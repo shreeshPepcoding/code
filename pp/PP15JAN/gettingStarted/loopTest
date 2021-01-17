@@ -1,0 +1,32 @@
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        // target => print star 5 times
+        // for loop
+
+        /*
+        for(int i = 1; i <= 5; i++) {
+            System.out.println("*");
+        }
+        */
+
+        // while loop
+        /*
+        int j = 7;
+        while(j <= 6) {
+            System.out.println("*");
+            j++;
+        }
+        */
+
+        // do-while
+
+        int k = 6;
+        do {
+            System.out.println("*");
+            k++;
+        } while (k <= 5);
+    }
+}

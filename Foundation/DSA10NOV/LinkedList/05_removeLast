@@ -1,0 +1,27 @@
+private Node getNm1node() {
+    Node temp = head;
+    while(temp.next.next != null) {
+        temp = temp.next;
+    }
+    
+    // Node temp = null;
+    // for(temp = head; temp.next.next != null; temp = temp.next) {
+    //     // nothing to do
+    // }
+    return temp;
+}
+
+public void removeLast() {
+    if(this.size == 0) {
+        System.out.println("List is empty");
+        return;
+    } else if(this.size == 1) {
+        this.head = this.tail = null;
+    } else {
+        // get second last node
+        Node nm1 = getNm1node();
+        nm1.next = null;
+        tail = nm1;
+    }
+    this.size--;
+}

@@ -1,0 +1,36 @@
+public int getFirst() {
+    // write your code here
+    if(size == 0) {
+        System.out.println("List is empty");
+        return -1;
+    }
+    return this.head.data;
+}
+
+public int getLast() {
+    // write your code here
+    if(size == 0) {
+        System.out.println("List is empty");
+        return -1;
+    }
+    return this.tail.data;
+}
+    
+public Node getNodeAt(int idx) {
+    Node temp = head;
+    while(idx > 0) {
+        idx--;
+        temp = temp.next;
+    }
+    return temp;
+}
+
+public int getAt(int idx) {
+    // write your code here
+    if(idx < 0 || idx >= size) {
+        System.out.println("Invalid arguments");
+        return -1;
+    }
+    Node n = getNodeAt(idx);
+    return n.data;
+}
