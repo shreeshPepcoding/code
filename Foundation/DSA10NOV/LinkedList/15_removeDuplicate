@@ -1,0 +1,37 @@
+public void removeDuplicates() {
+    // write your code here
+    // if(head == null) return;
+    // Node curr = head;
+    // Node next = head.next;
+
+    // while(next != null) {
+    //     curr.next = next;
+
+    //     if(curr.data == next.data) {
+    //         next = next.next;
+    //     } else {
+    //         curr = next;
+    //         next = next.next;
+    //     }
+    // }
+
+    // curr.next = null;
+    // this.tail = curr;
+
+    LinkedList l = new LinkedList();
+
+    l.addLast(this.getFirst());
+
+    Node temp = this.head.next;
+
+    while (temp != null) {
+        if (l.getLast() == temp.data) {
+            temp = temp.next;
+        } else {
+            l.addLast(temp.data);
+            temp = temp.next;
+        }
+    }
+    this.head = l.head;
+    this.tail = l.tail;
+}

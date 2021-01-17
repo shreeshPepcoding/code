@@ -1,0 +1,31 @@
+public void oddEven() {
+    if (head == null) return;
+    LinkedList odd = new LinkedList();
+    LinkedList even = new LinkedList();
+
+    while (this.size > 0) {
+        int data = this.getFirst();
+        this.removeFirst();
+
+        if (data % 2 == 0) {
+            even.addLast(data);
+        } else {
+            odd.addLast(data);
+        }
+    }
+
+    if (odd.size() == 0) {
+        this.head = even.head;
+        this.tail = even.tail;
+        this.size = even.size();
+    } else if (even.size() == 0) {
+        this.head = odd.head;
+        this.tail = odd.tail;
+        this.size = odd.size();
+    } else {
+        odd.tail.next = even.head;
+        this.head = odd.head;
+        this.tail = even.tail;
+        this.size = odd.size() + even.size();
+    }
+}

@@ -1,0 +1,29 @@
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scn = new Scanner(System.in);
+        int num = scn.nextInt();
+
+        // count digit + power
+        int power = 1; // power = 10^0
+        int cd = 0; // count digit
+
+        int n = num;
+        while (n != 0) {
+            cd++;
+            n /= 10;
+            power *= 10;
+        }
+
+
+        for (int i = 1; i <= cd; i++) {
+            power = power / 10;
+            int d = num / power;
+            num = num % power;
+
+            System.out.println(d);
+        }
+    }
+}
