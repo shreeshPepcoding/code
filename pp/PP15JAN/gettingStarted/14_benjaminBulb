@@ -7,14 +7,10 @@ public class Main {
         
         int n = scn.nextInt();
         
-        int div = 2;
-        while(n != 1) {
-            if(n % div == 0) {
-                System.out.print(div + " ");
-                n = n / div;
-            } else {
-                div++;
-            }
+        int i = 1;
+        while(i * i <= n) {
+            System.out.println(i * i);
+            i++;
         }
     }
 }
