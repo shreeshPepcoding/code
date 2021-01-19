@@ -1,0 +1,38 @@
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scn = new Scanner(System.in);
+        
+        int num = scn.nextInt();
+        int k = scn.nextInt();
+        
+        // step1 find length
+        int cd = 0;
+        int n = num;
+        
+        while(n != 0) {
+            n = n / 10;
+            cd++;
+        }
+        
+        // step2 balance k
+        k = k % cd;
+        if(k < 0) {
+            k = k + cd;
+        }
+        
+        // step3 make multiplier and divisor
+        int mult = (int)Math.pow(10, cd - k);
+        int div = (int)Math.pow(10, k);
+        
+        // step4 make a and b, i.e. first half and second half
+        int a = num / div; // first half
+        int b = num % div; // second half
+        
+        // step5 result
+        int ans = (b * mult) + a;
+        System.out.println(ans);
+    }
+}

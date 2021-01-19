@@ -1,0 +1,39 @@
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scn = new Scanner(System.in);
+
+        int n1 = scn.nextInt();
+        int n2 = scn.nextInt();
+
+        int a = n1;
+        int b = n2;
+
+        while (b % a != 0) {
+            int rem = b % a;
+            b = a;
+            a = rem;
+        }
+
+        int gcd = a;
+            
+        // int lcm = n1 * n2 / gcd;
+        
+        int max = Math.max(n1, n2);
+        int lcm = 0;
+        while(true) {
+            if(max % n1 == 0 && max % n2 == 0) {
+                lcm = max;
+                break;
+            }
+            max++;
+        }
+        
+        
+        System.out.println(gcd);
+        System.out.println(lcm);
+
+    }
+}
