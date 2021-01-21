@@ -1,0 +1,32 @@
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scn = new Scanner(System.in);
+        int n = scn.nextInt();
+
+        for (int r = 0; r < n; r++) {
+            for (int c = 0; c <= r; c++) {
+                if (r == c) {
+                    System.out.println("*\t");
+                } else {
+                    System.out.print("\t");
+                }
+            }
+            // hit enter
+            // System.out.println();
+        }
+
+        // int space = 0;
+        // for(int r = 0; r < n; r++) {
+        //     for(int sp = 1; sp <= space; sp++) {
+        //         System.out.print("\t");
+        //     }
+
+        //     System.out.println("*");
+        //     space++;
+        // }
+
+    }
+}

@@ -1,0 +1,23 @@
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scn = new Scanner(System.in);
+
+        // write ur code here
+        int n = scn.nextInt();
+
+        int
+        var = 1;
+        for (int r = 0; r < n; r++) {
+            for (int c = 0; c <= r; c++) {
+                System.out.print(var +"\t");
+                var ++;
+            }
+
+            System.out.println();
+        }
+
+    }
+}

@@ -1,0 +1,45 @@
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scn = new Scanner(System.in);
+
+        int n = scn.nextInt();
+
+        int star = (n / 2) + 1;
+        int space = 1;
+
+        for (int r = 0; r < n; r++) {
+            // System.out.println(star + " " + space);
+
+            // print star
+            for (int st = 1; st <= star; st++) {
+                System.out.print("*\t");
+            }
+
+            // print space
+            for (int sp = 1; sp <= space; sp++) {
+                System.out.print("\t");
+            }
+
+            // print star
+            for (int st = 1; st <= star; st++) {
+                System.out.print("*\t");
+            }
+
+            // hit enter
+            System.out.println();
+
+            // manage count of star and space
+            if (r < n / 2) {
+                space += 2;
+                star--;
+            } else {
+                space -= 2;
+                star++;
+            }
+        }
+
+    }
+}

@@ -1,0 +1,43 @@
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scn = new Scanner(System.in);
+
+        // write ur code here
+        int n = scn.nextInt();
+
+        int star = 1;
+        int space = 2 * n - 3;
+
+
+        for (int r = 0; r < n; r++) {
+            int a = 0;
+            // print star
+            for (int st = 1; st <= star; st++) {
+                a++;
+                System.out.print(a + "\t");
+            }
+            // print space
+            for (int sp = 1; sp <= space; sp++) {
+                System.out.print("\t");
+            }
+            // print star
+            if (r == n - 1) {
+                star--;
+                a--;
+            }
+            for (int st = 1; st <= star; st++) {
+                System.out.print(a + "\t");
+                a--;
+            }
+            // hit enter
+            System.out.println();
+            // manage codition
+
+            star++;
+            space -= 2;
+        }
+    }
+}

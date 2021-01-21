@@ -1,0 +1,28 @@
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scn = new Scanner(System.in);
+        int n = scn.nextInt();
+
+        n--;
+
+        for (int r = 0; r <= n; r++) {
+            for (int c = 0; c <= n; c++) {
+                if (r + c == n / 2) {
+                    System.out.print("*\t");
+                } else if (r + c == (n + n / 2)) {
+                    System.out.print("*\t");
+                } else if (c - r == n / 2) {
+                    System.out.print("*\t");
+                } else if (r - c == n / 2) {
+                    System.out.print("*\t");
+                } else {
+                    System.out.print("\t");
+                }
+            }
+            System.out.println();
+        }
+    }
+}
