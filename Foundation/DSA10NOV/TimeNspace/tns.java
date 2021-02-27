@@ -384,7 +384,7 @@ public class tns {
         // insertionSort(arr);
         // CountSort(arr2, 1, 9);
         quickSort(arr, 0, arr.length - 1);
-        // display(arr);
+        display(arr);
 
     }
 
