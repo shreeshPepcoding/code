@@ -1,0 +1,12 @@
+public void addFirst(int val) {
+    // write your code here
+    Node nn = new Node();
+    nn.data = val;
+    if(this.size == 0) {
+        this.head = this.tail = nn;
+    } else {
+        nn.next = this.head;
+        this.head = nn;
+    }
+    this.size++;
+}
