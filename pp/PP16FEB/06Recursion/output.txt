@@ -1,18 +1,3 @@
-tdg
-tdh
-tdi
-teg
-teh
-tei
-tfg
-tfh
-tfi
-udg
-udh
-udi
-ueg
-ueh
-uei
-ufg
-ufh
-ufi
+5 2 a*b
+5 2 a*b
+5 1 abcde

@@ -325,7 +325,6 @@ public class graph {
         }
     }
 
-
     public static void noOfIsland() {
         int[][] island = {
             {0, 0, 1, 0, 0, 1},
@@ -360,6 +359,161 @@ public class graph {
         // System.out.println("No. of island : " + count);
     }
 
+    // date : 1st april 2021
+    public static void hamiltonian(ArrayList<Edge>[] graph, int src, int osrc, int csf, boolean[] vis, String psf) {
+        if(csf == graph.length) {
+            psf += src;
+            // check is path is cyclic or not
+            boolean isCyclic = false;
+            for(Edge e : graph[osrc]) {
+                if(src == e.nbr) {
+                    isCyclic = true;
+                    break;
+                }
+            }
+
+            if(isCyclic == true) {
+                psf += "*";
+            } else {
+                psf += ".";
+            }
+            // print path
+            System.out.println(psf);
+            return;
+        }
+
+
+        vis[src] = true;
+        for(Edge e : graph[src]) {
+            int n = e.nbr;
+            if(vis[n] == false) {
+                hamiltonian(graph, n, osrc, csf + 1, vis, psf + src);
+            }
+        }
+
+        vis[src] = false;
+    }
+    
+
+    public static class bfsHelper {
+        int vtx;
+        String psf;
+
+        public bfsHelper(int vtx, String psf) {
+            this.vtx = vtx;
+            this.psf = psf;
+        }
+    }
+
+    public static void bfs(ArrayList<Edge>[] graph, int src) {
+        LinkedList<bfsHelper> que = new LinkedList<>();
+
+        boolean[] vis = new boolean[graph.length];
+        que.addLast(new bfsHelper(src, "" + src));
+
+        while(que.size() > 0) {
+            // 1. get + 2. remove
+            bfsHelper rem = que.removeFirst();
+            int vtx = rem.vtx;
+
+            // 3. marks*
+            if(vis[vtx] == true) {
+                continue;
+            } 
+            vis[vtx] = true;
+
+            // 4. work
+            System.out.println(rem.vtx + " from " + rem.psf);
+
+            // 5. add neighbours
+            for(Edge e : graph[vtx]) {
+                int n = e.nbr;
+                if(vis[n] == false) {
+                    que.addLast(new bfsHelper(n, rem.psf + " " + n));
+                }
+            }
+        }
+    }
+
+    public static boolean isCyclicHlp(ArrayList<Edge>[] graph, int src, boolean[] vis) {
+        LinkedList<bfsHelper> que = new LinkedList<>();
+        que.addLast(new bfsHelper(src, "" + src));
+
+        while(que.size() > 0) {
+            // 1. get + 2. remove
+            bfsHelper rem = que.removeFirst();
+            int vtx = rem.vtx;
+
+            // 3. marks*
+            if(vis[vtx] == true) {
+                return true;
+            } 
+            vis[vtx] = true;
+
+            // 4. work
+            // System.out.println(rem.vtx + " from " + rem.psf + " @ " + rem.csf);
+
+            // 5. add neighbours
+            for(Edge e : graph[vtx]) {
+                int n = e.nbr;
+                if(vis[n] == false) {
+                    que.addLast(new bfsHelper(n, rem.psf + " " + n));
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean isCyclic(ArrayList<Edge>[] graph) {
+        boolean[] vis = new boolean[graph.length];
+        for(int v = 0; v < graph.length; v++) {
+            if(vis[v] == false) {
+                boolean res = isCyclicHlp(graph, v, vis);
+                if(res == true) return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isCyclicDfsHlp(ArrayList<Edge>[] graph, int src, int par, boolean[] vis) {
+        vis[src] = true;
+
+        for(Edge e : graph[src]) {
+            int nbr = e.nbr;
+
+            if(vis[nbr] == false) {
+                // make call on another level
+                boolean rres = isCyclicDfsHlp(graph, nbr, src, vis);
+                if(rres == true) return true;
+            } else if(nbr != par) {
+                // this is cyclic moment, where vis[nbr] == true && nbr != par
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean isCyclicDfs(ArrayList<Edge>[] graph) {
+        boolean[] vis = new boolean[graph.length];
+
+        for(int v = 0; v < graph.length; v++) {
+            if(vis[v] == false) {
+                boolean res = isCyclicDfsHlp(graph, v, -1, vis);
+
+                if(res == true) return true;
+            }
+        }
+        return false;
+    }
+
+
+    public static void bfsFun(ArrayList<Edge>[] graph) {
+        int src = 0;
+        bfs(graph, src);
+        System.out.println(isCyclic(graph));
+
+    }
 
     public static void ques() {
         // n is no. of vertex
@@ -398,17 +552,22 @@ public class graph {
 
 
         addEdge(graph, 0, 3, 40);
-        addEdge(graph, 0, 1, 10);
+        // addEdge(graph, 0, 1, 10);
         addEdge(graph, 1, 2, 10);
         addEdge(graph, 2, 3, 10);
         addEdge(graph, 3, 4, 2);
         addEdge(graph, 4, 5, 3);
         addEdge(graph, 4, 6, 8);
-        addEdge(graph, 5, 6, 3);
+        // addEdge(graph, 5, 6, 3);
+        // addEdge(graph, 2, 5, 0);
 
         display(graph);
 
-        noOfIsland();
+        bfsFun(graph);
+
+        // boolean[] vis = new boolean[graph.length];
+        // hamiltonian(graph, 6, 6, 1, vis, "");
+        // noOfIsland();
         // isGraphConnected(graph);
         // gcc(graph);
         

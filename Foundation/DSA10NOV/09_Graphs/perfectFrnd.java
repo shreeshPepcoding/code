@@ -98,7 +98,7 @@ public class perfectFrnd {
                 int compSize = gcc(graph, v, vis);
                 res += psum * compSize;
                 psum += compSize;
-            }
+            }   
         }
         
         System.out.println(res);   
