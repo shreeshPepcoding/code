@@ -1,3 +1,2 @@
-ddrddrrr
-ddrrttrrdddd
-ddrrrrdd
+Method one required 3231 milli seconds to solve
+Method two required 1694 milli seconds to solve
