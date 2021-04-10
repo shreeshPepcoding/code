@@ -59,31 +59,51 @@ public class revesionBack {
         maze[sr][sc] = 0;
     }
 
-
-    public static void backtrack() {
-        int[][] maze = {
-            {0, 0, 0, 0, 0, 0, 1, 0},
-            {0, 0, 0, 0, 0, 0, 1, 1},
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 1, 0, 1, 0, 0, 0},
-            {0, 0, 0, 0, 0, 1, 0, 0},
-            {0, 0, 1, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 1, 0, 0},
-            {0, 0, 1, 0, 0, 1, 0, 0}
-        };
-        long t1 = System.currentTimeMillis();
-        floodfill(maze, 0, 0, "");
-        long t2 = System.currentTimeMillis();
-
-        System.out.println("Method one required " + (t2 - t1) + " milli seconds to solve");
-
-        if(maze[0][0] == 1 || maze[maze.length - 1][maze[0].length - 1] == 1) {
+    // asf -> answer so far, ssf -> sum so far, tar-> target
+    public static void printTargetSumSubsets(int[] arr, int idx, String asf, int ssf, int tar) {
+        if(idx == arr.length) {
+            if(ssf == tar)
+                System.out.println(asf + ".");
             return;
         }
-        t1 = System.currentTimeMillis();
-        floodfill1(maze, 0, 0, "");
-        t2 = System.currentTimeMillis();
-        System.out.println("Method two required " + (t2 - t1) + " milli seconds to solve");
+
+        // yes call
+        if(ssf + arr[idx] <= tar)
+            printTargetSumSubsets(arr, idx + 1, asf + arr[idx] + ", ", ssf + arr[idx], tar);
+        // no call
+        printTargetSumSubsets(arr, idx + 1, asf, ssf, tar);
+    }
+
+    public static void backtrack() {
+        int[] arr = {10, 20, 0, 30};
+        int tar = 30;
+        printTargetSumSubsets(arr, 0, "", 0, tar);
+
+
+
+        // int[][] maze = {
+        //     {0, 0, 0, 0, 0, 0, 1, 0},
+        //     {0, 0, 0, 0, 0, 0, 1, 1},
+        //     {0, 0, 0, 0, 0, 0, 0, 0},
+        //     {0, 0, 1, 0, 1, 0, 0, 0},
+        //     {0, 0, 0, 0, 0, 1, 0, 0},
+        //     {0, 0, 1, 0, 0, 0, 0, 0},
+        //     {0, 0, 0, 0, 0, 1, 0, 0},
+        //     {0, 0, 1, 0, 0, 1, 0, 0}
+        // };
+        // long t1 = System.currentTimeMillis();
+        // floodfill(maze, 0, 0, "");
+        // long t2 = System.currentTimeMillis();
+
+        // System.out.println("Method one required " + (t2 - t1) + " milli seconds to solve");
+
+        // if(maze[0][0] == 1 || maze[maze.length - 1][maze[0].length - 1] == 1) {
+        //     return;
+        // }
+        // t1 = System.currentTimeMillis();
+        // floodfill1(maze, 0, 0, "");
+        // t2 = System.currentTimeMillis();
+        // System.out.println("Method two required " + (t2 - t1) + " milli seconds to solve");
     }
 
 
