@@ -143,11 +143,104 @@ public class tns {
         System.out.println(fun(x, n));
     }
 
+    public static int[] mergeTwoSortedArrays(int[] arr1, int[] arr2) {
+        int l1 = arr1.length;
+        int l2 = arr2.length;
 
+        int[] res = new int[l1 + l2];
+
+        int i = 0;
+        int j = 0;
+        int k = 0;
+
+        while(i < l1 && j < l2) {
+            if(arr1[i] < arr2[j]) {
+                res[k] = arr1[i];
+                i++;
+            } else {
+                res[k] = arr2[j];
+                j++;
+            }
+            k++;
+        }
+
+        while(i < l1) {
+            res[k] = arr1[i];
+            i++;
+            k++;
+        }
+
+        while(j < l2) {
+            res[k] = arr2[j];
+            j++;
+            k++;
+        }
+
+        return res;
+    }
+
+    public static int[] mergeSort(int[] arr, int lo, int hi) {
+        if(lo == hi) {
+            int[] bres = new int[1];
+            bres[0] = arr[lo];
+            return bres;
+        }
+
+        int mid = lo + (hi - lo) / 2;
+
+        // faith
+        int[] arr1 = mergeSort(arr, lo, mid);
+        int[] arr2 = mergeSort(arr, mid + 1, hi);
+
+        int[] res = mergeTwoSortedArrays(arr1, arr2);
+        return res;
+    }
+
+    public static void bubbleSort(int[] arr) {
+        for(int i = 0; i < arr.length; i++) {
+            for(int j = 0; j < arr.length - i - 1; j++) {
+                if(arr[j] > arr[j + 1]) {
+                    swap(arr, j, j + 1);
+                }
+            }
+        }
+    }
+
+    public static void selectionSort(int[] arr) {
+        for(int i = 0; i < arr.length - 1; i++) {
+            int minIndx = i;
+            for(int j = i + 1; j < arr.length; j++) {
+                if(arr[j] < arr[minIndx]) {
+                    minIndx = j;
+                }
+            }
+            // swapping i, minIndx;
+            swap(arr, i, minIndx);
+        }
+    }
+
+    public static void sorting() {
+        int[] arr = {10, 15, 19, 57, 25, 36, 14, 12, 11, 24, 27};
+
+        System.out.println("Array Before sort : " + Arrays.toString(arr));
+        // int[] res = mergeSort(arr, 0, arr.length - 1);
+        // bubbleSort(arr);
+        selectionSort(arr);
+
+        // System.out.println("Res after sort : " + Arrays.toString(res));
+        System.out.println("Array after sort : " + Arrays.toString(arr));
+
+        // int[] arr1 = {8, 10, 15, 16, 18, 21, 25};
+        // int[] arr2 = {9, 12, 14, 17, 19};
+        // int[] res = mergeTwoSortedArrays(arr1, arr2);
+        // String str = Arrays.toString(res);
+        // System.out.println(str);
+    }
     
     public static void solve() {
         // searching();
-        ques();
+        // ques();
+        sorting();
     }
 
     public static void main(String[] args) {
