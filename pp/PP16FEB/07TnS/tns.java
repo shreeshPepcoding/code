@@ -219,13 +219,141 @@ public class tns {
         }
     }
 
+    public static void insertionSort(int[] arr) {
+        for(int i = 1; i < arr.length; i++) {
+            int j = i;
+            while(j > 0 && arr[j - 1] > arr[j]) {
+                swap(arr, j - 1, j);
+                j--;
+            }
+        }
+    }
+
+    public static void countSort(int[] arr, int maxRange) {
+        int[] fmap = new int[maxRange + 1];
+
+        for(int i = 0; i < arr.length; i++) {
+            // int indx = arr[i];
+            // fmap[indx]++;
+
+            int val = arr[i];
+            fmap[val] += 1;
+        }
+
+        System.out.println("fmap : " + Arrays.toString(fmap));
+        
+        int indx = 0;
+        
+        for(int i = 0; i < fmap.length; i++) {
+            int freq = fmap[i];
+            for(int j = 0; j < freq; j++) {
+                arr[indx] = i;
+                indx++;
+            }
+        }
+    }
+
+    public static void countSort2(int[] arr, int min, int max) {
+        int[] fmap = new int[max - min + 1];
+
+        for(int i = 0; i < arr.length; i++) {
+            int indx = arr[i] - min; // val - base value
+            fmap[indx]++;
+        }
+
+        int indx = 0;
+        for(int i = 0; i < fmap.length; i++) {
+            int val = i + min; // indx + base value
+            int freq = fmap[i];
+
+            for(int j = 0; j < freq; j++) {
+                arr[indx] = val;
+                indx++;
+            }
+        }
+    }
+
+    public static void partition(int[] arr, int pivot) {
+        int i = 0;
+        int j = 0;
+
+        while(j < arr.length) {
+            if(arr[j] <= pivot) {
+                swap(arr, i, j);
+                i++;
+                j++;
+            } else {
+                j++;
+            }
+        }
+    }
+
+    public static int partitionIndx(int[] arr, int lo, int hi, int pivot) {
+        int i = lo;
+        int j = lo;
+
+        while(j <= hi) {
+            if(arr[j] <= pivot) {
+                swap(arr, j, i);
+                i++;
+                j++;
+            } else {
+                j++;
+            }
+        }
+
+        return i - 1;
+
+    }
+
+    public static void quickSort(int[] arr, int lo, int hi) {
+        if(lo > hi) 
+            return;
+
+        int pivot = arr[hi];
+
+        int pi = partitionIndx(arr, lo, hi, pivot);
+
+        // String str = Arrays.toString(arr);
+        // System.out.println("lo : " + lo + " hi : " + hi + " pi : " + pi + " Array : " + str);
+
+        quickSort(arr, lo, pi - 1);
+        quickSort(arr, pi + 1, hi);
+    }
+
+    public static int quickSelect(int[] arr, int lo, int hi, int k) {
+        // if(lo > hi) return -1;
+        int pivot = arr[hi];
+        int pi = partitionIndx(arr, lo, hi, pivot);
+
+        if(pi > k) {
+            // left side
+            return quickSelect(arr, lo, pi - 1, k);
+        } else if(pi < k) {
+            // right side
+            return quickSelect(arr, pi + 1, hi, k);
+        } else {
+            // found
+            return pivot;
+        }   
+    }
+
     public static void sorting() {
         int[] arr = {10, 15, 19, 57, 25, 36, 14, 12, 11, 24, 27};
+        // int[] arr = {4, 2, 2, 1, 0, 1, 2, 1, 1, 3, 3, 4, 7, 0, 9, 0, 9, 9, 7, 7, 6, 6, 5, 8};
+        // int[] arr = {7, -2, 4, -1, 3, -2, 1, 7, 6, -1};
+
+        Arrays.sort(arr);
 
         System.out.println("Array Before sort : " + Arrays.toString(arr));
         // int[] res = mergeSort(arr, 0, arr.length - 1);
         // bubbleSort(arr);
-        selectionSort(arr);
+        // selectionSort(arr);
+        // insertionSort(arr);
+        // countSort(arr, 9);
+        // countSort2(arr, -2, 7);
+
+        quickSort(arr, 0, arr.length - 1);
 
         // System.out.println("Res after sort : " + Arrays.toString(res));
         System.out.println("Array after sort : " + Arrays.toString(arr));
@@ -236,11 +364,29 @@ public class tns {
         // String str = Arrays.toString(res);
         // System.out.println(str);
     }
+
+    public static void testing() {
+        int[] arr = new int[10000];
+        int len = 10000;
+        for(int i = 0; i < 10000; i++) {
+            arr[i] = len;
+            len--;
+        }
+
+        long start = System.currentTimeMillis();
+        // bubbleSort(arr);
+        // selectionSort(arr);
+        // insertionSort(arr);
+        long end = System.currentTimeMillis();
+
+        System.out.println(end - start);
+    }
     
     public static void solve() {
         // searching();
         // ques();
         sorting();
+        // testing();
     }
 
     public static void main(String[] args) {
