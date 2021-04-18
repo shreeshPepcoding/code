@@ -117,6 +117,26 @@ public class tns {
         }
     }
 
+    public static void targetSumPair(int[] arr, int target) {
+        Arrays.sort(arr);
+
+        int i = 0;
+        int j = arr.length - 1;
+
+        while(i < j) {
+            int sum = arr[i] + arr[j];
+            if(sum == target) {
+                System.out.println(arr[i] + ", " + arr[j]);
+                i++;
+                j--;
+            } else if(sum > target) {
+                j--;
+            } else {
+                i++;
+            }
+        }
+    }
+
     // fun, f(x, n) = 1.x^(n) + 2.x^(n - 1) + 3.x^(n - 2) + .... + n.x^1
     public static int fun(int x, int N) {
         int sum = 0;
@@ -138,9 +158,12 @@ public class tns {
         // sort012(arr);
         // display(arr);
 
-        int x = 2;
-        int n = 3;
-        System.out.println(fun(x, n));
+        // int x = 2;
+        // int n = 3;
+        // System.out.println(fun(x, n));
+
+        int[] arr = {10, 20, 30, 40, 50, 60, 70, 80, 90};
+        targetSumPair(arr, 70);
     }
 
     public static int[] mergeTwoSortedArrays(int[] arr1, int[] arr2) {
@@ -338,14 +361,100 @@ public class tns {
         }   
     }
 
+    public static void stableSort(int[] arr, char[] charr, int min, int max) {
+        int[] fmap = new int[max - min + 1];
+
+        // make freq. map
+        for(int i = 0; i < arr.length; i++) {
+            int indx = arr[i] - min;
+            fmap[indx]++;
+        }
+
+        // prefix sum array
+        for(int i = 1; i < fmap.length; i++) {
+            fmap[i] += fmap[i - 1];
+        }
+
+        int[] ans = new int[arr.length];
+        char[] chans = new char[charr.length];
+
+        // tarvel in original array from last index
+        for(int i = arr.length - 1; i >= 0; i--) {
+            int indx = arr[i] - min;
+            int pos = fmap[indx];
+            fmap[indx]--;
+
+            ans[pos - 1] = arr[i];
+            chans[pos - 1] = charr[i];
+        }
+
+        // fill original array with sorted array
+        for(int i = 0; i < arr.length; i++) {
+            arr[i] = ans[i];
+            charr[i] = chans[i];
+        }
+    }
+
+    public static void radixSort(int[] arr) {
+        int max = Integer.MIN_VALUE;
+
+        for(int i = 0; i < arr.length; i++) {
+            if(arr[i] > max) {
+                max = arr[i];
+            }
+        }
+
+        int exp = 1; // 10 ^ 0
+        // exponent is helping us to sort number digit wise
+        while(exp <= max) {
+            countSortForRadix(arr, exp);
+            exp *= 10;
+        }
+    }
+
+    public static void countSortForRadix(int[] arr, int exp) {
+        int[] fmap = new int[10];
+
+        // make freq. map
+        for(int i = 0; i < arr.length; i++) {
+            int indx = arr[i] / exp % 10;
+            fmap[indx]++;
+        }
+
+        // prefix sum array
+        for(int i = 1; i < fmap.length; i++) {
+            fmap[i] += fmap[i - 1];
+        }
+
+        int[] ans = new int[arr.length];
+
+        // tarvel in original array from last index
+        for(int i = arr.length - 1; i >= 0; i--) {
+            int indx = arr[i] / exp % 10;
+            int pos = fmap[indx];
+            fmap[indx]--;
+
+            ans[pos - 1] = arr[i];
+        }
+
+        // fill original array with sorted array
+        for(int i = 0; i < arr.length; i++) {
+            arr[i] = ans[i];
+        }
+    }
+
     public static void sorting() {
-        int[] arr = {10, 15, 19, 57, 25, 36, 14, 12, 11, 24, 27};
+        // int[] arr = {10, 15, 19, 57, 25, 36, 14, 12, 11, 24, 27};
         // int[] arr = {4, 2, 2, 1, 0, 1, 2, 1, 1, 3, 3, 4, 7, 0, 9, 0, 9, 9, 7, 7, 6, 6, 5, 8};
         // int[] arr = {7, -2, 4, -1, 3, -2, 1, 7, 6, -1};
 
-        Arrays.sort(arr);
+        // int[] arr = {6, 5, 4, 6, 5, 7, 3, 7, 6, 7, 4, 3, 4, 5};
+        // char[] charr = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n'};
 
-        System.out.println("Array Before sort : " + Arrays.toString(arr));
+        int[] arr = {15876, 98756, 1456, 3698, 7852, 8526, 148995, 74589, 36547, 25897, 125421, 1};
+
+        System.out.println("Array after sort : " + Arrays.toString(arr));
+        // System.out.println("Array after sort : " + Arrays.toString(charr));
         // int[] res = mergeSort(arr, 0, arr.length - 1);
         // bubbleSort(arr);
         // selectionSort(arr);
@@ -353,10 +462,13 @@ public class tns {
         // countSort(arr, 9);
         // countSort2(arr, -2, 7);
 
-        quickSort(arr, 0, arr.length - 1);
+        // quickSort(arr, 0, arr.length - 1);
+        // stableSort(arr, charr, 3, 7);
+        radixSort(arr);
 
         // System.out.println("Res after sort : " + Arrays.toString(res));
         System.out.println("Array after sort : " + Arrays.toString(arr));
+        // System.out.println("Array after sort : " + Arrays.toString(charr));
 
         // int[] arr1 = {8, 10, 15, 16, 18, 21, 25};
         // int[] arr2 = {9, 12, 14, 17, 19};
@@ -365,18 +477,30 @@ public class tns {
         // System.out.println(str);
     }
 
+    public static void ArrayFiller(int[] arr, int digit) {
+        int power = (int)Math.pow(10, digit);
+        for(int i = 0; i < arr.length; i++) {
+            arr[i] = (int)(Math.random() * power);
+        }
+    }
+
     public static void testing() {
         int[] arr = new int[10000];
-        int len = 10000;
-        for(int i = 0; i < 10000; i++) {
-            arr[i] = len;
-            len--;
-        }
-
+        // int len = 10000;
+        // for(int i = 0; i < 10000; i++) {
+        //     arr[i] = len;
+        //     len--;
+        // }
+        
+        // ArrayFiller(arr, 8);
+        // System.out.println(Arrays.toString(arr));
+        // int[] arr = {15876, 98756, 1456, 3698, 7852, 8526, 148995, 74589, 36547, 25897, 125421, 1};
         long start = System.currentTimeMillis();
         // bubbleSort(arr);
         // selectionSort(arr);
         // insertionSort(arr);
+        // radixSort(arr);
+        // quickSort(arr, 0, arr.length - 1);
         long end = System.currentTimeMillis();
 
         System.out.println(end - start);
@@ -384,8 +508,8 @@ public class tns {
     
     public static void solve() {
         // searching();
-        // ques();
-        sorting();
+        ques();
+        // sorting();
         // testing();
     }
 
