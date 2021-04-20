@@ -90,6 +90,127 @@ public class ll {
         tail.next = head2;
     }
 
+    public static ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        ListNode head = new ListNode(-1);
+        ListNode temp = head;
+
+        ListNode t1 = l1;
+        ListNode t2 = l2;
+
+        while(t1 != null && t2 != null) {
+            if(t1.val < t2.val) {
+                temp.next = t1;
+                t1 = t1.next;
+            } else {
+                temp.next = t2;
+                t2 = t2.next;
+            }
+            temp = temp.next;
+        }
+
+        if(t1 != null)
+            temp.next = t1;
+
+        if(t2 != null)
+            temp.next = t2;
+
+        return head.next;
+    }
+
+    public static ListNode mergeSort(ListNode head1) {
+        if(head1.next == null) {
+            return head1;
+        }
+
+        ListNode mid = midNode(head1);
+        ListNode head2 = mid.next;
+        mid.next = null;
+
+        head1 = mergeSort(head1);   
+        head2 = mergeSort(head2);
+
+        head1 = mergeTwoLists(head1, head2);
+
+        return head1;
+    }
+
+    public static class Pair implements Comparable<Pair>{
+        ListNode node;
+            
+        public Pair(ListNode node) {
+            this.node = node;
+        }
+        
+        public int compareTo(Pair other) {
+            return this.node.val - other.node.val;
+        }
+    }
+    
+    public static ListNode mergeKLists(ListNode[] lists) {
+        
+        PriorityQueue<Pair> pq = new PriorityQueue<>();
+        
+        for(int i = 0; i < lists.length; i++) {
+            if(lists[i] != null)
+                pq.add(new Pair(lists[i]));
+        }
+        
+        ListNode head = new ListNode(-1);
+        ListNode temp = head;
+        
+        while(pq.size() > 0) {
+            Pair rem = pq.remove();
+            temp.next = rem.node;
+            temp = temp.next;
+            
+            if(rem.node.next != null) 
+                pq.add(new Pair(rem.node.next));
+        }
+        
+        return head.next;
+    }
+
+    public static boolean isCyclePresentInLL(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head;
+
+        boolean iscyclic = false;
+        while(fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+
+            if(slow == fast) {
+                iscyclic = true;
+                break;
+            }
+        }
+        return iscyclic;
+    }
+
+    public static ListNode CycleNode(ListNode head) {
+        boolean iscyclic = false;
+        ListNode slow = head;
+        ListNode fast = head;
+        while(fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+
+            if(slow == fast) {
+                iscyclic = true;
+                break;
+            }
+        }
+
+        if(iscyclic == false) return null;
+
+        slow = head;
+        while(slow != fast) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        return slow;
+    }
+
     public static void main(String[] args) {
         return;
     }
