@@ -3,7 +3,7 @@ import java.util.*;
 public class tns {
     public static void display(int[] arr) {
         for(int val : arr) 
-            System.out.print(val + " ");
+            System.out.println(val);
         
         System.out.println();
     }
@@ -78,7 +78,6 @@ public class tns {
         display(arr);
         System.out.println(data + " situation : " + res);
     }
-
 
     public static void sort01(int[] arr) {
         int i = 0;
@@ -485,14 +484,15 @@ public class tns {
     }
 
     public static void testing() {
-        int[] arr = new int[10000];
+        int[] arr = new int[50];
         // int len = 10000;
         // for(int i = 0; i < 10000; i++) {
         //     arr[i] = len;
         //     len--;
         // }
         
-        // ArrayFiller(arr, 8);
+        ArrayFiller(arr, 2);
+		display(arr);
         // System.out.println(Arrays.toString(arr));
         // int[] arr = {15876, 98756, 1456, 3698, 7852, 8526, 148995, 74589, 36547, 25897, 125421, 1};
         long start = System.currentTimeMillis();
@@ -508,12 +508,13 @@ public class tns {
     
     public static void solve() {
         // searching();
-        ques();
+        // ques();
         // sorting();
-        // testing();
+        testing();
     }
 
     public static void main(String[] args) {
         solve();
     }
 }
+

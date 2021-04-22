@@ -59,11 +59,45 @@ public class recursion {
         return firstIndx(arr, indx + 1, dtf);
     }
 
-    public static void ques() {
-        int[] arr = {10, 20, 30, 40, 50, 60, 70, 80, 90};
-        // display(arr, 0);
+    public static int lastIndx(int[] arr, int indx, int dtf) {
+        if(indx == arr.length) return -1;
 
-        System.out.println(find(arr, 0, 55));
+        int li = lastIndx(arr, indx + 1, dtf);
+
+        if(li == -1 && arr[indx] == dtf) {
+            li = indx;
+        }
+        return li;
+    }
+    
+    public static int[] allIndices(int[] arr, int data, int indx, int count) {
+        if(indx == arr.length) {
+            int[] bres = new int[count];
+            return bres;
+        }
+
+
+        if(arr[indx] == data){
+            count++;
+        }
+        int[] res = allIndices(arr, data, indx + 1, count);
+        if(arr[indx] == data) {
+            res[count - 1] = indx;
+        }
+
+        return res;
+    }
+
+    public static void ques() {
+        int[] arr = {10, 20, 20, 40, 20, 30, 20, 60, 20, 30, 20, 90};
+
+        int[] res = allIndices(arr, 20, 0, 0);
+
+        System.out.println(Arrays.toString(res));
+
+        // display(arr, 0); 
+        // System.out.println(find(arr, 0, 55));
+        // System.out.println(lastIndx(arr, 0, 30));
     }
 
     public static void extra() {
