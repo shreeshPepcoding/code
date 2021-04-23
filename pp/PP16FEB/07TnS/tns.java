@@ -149,7 +149,26 @@ public class tns {
         return sum;
     }
 
+    public static int findPivotEle(int[] arr, int lo, int hi) {
+        if(lo == hi) return arr[lo];
+
+        int mid = lo + (hi - lo) / 2;
+        int res = 0;
+        if(arr[mid] < arr[hi]) {
+            // left side -> including mid
+            res = findPivotEle(arr, lo, mid);
+        } else {
+            // right side
+            res = findPivotEle(arr, mid + 1, hi);
+        }
+        return res;
+    }
+
     public static void ques() {
+        int[] arr = {70, 5, 20, 30, 35, 40, 50};
+        int res = findPivotEle(arr, 0, arr.length - 1);
+        System.out.println("Smallest ele is : " + res);
+
         // int[] arr = {1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0};
         // int[] arr = {0, 1, 0, 2, 2, 0, 1, 1, 0, 2, 2, 0, 2, 0, 1, 0, 1, 0, 2, 0, 1, 2, 2};
         // display(arr);
@@ -161,8 +180,8 @@ public class tns {
         // int n = 3;
         // System.out.println(fun(x, n));
 
-        int[] arr = {10, 20, 30, 40, 50, 60, 70, 80, 90};
-        targetSumPair(arr, 70);
+        // int[] arr = {10, 20, 30, 40, 50, 60, 70, 80, 90};
+        // targetSumPair(arr, 70);
     }
 
     public static int[] mergeTwoSortedArrays(int[] arr1, int[] arr2) {
@@ -508,9 +527,9 @@ public class tns {
     
     public static void solve() {
         // searching();
-        // ques();
+        ques();
         // sorting();
-        testing();
+        // testing();
     }
 
     public static void main(String[] args) {
