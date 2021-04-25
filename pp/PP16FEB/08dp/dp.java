@@ -223,10 +223,251 @@ public class dp {
         System.out.println(res);
     }
 
+    // ~~~~~~~~~~~~~~~~~~~Min Cost in Maze Traversal~~~~~~~~~~~~~~~~~~~~~~
+
+    public static int minCostPath_rec(int[][] maze, int sr, int sc) {
+        if(sr == maze.length - 1 && sc == maze[0].length - 1) {
+            return maze[sr][sc];
+        }
+        int minCost = Integer.MAX_VALUE;
+        // horizontal
+        if(sc + 1 < maze[0].length) {
+            minCost = Math.min(minCost, minCostPath_rec(maze, sr, sc + 1));
+        }
+
+        // vertical
+        if(sr + 1 < maze.length) {
+            minCost = Math.min(minCost, minCostPath_rec(maze, sr + 1, sc));
+        }
+        return maze[sr][sc] + minCost;
+    }
+
+    public static int minCostPath_memo(int[][] maze, int sr, int sc, int[][] dp) {
+        if(sr == maze.length - 1 && sc == maze[0].length - 1) {
+            return dp[sr][sc] = maze[sr][sc];
+        }
+
+        if(dp[sr][sc] != 0) {
+            return dp[sr][sc];
+        }
+
+        int minCost = Integer.MAX_VALUE;
+        // horizontal
+        if(sc + 1 < maze[0].length) {
+            minCost = Math.min(minCost, minCostPath_memo(maze, sr, sc + 1, dp));
+        }
+
+        // vertical
+        if(sr + 1 < maze.length) {
+            minCost = Math.min(minCost, minCostPath_memo(maze, sr + 1, sc, dp));
+        }
+        dp[sr][sc] = maze[sr][sc] + minCost;
+        return dp[sr][sc]; 
+    }
+
+    public static int minCostPath_tab(int[][] maze) {
+        int n = maze.length;
+        int m = maze[0].length;
+        int[][] dp = new int[n][m];
+
+
+        for(int r = n - 1; r >= 0; r--) {
+            for(int c = m - 1; c >= 0; c--) {
+                if(r == n - 1 && c == m - 1) {
+                    dp[r][c] = maze[r][c];
+                } else if(r == n - 1) {
+                    dp[r][c] = maze[r][c] + dp[r][c + 1];
+                } else if(c == m - 1) {
+                    dp[r][c] = maze[r][c] + dp[r + 1][c];
+                } else {
+                    dp[r][c] = maze[r][c] + Math.min(dp[r][c + 1], dp[r + 1][c]);
+                }
+            }
+        }
+
+        return dp[0][0];
+    }
+
+    public static int minCostPath_tab2(int[][] maze, int sr, int sc, int[][] dp) {
+        for(sc = maze[0].length - 1; sc >= 0; sc--) {
+            for(sr = maze.length - 1; sr >= 0; sr--) {
+                if(sr == maze.length - 1 && sc == maze[0].length - 1) {
+                    dp[sr][sc] = maze[sr][sc];
+                    continue;
+                }
+        
+                int minCost = Integer.MAX_VALUE;
+                // horizontal
+                if(sc + 1 < maze[0].length) {
+                    minCost = Math.min(minCost, dp[sr][sc + 1]);
+                }
+        
+                // vertical
+                if(sr + 1 < maze.length) {
+                    minCost = Math.min(minCost, dp[sr + 1][sc]);
+                }
+                dp[sr][sc] = maze[sr][sc] + minCost;
+            }
+        }
+        return dp[0][0];
+    }
+
+    public static void minCostPath() {
+        int[][] maze = {
+            {0, 1, 4, 2, 8, 2},
+            {4, 3, 6, 5, 0, 4},
+            {1, 2, 4, 1, 4, 6},
+            {2, 0, 7, 3, 2, 2},
+            {3, 1, 5, 9, 2, 4},
+            {2, 7, 0, 8, 5, 1}
+        };
+        // int res = minCostPath_rec(maze, 0, 0);
+        int[][] dp = new int[maze.length][maze[0].length];
+        // int res = minCostPath_memo(maze, 0, 0, dp);
+        // int res = minCostPath_tab(maze);
+        int res = minCostPath_tab2(maze, 0, 0, dp);
+        System.out.println(res);
+    }
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~Goldmine~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    public static int[] rdir = {-1, 0, 1};
+    public static int[] cdir = {1, 1, 1};
+
+    public static int goldmine_rec(int[][] mine, int r, int c) {
+        if(c == mine[0].length - 1) {
+            return mine[r][c];
+        }
+
+        int maxGold = 0;
+        for(int d = 0; d <= 2; d++) {
+            int rr = r + rdir[d];
+            int cc = c + cdir[d];
+            if(rr >= 0 && rr < mine.length) {
+                maxGold = Math.max(maxGold, goldmine_rec(mine, rr, cc));
+            }
+        }
+        return maxGold + mine[r][c];
+    }
+
+    public static int goldmine_recHelp(int[][] mine) {
+        int maxGold = 0;
+        for(int r = 0; r < mine.length; r++) {
+            maxGold = Math.max(maxGold, goldmine_rec(mine, r, 0));
+        }
+        return maxGold;
+    }
+
+    public static int goldmine_memo(int[][] mine, int r, int c, int[][] dp) {
+        if(c == mine[0].length - 1) {
+            return dp[r][c] = mine[r][c];
+        }
+
+        if(dp[r][c] != 0) return dp[r][c];
+
+        int maxGold = 0;
+        for(int d = 0; d <= 2; d++) {
+            int rr = r + rdir[d];
+            int cc = c + cdir[d];
+            if(rr >= 0 && rr < mine.length) {
+                maxGold = Math.max(maxGold, goldmine_memo(mine, rr, cc, dp));
+            }
+        }
+        return dp[r][c] = maxGold + mine[r][c];
+    }
+
+    public static int goldmine_memoHelp(int[][] mine) {
+
+        int[][] dp = new int[mine.length][mine[0].length];
+
+        int maxGold = 0;
+        for(int r = 0; r < mine.length; r++) {
+            maxGold = Math.max(maxGold, goldmine_memo(mine, r, 0, dp));
+        }
+        return maxGold;
+    }
+
+    public static int goldmine_tab(int[][] mine) {
+        int[][] dp = new int[mine.length][mine[0].length];
+
+        for(int c = mine[0].length - 1; c >= 0; c--) {
+            for(int r = 0; r < mine.length; r++) {
+                if(c == mine[0].length - 1) {
+                    // last caolumn
+                    dp[r][c] = mine[r][c];
+                } else if(r == 0) {
+                    // first row
+                    dp[r][c] = mine[r][c] + Math.max(dp[r][c + 1], dp[r + 1][c + 1]);
+                } else if(r == mine.length - 1) {
+                    // last row
+                    dp[r][c] = mine[r][c] + Math.max(dp[r - 1][c + 1], dp[r][c + 1]);
+                } else {
+                    // middle section
+                    dp[r][c] = mine[r][c] + Math.max(dp[r - 1][c + 1], Math.max(dp[r][c + 1], dp[r + 1][c + 1]));
+                }
+            }
+        }
+        // loop and find answer
+        int maxGold = 0;
+        for(int r = 0; r < dp.length; r++) {
+            maxGold = Math.max(maxGold, dp[r][0]);
+        }
+        return maxGold;
+    }
+
+    public static int goldmine_tab2(int[][] mine, int r, int c, int[][] dp) {
+        for(c = mine[0].length - 1; c >= 0; c--) {
+            for(r = 0; r < mine.length; r++) {
+                if(c == mine[0].length - 1) {
+                    dp[r][c] = mine[r][c];
+                    continue;
+                }
+
+                int maxGold = 0;
+                for(int d = 0; d <= 2; d++) {
+                    int rr = r + rdir[d];
+                    int cc = c + cdir[d];
+                    if(rr >= 0 && rr < mine.length) {
+                        maxGold = Math.max(maxGold, dp[rr][cc]);
+                    }
+                }
+                dp[r][c] = maxGold + mine[r][c];
+            }
+        }
+
+        // loop and find answer
+        int gold = 0;
+        for(r = 0; r < dp.length; r++) {
+            gold = Math.max(gold, dp[r][0]);
+        }
+        return gold;
+    }
+
+    public static void goldmine() {
+        int[][] mine = {
+            {0, 1, 4, 2, 8, 2},
+            {4, 3, 6, 5, 0, 4},
+            {1, 2, 4, 1, 4, 6},
+            {2, 0, 7, 3, 2, 2},
+            {3, 1, 5, 9, 2, 4},
+            {2, 7, 0, 8, 5, 1}
+        };
+
+        // int res = goldmine_recHelp(mine);
+        // int res = goldmine_memoHelp(mine);
+        // int res = goldmine_tab(mine);
+
+        int[][] dp = new int[mine.length][mine[0].length];
+        int res = goldmine_tab2(mine, 0, 0, dp);
+        System.out.println(res);
+    }
+
 
     public static void ques() {
         
-        climbStairs();
+        goldmine();
+        // minCostPath();
+        // climbStairs();
         // fib();
     }
 
