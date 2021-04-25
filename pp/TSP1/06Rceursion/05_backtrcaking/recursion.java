@@ -2,8 +2,65 @@ import java.util.*;
 
 public class recursion {
 
+    public static int[] rdir = {-1, 0, 1, 0};
+    public static int[] cdir = {0, -1, 0, 1};
+    public static char[] chArr = {'t', 'l', 'd', 'r'};
+
+    public static void floodfill(int[][] board, int sr, int sc, String asf) {
+        if(sr == board.length - 1 && sc == board[0].length - 1) {
+            System.out.println(asf);
+            return;
+        }
+
+        // mark
+        board[sr][sc] = 1;
+
+        for(int d = 0; d < rdir.length; d++) {
+            int rr = sr + rdir[d];
+            int cc = sc + cdir[d];
+            char dir = chArr[d];
+
+            if(rr >= 0 && rr < board.length && cc >= 0 && cc < board[0].length && board[rr][cc] != 1) {
+                floodfill(board, rr, cc, asf + dir);
+            }
+        }
+
+        // unmarking
+        board[sr][sc] = 0;
+    }
+
+    public static void printTargetSumSubset(int[] arr, int indx, int ssf, int targ, String asf) {
+        if(indx == arr.length) {
+            if(targ == ssf) {
+                System.out.println(asf + ".");
+            }
+            return;
+        }
+
+
+        // yes call
+        if(ssf + arr[indx] <= targ) {
+            printTargetSumSubset(arr, indx + 1, ssf + arr[indx], targ, asf + arr[indx] + ", ");
+        }
+        // no call
+        printTargetSumSubset(arr, indx + 1, ssf, targ, asf);
+    }
 
     public static void ques() {
+        int[] arr = {2, 1, 3, 0};
+        int targ = 3;
+        printTargetSumSubset(arr, 0, 0, targ, "");
+ 
+        // int[][] board = {
+        //     {0, 1, 0, 0, 0, 0},
+        //     {0, 1, 0, 1, 1, 0},
+        //     {0, 1, 0, 1, 1, 0},
+        //     {0, 0, 0, 0, 0, 0},
+        //     {1, 1, 0, 1, 1, 0},
+        //     {1, 1, 0, 0, 0, 0}
+        // };
+
+        // floodfill(board, 0, 0, "");
         return;
     }
 
@@ -109,8 +166,8 @@ public class recursion {
     }
 
     public static void main(String[] args) {
-        // ques();
-        demo();
+        ques();
+        // demo();
     }
 
 }
