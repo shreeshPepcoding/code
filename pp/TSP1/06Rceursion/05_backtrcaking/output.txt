@@ -1,0 +1,8 @@
+row : 2, col : 5
+row : 3, col : 6
+row : 5, col : 6
+row : 6, col : 5
+row : 6, col : 3
+row : 5, col : 2
+row : 3, col : 2
+row : 2, col : 3
