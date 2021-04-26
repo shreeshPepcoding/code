@@ -211,6 +211,169 @@ public class ll {
         return slow;
     }
 
+
+    public static int length(ListNode head) {
+        int len = 0;
+        while(head != null) {
+            head = head.next;
+            len++;
+        }
+        return len;
+    }
+
+    public static ListNode thead = null;
+    public static ListNode ttail = null;
+
+    public static void addFirst(ListNode node) {
+        if(thead == null) {
+            thead = ttail = node; 
+        } else {
+            node.next = thead;
+            thead = node;
+        }
+    }
+
+    public static ListNode reverseInKGroup(ListNode node, int K) {
+        if(node == null || node.next == null || K == 0) return node;
+
+        int len = length(node);
+
+        thead = ttail = null;
+
+        ListNode head = null;
+        ListNode tail = null;
+        ListNode temp = node;
+        int k = K;
+        while(len >= k) {
+            ListNode next = temp.next;
+            addFirst(temp);
+            temp = next;
+            k--;
+            len--;
+
+            if(k == 0) {
+                if(head == null) {
+                    head = thead;
+                    tail = ttail;
+                } else {
+                    tail.next = thead;
+                    tail = ttail;
+                }
+                thead = ttail = null;
+                k = K;
+            }
+        }
+
+        tail.next = temp;
+        return head;
+    }
+
+    public static ListNode reverseInRange(ListNode head, int n, int m) {
+        if(head == null || head.next == null || n == m) return head;
+
+        thead = thead = null;
+        int indx = 1;
+        ListNode prev = null;
+        ListNode temp = head;
+
+        while(temp != null) {
+            while(indx >= n && indx <= m) {
+                ListNode next = temp.next;
+                addFirst(temp);
+                temp = next;
+                indx++;
+            }
+
+            if(indx > m) {
+                if(prev != null) {
+                    prev.next = thead;
+                    ttail.next = temp;
+                } else {
+                    head = thead;
+                    ttail.next = temp;
+                }
+                return head;
+            }
+
+            indx++;
+            prev = temp;
+            temp = temp.next;
+        }
+        return head;
+    }
+
+    public static ListNode segregateEvenOdd(ListNode head) {
+        if(head == null || head.next == null) return head;
+        // dummy nodes
+        ListNode ohead = new ListNode(-1);
+        ListNode ehead = new ListNode(-1);
+    
+        // make tail of odd list and even list for iteration
+        ListNode otail = ohead, etail = ehead;
+
+        ListNode temp = head;
+
+        while(temp != null) {
+            if(temp.val % 2 == 0) {
+                // even
+                etail.next = temp;
+                etail = temp;
+            } else {
+                // odd
+                otail.next = temp;
+                otail = temp;
+            }
+            temp = temp.next;
+        }
+
+        etail.next = ohead.next;
+        otail.next = null;
+        return ehead.next;
+    }
+
+    public static ListNode IntersectionNodeInTwoLLDifferenceApproach(ListNode headA, ListNode headB) {
+        if(headA == null || headB == null) return null;
+
+        int s1 = length(headA);
+        int s2 = length(headB);
+
+        if(s1 > s2) {
+            int itr = s1 - s2;
+            while(itr > 0) {
+                headA = headA.next;
+                itr--;
+            }
+        } else if(s2 > s1) {
+            int itr = s2 - s1;
+            while(itr > 0) {
+                headB = headB.next;
+                itr--;
+            }
+        }
+
+        while(headA != null) {
+            if(headA == headB) {
+                return headA;
+            }
+            headA = headA.next;
+            headB = headB.next;
+        }
+        return null;
+    }
+
+    public static ListNode getTail(ListNode head) {
+        while(head.next != null) {
+            head = head.next;
+        }
+        return head;
+    }
+
+    public static ListNode IntersectionNodeInTwoLLCyclicApproach(ListNode headA, ListNode headB) {
+        if(headA == null || headB == null) return null;
+        ListNode tail = getTail(headA);
+        tail.next = headA;
+        return CycleNode(headB);
+    }
     public static void main(String[] args) {
         return;
     }
