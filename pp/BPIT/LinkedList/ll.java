@@ -211,7 +211,6 @@ public class ll {
         return slow;
     }
 
-
     public static int length(ListNode head) {
         int len = 0;
         while(head != null) {
@@ -374,6 +373,157 @@ public class ll {
         tail.next = headA;
         return CycleNode(headB);
     }
+
+    public static ListNode copyRandomList(ListNode head) {
+        ListNode t1 = null, t2 = null;
+        // 1. Make normal clone list
+        ListNode chead = null;
+        t1 = head; // helper for movement in original list
+        t2 = chead; // helper for movement in clonned list
+        while(t1 != null) {
+            ListNode nn = new ListNode(t1.val);
+            if(chead == null) {
+                chead = nn;
+            } else {
+                t2.next = nn;
+            }
+            t2 = nn;
+            t1 = t1.next;
+        }
+        // 2. Alternate Arrangement
+        t1 = head;
+        t2 = chead;
+
+        while(t2 != null) {
+            ListNode f1 = t1.next; // forward 1
+            ListNode f2 = t2.next; // forward 2
+
+            t1.next = t2;
+            t2.next = f1;
+
+            t1 = f1;
+            t2 = f2;
+        }
+
+        // 3. Set random pointers in clone
+        t1 = head; // this is temporary pointer
+        while(t1 != null) {
+            t1.next.random = t1.random == null ? null : t1.random.next;
+            t1 = t1.next.next;
+        }
+
+        // 4. Recover original list
+        ListNode olist = new Listnode(-1); // dummy node for original list
+        ListNode clist = new Listnode(-1); // dummy node for clonned list
+
+        t1 = olist;
+        t2 = clist;
+        ListNode temp = head;
+        while(temp != null) {
+            t1.next = temp;
+            t1 = temp;
+
+            t2.next = temp.next;
+            t2 = temp.next;
+
+            temp = temp.next.next;
+        }
+        t1.next = null;
+        return chead;
+    }
+
+
+    public static ListNode reverse(ListNode head) {
+        ListNode prev = null, curr = head;
+        
+        while(curr != null) {
+            ListNode next = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = next;
+        }
+        return prev;
+    }
+
+    public static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        if(l1 == null || l2 == null) {
+            return l1 == null ? l2 : l1;
+        }
+        l1 = reverse(l1);
+        l2 = reverse(l2);
+        
+        ListNode i = l1;
+        ListNode j = l2;
+
+        ListNode ans = new ListNode(-1);
+        ListNode temp = ans;
+        int carry = 0;
+
+        while(i != null || j != null || carry == 1) {
+            int ival = i == null ? 0 : i.val;
+            i = i == null ? null : i.next;
+
+            int jval = j == null ? 0 : j.val;
+            j = j == null ? null : j.next;
+            
+            int sum = ival + jval + carry;
+            int val = sum % 10;
+            carry = sum / 10;
+
+            ListNode nn = new ListNode(val);
+            temp.next = nn;
+            temp = nn;
+        }
+
+        ans = reverse(ans.next);
+        return ans;
+    }
+
+    public static ListNode removeDuplicates(ListNode head) {
+        ListNode nhead = new ListNode(-1);
+        ListNode temp = nhead, itr = head;
+
+        while(itr != null) {
+            if(itr.val != temp.val) {
+                temp.next = itr;
+                temp = itr;
+            }
+            itr = itr.next;
+        }
+        temp.next = null;
+        return nhead.next;
+    }
+
+    public static ListNode subtractTwoNumbers(ListNode l1, ListNode l2) {
+        return null;
+    }
+
+    public static ListNode removeDuplicates2(ListNode head) {
+        if(head == null || head.next == null) return head;
+        ListNode nhead = new ListNode(-1);
+        ListNode temp = nhead, temp2 = head.next;
+        
+        temp.next = head;
+
+        while(temp2 != null) {
+            boolean flag = false;
+            while(temp2 != null && temp.next.val == temp2.val) {
+                flag = true;
+                temp2 = temp2.next;
+            }
+
+            if(flag == true) {
+                temp.next = temp2;
+            } else {
+                temp = temp.next;
+            }
+
+            if(temp2 != null)
+                temp2 = temp2.next;
+        }
+        return nhead.next;
+    }
+
     public static void main(String[] args) {
         return;
     }
