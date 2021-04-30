@@ -646,6 +646,7 @@ public class dp {
         // minCostPath();
         // climbStairs();
         // fib();
+        Integer i = 1000;
     }
 
     public static void main(String[] args) {
