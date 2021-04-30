@@ -462,10 +462,187 @@ public class dp {
         System.out.println(res);
     }
 
+    // ~~~~~~~~~~~~~~~~~~~~~~~~Coin Change~~~~~~~~~~~~~~~~~~~~~~    
+
+    public static int coinChangePerm_rec(int[] coins, int target) {
+        if(target == 0) {
+            return 1;
+        }
+
+
+        int count = 0;
+        for(int i = 0; i < coins.length; i++) {
+            int coin = coins[i];
+            if(target - coin >= 0) {
+                count += coinChangePerm_rec(coins, target - coin);
+            }
+        }
+        return count;
+    }
+
+    public static int coinChangePerm_memo(int[] coins, int target, int[] dp) {
+        if(target == 0) {
+            return dp[target] = 1;
+        }
+
+        if(dp[target] != 0) {
+            return dp[target];
+        }
+
+        int count = 0;
+        for(int i = 0; i < coins.length; i++) {
+            int coin = coins[i];
+            if(target - coin >= 0) {
+                count += coinChangePerm_memo(coins, target - coin, dp);
+            }
+        }
+        return dp[target] = count;
+    }
+
+    public static int coinChangePerm_tab1(int[] coins, int target) {
+        int[] dp = new int[target + 1];
+        dp[0] = 1;
+
+        for(int t = 1; t <= target; t++) {
+            // find solution for target = t;
+            int count = 0;
+            // provide opportunity to every coins
+            for(int i = 0; i < coins.length; i++) {
+                int coin = coins[i];
+                if(t - coin >= 0) {
+                    count += dp[t - coin];
+                }
+            }
+            dp[t] = count;
+        }
+        return dp[target];
+    }
+
+    public static void coinChangePermutation(int[] coins, int target) {
+        // int res = coinChangePerm_rec(coins, target);
+        // int[] dp = new int[target + 1]; 
+        // int res = coinChangePerm_memo(coins, target, dp);
+
+        int res = coinChangePerm_tab1(coins, target);
+        System.out.println(res);
+    }
+
+    // li-> last index
+    public static int coinChangeComb_rec(int[] coins, int target, int li) {
+        if(target == 0) return 1;
+
+        int count = 0;
+        for(int i = li; i < coins.length; i++) {
+            int coin = coins[i];
+
+            if(target - coin >= 0) {
+                count += coinChangeComb_rec(coins, target - coin, i);
+            }
+        }
+
+        return count;
+    }
+
+    public static int coinChangeComb_tab(int[] coins, int target) {
+        int[] dp = new int[target + 1];
+        dp[0] = 1;
+        for(int i = 0; i < coins.length; i++) {
+            int coin = coins[i];
+            for(int t = coin; t <= target; t++) {
+                dp[t] += dp[t - coin];
+            }
+        }
+
+        return dp[target];
+    }
+
+    public static void  coinChangeComb(int[] coins, int target) {
+        int res = coinChangeComb_rec(coins, target, 0);
+        System.out.println(res);
+    }
+
+    public static void coinChange() {
+        int[] coins = {2, 3, 5, 6};
+        int target = 7;
+        // coinChangePermutation(coins, target);
+        coinChangeComb(coins, target);
+    }
+    
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~Target Sum Subset~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    public static boolean targetSumSubset_rec(int[] arr, int indx, int target) {
+        if(target == 0) {
+            return true;
+        }
+        if(indx == arr.length) return false;
+
+        boolean res = false;
+        // yes call
+        if(target - arr[indx] >= 0) {
+            res = targetSumSubset_rec(arr, indx + 1, target - arr[indx]);
+        }
+        // no call
+        res = res || targetSumSubset_rec(arr, indx + 1, target);
+        return res;
+    }
+
+    public static boolean targetSumSubset_memo(int[] arr, int indx, int target, boolean[][] dp) {
+        if(target == 0) {
+            return dp[indx][target] = true;
+        }
+        if(indx == arr.length) return dp[indx][target] = false;
+
+        if(dp[indx][target] == true) {
+            return true;
+        }
+
+        boolean res = false;
+        // yes call
+        if(target - arr[indx] >= 0) {
+            res = targetSumSubset_rec(arr, indx + 1, target - arr[indx]);
+        }
+        // no call
+        res = res || targetSumSubset_rec(arr, indx + 1, target);
+        return dp[indx][target] = res;
+    }
+
+    public static int targetSumSubset_noOfWays(int[] arr, int indx, int target, int[][] dp, String res) {
+        if(target == 0) {
+            System.out.println(res);
+            return dp[indx][target] = 1;
+        }
+        if(indx == arr.length) return dp[indx][target] = 0;
+
+        // if(dp[indx][target] != 0) return dp[indx][target];
+
+        int count = 0;
+        if(target - arr[indx] >= 0) {
+            count += targetSumSubset_noOfWays(arr, indx + 1, target - arr[indx], dp, res + arr[indx] + ", ");
+        }
+        count += targetSumSubset_noOfWays(arr, indx + 1, target, dp, res);
+
+        return dp[indx][target] = count;
+    }
+
+    public static void targetSumSubset() {
+        int[] arr = {3, 1, 2, 5, 5, 6, 2, 7, 1, 3, 1};
+        int target = 22;
+        // boolean[][] dp = new boolean[arr.length + 1][target + 1];
+        int[][] dp = new int[arr.length + 1][target + 1];
+        System.out.println(targetSumSubset_noOfWays(arr, 0, target, dp, ""));
+
+        for(int[] a : dp){
+            System.out.println(Arrays.toString(a));
+        }
+        // System.out.println(targetSumSubset_memo(arr, 0, target, dp));
+        // System.out.println(targetSumSubset_rec(arr, 0, target));
+    }
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~Knapsack Problem~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     public static void ques() {
-        
-        goldmine();
+        targetSumSubset();
+        // coinChange();
+        // goldmine();
         // minCostPath();
         // climbStairs();
         // fib();
