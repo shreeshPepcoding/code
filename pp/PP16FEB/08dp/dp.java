@@ -612,7 +612,7 @@ public class dp {
         }
         if(indx == arr.length) return dp[indx][target] = 0;
 
-        // if(dp[indx][target] != 0) return dp[indx][target];
+        if(dp[indx][target] != 0) return dp[indx][target];
 
         int count = 0;
         if(target - arr[indx] >= 0) {
