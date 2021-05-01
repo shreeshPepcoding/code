@@ -623,30 +623,163 @@ public class dp {
         return dp[indx][target] = count;
     }
 
-    public static void targetSumSubset() {
-        int[] arr = {3, 1, 2, 5, 5, 6, 2, 7, 1, 3, 1};
-        int target = 22;
-        // boolean[][] dp = new boolean[arr.length + 1][target + 1];
+    public static int targetSumSubset_tab(int[] arr, int target) {
         int[][] dp = new int[arr.length + 1][target + 1];
-        System.out.println(targetSumSubset_noOfWays(arr, 0, target, dp, ""));
 
-        for(int[] a : dp){
-            System.out.println(Arrays.toString(a));
+        for(int i = 0; i < dp.length; i++) {
+            int val = i > 0 ? arr[i - 1] : 0;
+            for(int t = 0; t <= target; t++) {
+                if(i == 0 && t == 0) {
+                    dp[i][t] = 1;
+                } else if(i == 0) {
+                    dp[i][t] = 0;
+                } else if(t == 0) {
+                    dp[i][t] = 1;
+                } else {
+                    int count = 0;
+                    if(t - val < 0) {
+                        // if target is less than current value, only no call possible
+                        count += dp[i - 1][t];
+                    } else {
+                        // yes  
+                        count += dp[i - 1][t - val];
+                        // no 
+                        count += dp[i - 1][t];
+                    }
+                    dp[i][t] = count;
+                }
+            }
         }
+
+        // for(int[] a : dp){
+        //     System.out.println(Arrays.toString(a));
+        // }
+
+        return dp[arr.length][target];
+    }
+
+    public static void targetSumSubset() {
+        // int[] arr = {3, 1, 2, 5, 5, 6, 2, 7, 1, 3, 1};
+        // int target = 22;
+
+        int[] arr = {4, 2, 7, 1, 3};
+        int target = 10;
+        // boolean[][] dp = new boolean[arr.length + 1][target + 1];
+        // int[][] dp = new int[arr.length + 1][target + 1];
+        // System.out.println(targetSumSubset_noOfWays(arr, 0, target, dp, ""));
+        System.out.println(targetSumSubset_tab(arr, target));
+
+        // for(int[] a : dp){
+        //     System.out.println(Arrays.toString(a));
+        // }
         // System.out.println(targetSumSubset_memo(arr, 0, target, dp));
         // System.out.println(targetSumSubset_rec(arr, 0, target));
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~Knapsack Problem~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    public static int knapsack01_rec(int[] wts, int[] vals, int indx, int cap) {
+        if(indx == vals.length) {
+            return 0;
+        }
+
+        System.out.println(indx + " " + cap);
+
+        // yes call
+        int v1 = Integer.MIN_VALUE;
+        if(cap - wts[indx] >= 0)
+            v1 = knapsack01_rec(wts, vals, indx + 1, cap - wts[indx]) + vals[indx];
+        // no call
+        int v2 = knapsack01_rec(wts, vals, indx + 1, cap);
+
+        return v1 > v2 ? v1 : v2;
+    }
+
+    public static int knapsack01_memo(int[] wts, int[] vals, int indx, int cap, int[][] dp) {
+        if(indx == vals.length) {
+            return dp[indx][cap] = 0;
+        }
+
+        if(dp[indx][cap] != 0) 
+            return dp[indx][cap];
+        
+        System.out.println(indx + " " + cap);
+
+        // yes call
+        int v1 = Integer.MIN_VALUE;
+        if(cap - wts[indx] >= 0)
+            v1 = knapsack01_memo(wts, vals, indx + 1, cap - wts[indx], dp) + vals[indx];
+        // no call
+        int v2 = knapsack01_memo(wts, vals, indx + 1, cap, dp);
+
+        return dp[indx][cap] = v1 > v2 ? v1 : v2;
+    }
+
+    public static int knapsack01_tab(int[] wts, int[] val, int cap) {
+        int[][] dp = new int[wts.length + 1][cap + 1];
+
+        for(int i = 1; i < dp.length; i++) {
+            int wt = wts[i - 1];
+            int vl = val[i - 1];
+            for(int c = 1; c < dp[0].length; c++) {
+                if(c < wt) {
+                    dp[i][c] = dp[i - 1][c];
+                } else {
+                    dp[i][c] = Math.max(dp[i - 1][c - wt] + vl, dp[i - 1][c]);
+                }
+            }
+        }
+
+        for(int[] a : dp){
+            System.out.println(Arrays.toString(a));
+        }
+
+        return dp[dp.length - 1][dp[0].length - 1];
+    }
+
+    public static int unboundedKnapsack_tab(int[] wts, int[] vals, int cap) {
+        int[] dp = new int[cap + 1];
+
+        for(int i = 0; i < wts.length; i++) {
+            int wt = wts[i];
+            int val = vals[i];
+
+            for(int c = wt; c <= cap; c++) {
+                // yes call
+                int v1 = dp[c - wt] + val;
+                // no call
+                int v2 = dp[c];
+                dp[c] = Math.max(v1, v2);
+            }
+        }
+
+        System.out.println(Arrays.toString(dp));
+
+        return dp[cap];
+    }
+
+    public static void knapsack() {
+        int[] wts = {2, 5, 1, 3, 4};
+        int[] val = {15, 14, 10, 45, 30};
+        int cap = 7;
+
+        System.out.println(unboundedKnapsack_tab(wts, val, cap));
+        // int[][] dp = new int[wts.length + 1][cap + 1];
+        // System.out.println(knapsack01_memo(wts, val, 0, cap, dp));
+        // for(int[] a : dp){
+        //     System.out.println(Arrays.toString(a));
+        // }
+        // System.out.println(knapsack01_tab(wts, val, cap));
+    }
+
     public static void ques() {
-        targetSumSubset();
+        knapsack();
+        // targetSumSubset();
         // coinChange();
         // goldmine();
         // minCostPath();
         // climbStairs();
         // fib();
-        Integer i = 1000;
     }
 
     public static void main(String[] args) {
