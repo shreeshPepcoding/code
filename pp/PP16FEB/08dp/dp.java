@@ -44,6 +44,19 @@ public class dp {
         return dp[n];
     }
 
+    public static int fib_optimise(int n) {
+        int a = 0;
+        int b = 1;
+
+        while(n > 0) {
+            int c = a + b;
+            a = b;
+            b = c;
+            n--;
+        }
+        return a;
+    }
+
     public static void fib() {
         int n = 5;
         // int res = fib_rec(n);
@@ -772,8 +785,198 @@ public class dp {
         // System.out.println(knapsack01_tab(wts, val, cap));
     }
 
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~Count Binary Strings~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // clen -> current length
+    // n -> total size of string
+    // le -> last element
+    public static int countBinaryStrings_rec(int clen, int n, int le, String str) {
+        if(clen == n) {
+            System.out.println(str);
+            return 1;
+        }
+        
+        int count = 0;
+
+        // System.out.println(clen + " " + le);
+
+        if(le == 0) {
+            count += countBinaryStrings_rec(clen + 1, n, 1, str + "1");
+        } else {
+            count += countBinaryStrings_rec(clen + 1, n, 0, str + "0");
+            count += countBinaryStrings_rec(clen + 1, n, 1, str + "1");
+        }
+        return count;
+    }
+
+    public static int countBinaryStrings_memo(int clen, int n, int le, String str, int[][] dp) {
+        if(clen == n) {
+            return dp[le][clen] = 1;
+        }
+        
+        if(dp[le][clen] != 0) {
+            return dp[le][clen];
+        }
+        int count = 0;
+        System.out.println(clen + " " + le);
+        if(le == 0) {
+            count += countBinaryStrings_memo(clen + 1, n, 1, str + "1", dp);
+        } else {
+            count += countBinaryStrings_memo(clen + 1, n, 0, str + "0", dp);
+            count += countBinaryStrings_memo(clen + 1, n, 1, str + "1", dp);
+        }
+        return dp[le][clen] = count;
+    }
+
+    public static int countBinaryString_opt(int n) {
+        int oo = 1; // old one
+        int oz = 1; // ld zero
+
+        for(int i = 2; i <= n; i++) {
+            int no = oo + oz; // new one
+            int nz = oo; // new zero
+
+            oo = no;
+            oz = nz;
+        }
+
+        return oo + oz;
+    }
+
+    public static void countBinaryString() {
+        int n = 4;
+
+        // System.out.println(countBinaryString_opt(n));
+
+        int count = countBinaryStrings_rec(1, n, 0, "0");
+        count += countBinaryStrings_rec(1, n, 1, "1");
+
+        // int[][] dp = new int[2][n + 1];
+
+        // int count = countBinaryStrings_memo(1, n, 0, "0", dp);
+        // count += countBinaryStrings_memo(1, n, 1, "1", dp);
+
+        // System.out.println(count);
+    }
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Arrange Buildings~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // question is similar to count binary string
+    public static void ArrangeBuildings(int n) {
+        long ob = 1;
+        long os = 1;
+        
+        for(int i = 2; i <= n; i++) {
+            long nb = os;
+            long ns = ob + os;
+            
+            os = ns;
+            ob = nb;
+        }
+        
+        long res = ob + os;
+        res *= res;
+        System.out.println(res);
+    }
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Count Encodings~~~~~~~~~~~~~~~~~~~~~~~~~
+    public static int countEncoding_rec(String str, String asf) {
+        if(str.length() == 0) {
+            // System.out.println(asf);
+            return 1;
+        }
+
+        System.out.println(str);
+
+        if(str.charAt(0) == '0') return 0;
+
+
+        int count = 0;
+        int n1 = (int)(str.charAt(0) - '0');
+        char ch1 = (char)(n1 + 'a' - 1);
+        String roq1 = str.substring(1);
+        count+= countEncoding_rec(roq1, asf + ch1);
+
+        if(str.length() > 1) {
+            int n2 = (int)(str.charAt(1) - '0');
+            int n = n1 * 10 + n2;
+            if(n <= 26) {
+                String roq2 = str.substring(2);
+                char ch2 = (char)(n + 'a' - 1);
+                count += countEncoding_rec(roq2, asf + ch2);
+            }
+        }
+        return count;
+    }
+
+    public static int countEncoding_memo(String str, int indx, int[] dp) {
+        if(indx == str.length()) {
+            return dp[indx] = 1;
+        }
+
+        if(str.charAt(indx) == '0') return dp[indx] = 0;
+
+        if(dp[indx] != 0) return dp[indx];
+
+
+        int count = 0;
+        int n1 = (int)(str.charAt(indx) - '0');
+        count+= countEncoding_memo(str, indx + 1, dp);
+
+        if(indx + 1 < str.length()) {
+            int n2 = (int)(str.charAt(indx + 1) - '0');
+            int n = n1 * 10 + n2;
+            if(n <= 26) {
+                count += countEncoding_memo(str, indx + 2, dp);
+            }
+        }
+        return dp[indx] = count;
+    }
+
+
+    public static int countEncoding_tab(String str) {
+        int[] dp = new int[str.length() + 1];
+        for(int indx = dp.length - 1; indx >= 0; indx--) {
+            if(indx == str.length()) {
+                dp[indx] = 1;
+                continue;
+            }
+    
+            if(str.charAt(indx) == '0')  {
+                dp[indx] = 0;
+                continue;
+            }
+
+            int count = 0;
+            int n1 = (int)(str.charAt(indx) - '0');
+            count+= dp[indx + 1]; // countEncoding_memo(str, indx + 1, dp);
+    
+            if(indx + 1 < str.length()) {
+                int n2 = (int)(str.charAt(indx + 1) - '0');
+                int n = n1 * 10 + n2;
+                if(n <= 26) {
+                    count += dp[indx + 2]; // countEncoding_memo(str, indx + 2, dp);
+                }
+            }
+            dp[indx] = count;
+        }
+
+        return dp[0];
+    }
+
+    public static void countEncoding() {
+        // String str = "231011";
+        String str = "123";
+        int count = countEncoding_tab(str);
+        // int[] dp = new int[str.length() + 1];
+        // int count = countEncoding_memo(str, 0, dp);
+        // int count = countEncoding_rec(str, "");
+        System.out.println(count);
+    }
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Count A+B+C~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
     public static void ques() {
-        knapsack();
+        countEncoding();
+        // countBinaryString();
+        // knapsack();
         // targetSumSubset();
         // coinChange();
         // goldmine();
@@ -781,6 +984,7 @@ public class dp {
         // climbStairs();
         // fib();
     }
+
 
     public static void main(String[] args) {
         ques();
