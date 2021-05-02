@@ -378,11 +378,101 @@ public class tns {
         }
     }
 
-    public static void sorting() {
-        int[] arr = {90, 70, 20, 60, 50, 30, 80, 40, 10, 45};
+    public static void insertionSort(int[] arr) {
+        int n = arr.length;
+        for(int i = 1; i < n; i++) {
+            int j = i;
+            while(j > 0 && arr[j - 1] > arr[j]) {
+                swap(arr, j, j - 1);
+                j--;
+            }
+        }
+    }    
+
+    public static void countSort1(int[] arr, int hi) {
+        int[] fmap = new int[hi + 1];
         
+        // 1. fill fmap
+        for(int i = 0; i < arr.length; i++) {
+            int val = arr[i];
+            fmap[val]++;
+        }
+
+        // 2. fill in array
+        int indx = 0;
+        for(int i = 0; i < fmap.length; i++) {
+            int fq = fmap[i];
+            int val = i;
+
+            for(int j = 0; j < fq; j++) {
+                arr[indx] = val;
+                indx++;
+            }
+        }
+    }
+
+    public static void countSort2(int[] arr, int min, int max) {
+        int[] fmap = new int[max - min + 1];
+        // 1. fill frequency map
+        for(int i = 0; i < arr.length; i++) {
+            int indx = arr[i] - min;
+            fmap[indx]++;
+        }
+        // 2. fill array
+        int indx = 0;
+        for(int i = 0; i < fmap.length; i++) {
+            int fq = fmap[i];
+            int val = i + min;
+            for(int j = 0; j < fq; j++) {
+                arr[indx] = val;
+                indx++;
+            }
+        }
+    }
+
+    public static void countSort_stable(int[] arr, int min, int max) {
+        int[] fmap = new int[max - min + 1];
+        // 1. fill frequency map
+        for(int i = 0; i < arr.length; i++) {
+            int indx = arr[i] - min;
+            fmap[indx]++;
+        }
+        // 2. generate prefix sum array
+        fmap[0]--;
+        for(int i = 1; i < fmap.length; i++) {
+            fmap[i] += fmap[i - 1];
+        }
+        // make a new array and fill it in reverse direction
+        // also decrease psum[i], while place ith element
+        int[] narr = new int[arr.length];
+
+        for(int i = arr.length - 1; i >= 0; i--) {
+            // val to place
+            int val = arr[i];
+            // index in fmap
+            int indx = val - min;
+            // position where we have to place in new array
+            int pos = fmap[indx];
+            // place it
+            narr[pos] = val;
+            // reduce the prefix sum, i.e. position for same upcoming element
+            fmap[indx]--;
+        }
+
+        // fill the actual array using narr
+        for(int i = 0; i < arr.length; i++) {
+            arr[i] = narr[i];
+        }
+    } 
+
+    public static void sorting() {
+        // int[] arr = {90, 70, 20, 60, 50, 30, 80, 40, 10, 45};
+        int[] arr = arrayFiller(20, 1);
+
         display(arr);
-        selectionSort(arr);
+        countSort_stable(arr, 0, 9);
+        // countSort1(arr, 9);
+        // selectionSort(arr);
         // bubbleSort(arr);
         // partitionAnArray(arr, 45);
         // quickSort(arr, 0, arr.length - 1);
@@ -443,20 +533,20 @@ public class tns {
 
     public static void testing() {
         int[] arr = arrayFiller(10000, 3);
-        quickSort(arr, 0, arr.length - 1);
+        // quickSort(arr, 0, arr.length - 1);
 
-        Arrays.sort(arr);
+        // Arrays.sort(arr);
 
         long st = System.currentTimeMillis();
-        // int[] res = mergeSort(arr, 0, arr.length - 1);
+        int[] res = mergeSort(arr, 0, arr.length - 1);
         // quickSort(arr, 0, arr.length - 1);
+        // insertionSort(arr);
         long end = System.currentTimeMillis();
 
         System.out.println(end - st + " mili seconds");
 
         // int[] arr = {10, 20, 30, 40, 50};
         // int[] arr2 = {7, 9, 15, 21};
-
         // int[] res = mergeTwoSortedArrays2(arr, arr2);
         // System.out.println(Arrays.toString(res));
     }
