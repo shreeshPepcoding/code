@@ -176,11 +176,71 @@ public class tns {
         }
     }
 
+    public static void targetSumPair(int[] arr, int target) {
+        Arrays.sort(arr);
+
+        int left = 0;
+        int right = arr.length - 1;
+
+        while(left < right) {
+            int sum = arr[left] + arr[right];
+
+            if(sum == target) {
+                System.out.println(arr[left] + ", " + arr[right]);
+                left++;
+                right--;
+            } else if(sum > target) {
+                right--;
+            } else {
+                left++;
+            }
+        }
+    }
+
+    public static int pivotInSortedRotated(int[] arr, int lo, int hi) {
+        if(lo == hi) {
+            return arr[lo];
+        }
+        int mid = lo + (hi - lo) / 2;
+        int res = 0;
+        if(arr[mid] < arr[hi]) {
+            // left side -> including mid
+            res = pivotInSortedRotated(arr, lo, mid);
+        } else {
+            // right side
+            res = pivotInSortedRotated(arr, mid + 1, hi);
+        }
+        return res;
+    }
+
+    // find pivot in iterative way
+    public static int findPivot(int[] arr) {
+        // write your code here
+        int lo = 0;
+        int hi = arr.length - 1;
+        
+        while(lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if(arr[mid] < arr[hi]) {
+                // left side -> including mid
+                hi = mid;
+            } else {
+                // right side
+                lo = mid + 1;
+            }
+        }
+        return arr[lo];
+    }
+
     public static void ques() {
-        int[] arr = arrayFiller(50, 1);
+        int[] arr = {10, 20, 30, 40, 50, 60, 70, 80, 90};
+        int target = 70;
+        targetSumPair(arr, target);
+
+        // int[] arr = arrayFiller(50, 1);
         // display(arr);
         // printPrime(arr);
-        sieve(arr, 9);
+        // sieve(arr, 9);
         // int[] arr = {1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0};
 
         // int res = polynomial(2, 5);
@@ -276,12 +336,56 @@ public class tns {
         quickSort(arr, pi + 1, hi);
     }
 
+    public static int quickSelect(int[] arr, int lo, int hi, int k) {
+        int pivot = arr[hi];
+        int pi = partitionIndex(arr, lo, hi, pivot);
+
+        int ans = 0;
+        if(pi == k) {
+            // found
+            ans = pivot;
+        } else if(pi > k) {
+            // answer is on left side
+            ans = quickSelect(arr, lo, pi - 1, k);
+        } else {
+            // answer is on right side
+            ans = quickSelect(arr, pi + 1, hi, k);
+        }
+        return ans;
+    }
+
+    public static void bubbleSort(int[] arr) {
+        int n = arr.length;
+
+        for(int i = 0; i < n - 1; i++) {
+            for(int j = 1; j < n - i; j++) {
+                if(arr[j] < arr[j - 1]) {
+                    swap(arr, j, j - 1);
+                }
+            }
+        }
+    }
+
+    public static void selectionSort(int[] arr) {
+        int n = arr.length;
+        for(int i = 0; i < n - 1; i++) {
+            int minIndx = i;
+            for(int j = i + 1; j < n; j++) {
+                if(arr[j] < arr[minIndx])
+                    minIndx = j;
+            }
+            swap(arr, i, minIndx);
+        }
+    }
+
     public static void sorting() {
         int[] arr = {90, 70, 20, 60, 50, 30, 80, 40, 10, 45};
         
         display(arr);
+        selectionSort(arr);
+        // bubbleSort(arr);
         // partitionAnArray(arr, 45);
-        quickSort(arr, 0, arr.length - 1);
+        // quickSort(arr, 0, arr.length - 1);
         // int[] res = mergeSort(arr, 0, arr.length - 1);
         // System.out.println(partitionIndex(arr, 0, arr.length - 1, 45));
         display(arr);
@@ -360,9 +464,9 @@ public class tns {
     // ~~~~~~~~~~~~~~~~~~~~~~Main Sections~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public static void fun() {
         // searching();
-        // sorting();
+        sorting();
         // ques();
-        testing();
+        // testing();
     }
 
     public static void main(String[] args) {
