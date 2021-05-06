@@ -42,7 +42,7 @@ public class tns {
         } else {
             // left part
             res = binarySearchRec(arr, lo, mid - 1, data);
-        }
+        } 
         return res;
     }
 
@@ -465,12 +465,63 @@ public class tns {
         }
     } 
 
+    public static void countSortForRadix(int[] arr, int exp) {
+        int[] fmap = new int[10];
+        // 1. fill frequency map
+        for(int i = 0; i < arr.length; i++) {
+            int indx = (arr[i] / exp) % 10;
+            fmap[indx]++;
+        }
+        // 2. generate prefix sum array
+        fmap[0]--;
+        for(int i = 1; i < fmap.length; i++) {
+            fmap[i] += fmap[i - 1];
+        }+
+        // make a new array and fill it in reverse direction
+        // also decrease psum[i], while place ith element
+        int[] narr = new int[arr.length];
+
+        for(int i = arr.length - 1; i >= 0; i--) {
+            // val to place
+            int val = (arr[i] / exp) % 10;
+            // index in fmap
+            int indx = val;
+            // position where we have to place in new array
+            int pos = fmap[indx];
+            // place it
+            narr[pos] = arr[i];
+            // reduce the prefix sum, i.e. position for same upcoming element
+            fmap[indx]--;
+        }
+
+        // fill the actual array using narr
+        for(int i = 0; i < arr.length; i++) {
+            arr[i] = narr[i];
+        }
+    }
+
+    public static void radixSort(int[] arr) {
+        int max = Integer.MIN_VALUE;
+        // find maximum element
+        for(int val : arr) {
+            if(val > max)
+                max = val;
+        }
+
+        int exp = 1;
+        while(exp <= max) {
+            countSortForRadix(arr, exp);
+            exp *= 10;
+        }
+    }
+
     public static void sorting() {
         // int[] arr = {90, 70, 20, 60, 50, 30, 80, 40, 10, 45};
-        int[] arr = arrayFiller(20, 1);
+        int[] arr = arrayFiller(10, 5);
 
         display(arr);
-        countSort_stable(arr, 0, 9);
+        radixSort(arr);
+        // countSort_stable(arr, 0, 9);
         // countSort1(arr, 9);
         // selectionSort(arr);
         // bubbleSort(arr);
