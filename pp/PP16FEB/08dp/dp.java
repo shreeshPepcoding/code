@@ -930,7 +930,6 @@ public class dp {
         return dp[indx] = count;
     }
 
-
     public static int countEncoding_tab(String str) {
         int[] dp = new int[str.length() + 1];
         for(int indx = dp.length - 1; indx >= 0; indx--) {
@@ -972,6 +971,151 @@ public class dp {
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Count A+B+C~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    public static int countAiBjCk(String str) {
+        int a_count = 0;
+        int b_count = 0;
+        int c_count = 0;
+
+        for(int i = 0; i < str.length(); i++) {
+            char ch = str.charAt(i);
+
+            if(ch == 'a') {
+                a_count = 2 * a_count + 1;
+            } else if(ch == 'b') {
+                b_count = 2 * b_count + a_count;
+            } else {
+                c_count = 2 * c_count + b_count;
+            }
+        }
+        return c_count;
+    }
+
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~Max. Sum Non Adjacent Element~~~~~~~~~~~~~~~~~~~~~~
+    public static long maxSumNonAdjacent(int[] arr) {
+        long exc = 0; // exclude
+        long inc = arr[0]; // include
+
+        for(int i = 1; i < arr.length; i++) {
+            long n_exc = Math.max(exc, inc); // new exclude
+            long n_inc = exc + arr[i]; // new include
+
+            exc= n_exc;
+            inc = n_inc;
+        }
+
+        return Math.max(inc, exc);
+    }
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Paint House~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    public static int paintHouse(int[][] arr) {
+        int red = arr[0][0];
+        int green = arr[0][1];
+        int blue = arr[0][2];
+
+        for(int i = 1; i < arr.length; i++) {
+            int n_red = Math.min(green, blue) + arr[i][0];
+            int n_green = Math.min(red, blue) + arr[i][1];
+            int n_blue = Math.min(green, red) + arr[i][2];
+
+            red = n_red;
+            green = n_green;
+            blue = n_blue;
+        }
+
+        // min from all three colours
+        if(red > green && blue > gren) {
+            return green;
+        } else if(blue > red) {
+            return red;
+        } else {
+            return blue;
+        }
+    }
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Paint House with Many Colors~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    public static int paintHouseIIOn3(int[][] arr) {
+        int n = arr.length;
+        int k = arr[0].length;
+
+        int[] dp = new int[k]; // no. of colors
+
+        // fill for first row
+        for(int j = 0; j < k; j++)
+            dp[j] = arr[0][j];
+
+        // dp code
+        for(int i = 1; i < n; i++) {
+            int[] n_dp = new int[k];
+            for(int j = 0; j < k; j++) {
+                // fill n_dp[j], find min from old dp except jth index
+                int min = Integer.MAX_VALUE;
+                for(int indx = 0; indx < k; indx++) {
+                    if(indx == j) continue;
+                    if(dp[indx] < min)
+                        min = dp[indx];
+                }
+
+                n_dp[j] = min + arr[i][j];
+            }
+            dp = n_dp;
+        }
+
+        // return min from dp
+        int ans = Integer.MAX_VALUE;
+        for(int indx = 0; indx < k; indx++) {
+            if(dp[indx] < ans)
+                ans = dp[indx];
+        }
+        return ans;
+    }
+
+    public static int paintHouseII(int[][] arr) {
+        int n = arr.length;
+        int k = arr[0].length;
+
+        int[] dp = new int[k]; // no. of colors
+
+        int min = Integer.MAX_VALUE; // min
+        int smin = Integer.MAX_VALUE; // second min
+
+        // fill for first row
+        for(int j = 0; j < k; j++) {
+            dp[j] = arr[0][j];
+            if(min > dp[j]) {
+                smin = min;
+                min = dp[j];
+            } else if(smin > dp[j]) {
+                smin = dp[j];
+            }
+        }
+
+        // dp code
+        for(int i = 1; i < n; i++) {
+            int[] n_dp = new int[k];
+            int min2 = Integer.MAX_VALUE;
+            int smin2 = Integer.MAX_VALUE;
+            for(int j = 0; j < k; j++) {
+                // fill n_dp[j], find min from old dp except jth index
+                if(dp[j] == min)
+                    n_dp[j] = smin + arr[i][j];
+                else
+                    n_dp[j] = min + arr[i][j];
+
+                if(min2 > n_dp[j]) {
+                    smin2 = min2;
+                    min2= n_dp[j];
+                } else if(smin2 > n_dp[j]) {
+                    smin2 = n_dp[j];
+                }
+            }
+            dp = n_dp;
+            min = min2;
+            smin = smin2;
+        }
+
+        return min;
+    }
 
     public static void ques() {
         countEncoding();
