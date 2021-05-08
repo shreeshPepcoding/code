@@ -1117,6 +1117,69 @@ public class dp {
         return min;
     }
 
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Paint Fence~~~~~~~~~~~~~~~~~~~~~~
+    public static long paintFence(int n, int k) {
+        long same = k;
+        long diff = k * (k - 1);
+
+        for(int i = 3; i <= n; i++) {
+            long nsame = diff;
+            long ndiff = (same + diff) * (k - 1);
+
+            same = nsame;
+            diff = ndiff;
+        }
+        return same + diff;
+    }
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~tillin 2 * 1~~~~~~~~~~~~~~~~~~~~~~~
+
+    public static int tiling2x1(int n) {
+        // fibbonacci after analysing
+        int a = 1;
+        int b = 2;
+
+        for(int i = 1; i < n; i++) {
+            int c = a + b;
+            a = b;
+            b = c;
+        }
+        return a;
+    }
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~tillin M * 1~~~~~~~~~~~~~~~~~~~~~~~
+    public static int tilingMx1(int n, int m) {
+        int[] dp = new int[n + 1];
+
+        for(int i = 1; i <= n; i++) {
+            if(i < m) {
+                dp[i] = 1;
+            } else if(i == m) {
+                dp[i] = 2;
+            } else {
+                dp[i] = dp[i - 1] + dp[i - m];
+            }
+        }
+        return dp[n];
+    }
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~Friends Pairing~~~~~~~~~~~~~~~~~~
+    public static int friendsPair(int n) {
+        if(n == 1) return 1;
+        int a = 1; // single 
+        int b = 2; // when no. of friend is 2;
+
+        for(int i = 3; i <= n; i++) {
+            // f(n) = f(n - 1) + (n - 1) * f(n - 2);
+            int c = b + (i - 1) * a;
+
+            // shifting
+            a = b;
+            b = c;
+        }
+        return b;
+    }
+
     public static void ques() {
         countEncoding();
         // countBinaryString();
