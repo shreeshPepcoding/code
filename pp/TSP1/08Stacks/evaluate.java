@@ -179,37 +179,132 @@ public class evaluate {
         // return vstack.pop();
     }
 
-    // // prefix
-    // public static int prefixEvaluation(String str) {
-
-    // }
-
-    // public static void prefixToInfix(String str) {
-
-    // }
-
-    // public static void prefixToPostfix(String str) {
-
-    // }
-
     // // postfix
-    // public static int postfixEvaluation(String str) {
+    public static void postfixEvaluation(String str) {
+        Stack<Integer> vstack = new Stack<>();
 
-    // }
+        for(int i = 0; i < str.length(); i++) {
+            char ch = str.charAt(i);
 
-    // public static void postfixToPrefix(String str) {
+            if(ch >= '0' && ch <= '9') {
+                vstack.push(ch - '0');
+            } else {
+                int val2 = vstack.pop();
+                int val1 = vstack.pop();
 
-    // }
+                int res = evaluate(val1, val2, ch);
+                vstack.push(res);
+            }
+        }
+        System.out.println(vstack.pop());
+    }
 
-    // public static void postixToinfix(String str) {
+    public static void postfixToPrefix(String str) {
+        Stack<String> vstack = new Stack<>();
 
-    // }
+        for(int i = 0; i < str.length(); i++) {
+            char ch = str.charAt(i);
+
+            if(ch >= '0' && ch <= '9') {
+                vstack.push("" + ch);
+            } else {
+                String val2 = vstack.pop();
+                String val1 = vstack.pop();
+
+                // int res = evaluate(val1, val2, ch);
+                String res = ch + val1 + val2;
+                vstack.push(res);
+            }
+        }
+        System.out.println(vstack.pop());
+    }
+
+    public static void postixToinfix(String str) {
+        Stack<String> vstack = new Stack<>();
+
+        for(int i = 0; i < str.length(); i++) {
+            char ch = str.charAt(i);
+
+            if(ch >= '0' && ch <= '9') {
+                vstack.push("" + ch);
+            } else {
+                String val2 = vstack.pop();
+                String val1 = vstack.pop();
+
+                // int res = evaluate(val1, val2, ch);
+                String res = "(" + val1 + ch + val2 + ")";
+                vstack.push(res);
+            }
+        }
+        System.out.println(vstack.pop());
+    }
+
+    // prefix
+    public static int prefixEvaluation(String str) {
+        Stack<Integer> vstack = new Stack<>();
+
+        for(int i = str.length() - 1; i >= 0; i--) {
+            char ch = str.charAt(i);
+
+            if(ch >= '0' && ch <= '9') {
+                vstack.push(ch - '0');
+            } else {
+                int val1 = vstack.pop();
+                int val2 = vstack.pop();
+
+                int res = evaluate(val1, val2, ch);
+                vstack.push(res);
+            }
+        }
+        System.out.println(vstack.pop());
+    }
+
+    public static void prefixToInfix(String str) {
+        Stack<String> vstack = new Stack<>();
+
+        for(int i = str.length() - 1; i >= 0; i--) {
+            char ch = str.charAt(i);
+
+            if(ch >= '0' && ch <= '9') {
+                vstack.push("" + ch);
+            } else {
+                String val1 = vstack.pop();
+                String val2 = vstack.pop();
+
+                // int res = evaluate(val1, val2, ch);
+                String res = "(" + val1 + ch + val2 + ")";
+                vstack.push(res);
+            }
+        }
+        System.out.println(vstack.pop());
+    }
+
+    public static void prefixToPostfix(String str) {
+        Stack<String> vstack = new Stack<>();
+
+        for(int i = str.length() - 1; i >= 0; i--) {
+            char ch = str.charAt(i);
+
+            if(ch >= '0' && ch <= '9') {
+                vstack.push("" + ch);
+            } else {
+                String val1 = vstack.pop();
+                String val2 = vstack.pop();
+
+                // int res = evaluate(val1, val2, ch);
+                String res = val1 + val2 + ch;
+                vstack.push(res);
+            }
+        }
+        System.out.println(vstack.pop());
+    }
     
     public static void evaluation() {
-        String str = "2 + 6 * (4 / 8) - 3";
+        String str = "2 + 6 * 4 / 8 - 3";
 
-        int res = infixEvaluation(str);
-        System.out.println(res);
+        // int res = infixEvaluation(str);
+        infixToPostfix(str);
+        // System.out.println(res);
 
     }
     
