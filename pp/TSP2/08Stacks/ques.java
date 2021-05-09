@@ -279,6 +279,7 @@ public class ques {
             System.out.println(arr[j]);
         }
     }
+    
     public static void fun() {
         // int[] arr = {10, 6, 12, 5, 3, 2, 4, 8, 1};
 

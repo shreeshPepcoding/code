@@ -1180,6 +1180,83 @@ public class dp {
         return b;
     }
 
+    // ~~~~~~~~~~~~~~~~~~~~Partition into k subset~~~~~~~~~~~~~~~~
+    public static int partitionKSubset(int n, int k) {
+        int[][] dp = new int[k + 1][n + 1];
+
+        for(int i = 1; i <= k; i++) {
+            for(int j = i; j <= n; j++) {
+                if(j == i) {
+                    dp[i][j] = 1;
+                } else {
+                    dp[i][j] = i * dp[i][j - 1] + dp[i - 1][j - 1];
+                }
+            }
+        }
+        return dp[k][n];
+    }
+
+    // ~~~~~~~~~~~~~~~~~~Stock Buy sell One transaction~~~~~~~~~~
+    public static int stockBuySell1(int[] price) {
+        int bd = 0; // buy date
+
+        int profit = 0;
+        for(int day = 1; day < price.length; day++) {
+            if(price[day] >= price[day - 1]) {
+                // local maxima
+                profit = Math.max(profit, price[day] - price[bd]);
+            } else {
+                // local minima
+                if(price[day] < price[bd]) {
+                    bd = day;
+                }
+            }
+        }
+        return profit;
+    }
+
+    // ~~~~~~~~~~~~~~~Stock Buy Sell Infinite transactions~~~~~~~~~
+    public static int stackBuySell2(int[] price) {
+        int bd = 0;
+        int sd = 0;
+        int profit = 0;
+
+        for(int day = 1; day < price.length; day++){
+            if(price[day] > price[day - 1]) {
+                // increasing
+                sd = day;
+            } else {
+                // add profit from previous incrementation
+                profit += price[sd] - price[bd];
+                // update buying selling day
+                sd = day;
+                bd = day;
+            }
+        }
+        profit += price[sd] - price[bd];
+        return profit;
+    }
+
+    // ~~~~~~~~~~~Longest Increasing Subsequence~~~~~~~~~~~~~~~~~
+    public static int lis(int[] arr) {
+        int omax = 0;
+        int[] dp = new int[arr.length];
+        dp[0] = 1;
+
+        for(int i = 1; i < arr.length; i++) {
+            int max = 0;
+            // find max from previous valid points
+            for(int j = i - 1; j >= 0; j--) {
+                if(arr[j] <= arr[i] && dp[j] > max) {
+                    max = dp[j];
+                }
+            }
+            dp[i] = max + 1;
+        }
+
+        return omax;
+    }
+
     public static void ques() {
         countEncoding();
         // countBinaryString();

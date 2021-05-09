@@ -1,2 +1,1 @@
-max area exist in 2 - 5 index
-20
+-1
