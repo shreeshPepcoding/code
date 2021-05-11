@@ -280,13 +280,124 @@ public class ques {
         }
     }
     
+    public static void findCelebrity(int[][] arr) {
+        // if a celebrity is there print it's index (not position), if there is not then
+        // print "none"
+
+        Stack<Integer> st = new Stack<>();
+        for(int i = 0; i < arr.length; i++) {
+            st.push(i);
+        }
+
+        // elimination
+        while(st.size() > 1) {
+            int i = st.pop();
+            int j = st.pop();
+
+            if(arr[i][j] == 1) {
+                // i is not celebrity
+                st.push(j);
+            } else {
+                // j is not celebrity
+                st.push(i);
+            }
+        }
+
+        int candidate = st.pop();
+
+        // check its row
+        for(int c = 0; c < arr[0].length; c++) {
+            if(arr[candidate][c] == 1) {
+                System.out.println("none");
+                return;
+            }
+        }
+        // check its colum
+        for(int r = 0; r < arr.length; r++) {
+            if(r != candidate && arr[r][candidate] == 0) {
+                System.out.println("none");
+                return;
+            }
+        }
+
+        System.out.println(candidate);
+    }
+
+    public static class Pair implements Comparable<Pair> {
+        int st = 0;
+        int end = 0;
+
+        public Pair(int st, int end) {
+            this.st = st;
+            this.end = end;
+        }
+
+        public int compareTo(Pair o) {
+            return this.st - o.st;
+        }
+    }
+
+    public static void mergeOverlappingIntervals(int[][] arr) {
+        // merge overlapping intervals and print in increasing order of start time
+        Pair[] pairs = new Pair[arr.length];
+        for(int i = 0; i < arr.length; i++) {
+            pairs[i] = new Pair(arr[i][0], arr[i][1]);
+        }
+        Arrays.sort(pair);
+        Stack<Pair> st = new Stack<>();
+        st.push(pairs[0]);
+        for(int i = 1; i < pairs.length; i++) {
+            Pair p = pairs[i];
+            if(p.st <= st.peek().end) {
+                // end time may be update
+                if(p.end > st.peek().end) {
+                    st.peek().end = p.end;
+                }
+            } else {
+                st.push(p);
+            }
+        }
+        Stack<Pair> rst = new Stack<>(); // reverse stack
+        while(st.size() > 0)
+            rst.push(st.pop());
+        while(rst.size() > 0) {
+            Pair rem = rst.pop();
+            System.out.println(rem.st + " " + rem.end);
+        }
+    }
+
+    public static void smallestNumberFollowingPattern(String str) {
+        int count = 1;
+        Stack<Integer> st = new Stack<>();
+
+        for(int i = 0; i < str.length(); i++) {
+            st.push(count);
+            count++;
+            if(strcharAt(i) == 'i') {
+                while(st.size() > 0) {
+                    System.out.print(st.pop());
+                }
+            }
+        }
+        st.push(count);
+        while(st.size() > 0) {
+            System.out.print(st.pop());
+        }
+    }
+
     public static void fun() {
+
+        int[][] arr = {
+            {5, 8},
+            {1, 7}
+        };
+        mergeOverlappingIntervals(arr);
         // int[] arr = {10, 6, 12, 5, 3, 2, 4, 8, 1};
 
-        int[] arr = {6, 2, 6, 5, 5, 6, 1, 7};
+        // int[] arr = {6, 2, 6, 5, 5, 6, 1, 7};
 
-        int res = largestAreaHistogram(arr);
-        System.out.println(res);
+        // int res = largestAreaHistogram(arr);
+        // System.out.println(res);
 
         // System.out.println("arr : " + Arrays.toString(arr));
         // int[] ngr = ngr(arr);
