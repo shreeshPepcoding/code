@@ -1,0 +1,2 @@
+a 5 70 20
+I'm inside para. constructor
