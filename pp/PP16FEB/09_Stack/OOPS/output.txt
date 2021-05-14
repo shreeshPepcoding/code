@@ -1,2 +1,17 @@
-a 5 70 20
-I'm inside para. constructor
+A is succesfully Admitted
+B is succesfully Admitted
+C is not eligible because of age
+Invalid Key
+E is succesfully Admitted
+F is succesfully Admitted
+G is succesfully Admitted
+Invalid Key
+I is succesfully Admitted
+A 24 1997
+B 24 1997
+E 23 1998
+F 15 2006
+G 22 1999
+I 27 1994
+Name is succesfully changed to BB
+Invalid Student ID
