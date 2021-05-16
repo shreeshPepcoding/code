@@ -148,10 +148,101 @@ public class ques {
         return ngl;
     }
 
-    // // leetcode 739
-    // public int[] dailyTemperatures(int[] T) {
+    public int[] ngrIndex(int[] arr) {
+        Stack<Integer> st = new Stack<>();
 
-    // }
+        st.push(0);
+        int[] res = new int[arr.length];
+        for (int i = 1; i < arr.length; i++) {
+            while (st.size() > 0 && arr[st.peek()] < arr[i]) {
+                res[st.pop()] = i;
+            }
+            st.push(i);
+        }
+        while (st.size() > 0) {
+            int indx = st.peek();
+            res[st.pop()] = indx;    
+        }
+        return res;
+    }
+
+    // leetcode 739
+    public int[] dailyTemperatures(int[] arr) {
+        int[] ngr = ngrIndex(arr);
+
+        for(int i = 0; i < ngr.length; i++) {
+            ngr[i] = ngr[i] - i;
+        }
+        return ngr;
+    }
+
+    public static int[] nslIndex(int[] arr) {
+        Stack<Integer> st = new Stack<>();
+
+        st.push(arr.length - 1);
+        int[] res = new int[arr.length];
+        for (int i = arr.length - 2; i >= 0; i--) {
+            while (st.size() > 0 && arr[st.peek()] > arr[i]) {
+                res[st.pop()] = i;
+            }
+            st.push(i);
+        }
+        while (st.size() > 0) {
+            res[st.pop()] = -1;
+        }
+        return res;
+    }
+
+    public static int[] nsrIndex(int[] arr) {
+        Stack<Integer> st = new Stack<>();
+
+        st.push(0);
+        int[] res = new int[arr.length];
+        for (int i = 1; i < arr.length; i++) {
+            while (st.size() > 0 && arr[st.peek()] > arr[i]) {
+                res[st.pop()] = i;
+            }
+            st.push(i);
+        }
+        while (st.size() > 0) {
+            res[st.pop()] = arr.length;
+        }
+        return res;
+    }
+
+    public static int largestAreaHistogram(int[] arr) {
+        int[] lsi = nslIndex(arr);
+        int[] rsi = nsrIndex(arr);
+
+        int area = 0;
+
+        for(int i = 0; i < arr.length; i++) {
+            int width = rsi[i] - lsi[i] - 1;
+            int ht = arr[i];
+            area = Math.max(area, width * ht);
+        }
+        return area;
+    }
+
+    // leetcode 85 Maximal Rectangle
+    public int maximalRectangle(char[][] matrix) {
+        if(matrix.length == 0 || matrix[0].length == 0) return 0;
+        int[] arr = new int[matrix[0].length];
+        int area = 0;
+        for(int i = 0; i < matrix.length; i++) {
+            // prepare arr for largest area histogram
+            for(int j = 0; j < matrix[0].length; j++) {
+                if(matrix[i][j] == '0') {
+                    arr[j] = 0;
+                } else {
+                    arr[j] += 1;
+                }
+            }
+            // find largest area histogram
+            area = Math.max(area, largestAreaHistogram(arr));
+        }
+        return area;
+    }
 
     public static void quest() {
         int[] arr = { 10, 6, 12, 5, 3, 2, 4, 8, 1 };
