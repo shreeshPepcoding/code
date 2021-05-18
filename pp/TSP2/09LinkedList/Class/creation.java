@@ -178,7 +178,7 @@ class linkedlist {
 
 
 public class creation {
-
+ 
     public static void demo() {
         linkedlist list = new linkedlist();
         list.addLast(10);

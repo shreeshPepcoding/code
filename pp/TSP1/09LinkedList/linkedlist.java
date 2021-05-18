@@ -316,6 +316,175 @@ public class linkedlist {
         return slow.data;
     }
 
+    public linkedlist mergeTwoSortedList1(linkedlist l1, linkedlist l2) {
+        // Without changing given linkedlist -> requirement of portal
+        Node t1 = l1.head;
+        Node t2 = l2.head;
+
+        linkedlist res = new linkedlist();
+
+        while(t1 != null && t2 != null) {
+            if(t1.data < t2.data) {
+                res.addLast(t1.data);
+                t1 = t1.next;
+            } else {
+                res.addLast(t2.data);
+                t2 = t2.next;
+            }
+        }
+
+        // t1 left over
+        while(t1 != null) {
+            res.addLast(t1.data);
+            t1 = t1.next;
+        }
+
+        // t2 left over
+        while(t2 != null) {
+            res.addLast(t2.data);
+            t2 = t2.next;
+        }
+        return res;
+    }
+
+    public linkedlist mergeTwoSortedList2(linkedlist l1, linkedlist l2) {
+        // changing in given linkedlist is allowed.
+        linkedlist res = new linkedlist();
+        while(l1.size() > 0 && l2.size() > 0) {
+            if(l1.getFirst() < l2.getFirst()) {
+                res.addLast(l1.removeFirst());
+            } else {
+                res.addLast(l2.removeFirst());
+            }
+        }
+
+        // l1 left over
+        while(l1.size() > 0) {
+            res.addLast(l1.removeFirst());
+        }
+
+        // l2 left over
+        while(l2.size() > 0) {
+            res.addLast(l2.removeFirst());
+        }
+        return res;
+    }
+
+    public linkedlist mergeTwoSortedList3(linkedlist l1, linkedlist l2) {
+        // inplace change in original linkedlist
+        Node head1 = l1.head;
+        Node head2 = l2.head;
+
+        Node t1 = head1;
+        Node t2 = head2;
+
+        Node dummy = new Node(-1);
+        Node temp = dummy;
+
+        while(t1 != null && t2 != null) {
+            if(t1.data < t2.data) {
+                temp.next = t1;
+                temp = temp.next;
+                t1 = t1.next;
+            } else {
+                temp.next = t2;
+                temp = temp.next;
+                t2 = t2.next;
+            }
+        }
+
+        if(t1  == null) {
+            temp.next = t2;
+        } else {
+            temp.next = t1;
+        }
+
+        linkedlist res = new linkedlist();
+        res.head = dummy.next;
+        int sz = 0;
+        temp = dummy;
+        while(temp.next != null) {
+            sz++;
+            temp = temp.next;
+        }
+        res.tail = temp;
+        res.size = sz;
+        return res;
+    }
+
+    private Node midForMergeSort(Node head, Node tail) {
+        Node slow = head;
+        Node fast = head;
+
+        while(fast != tail && fast.next != tail) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return slow;
+    }
+
+    public linkedlist mergeSort(Node head, Node tail) {
+        if(head == tail) {
+            linkedlist bres = new linkedlist();
+            bres.addFirst(head.data);
+            return bres;
+        }
+
+        Node mid = midForMergeSort(head, tail);
+
+        linkedlist l1 = mergeSort(head, mid);
+        linkedlist l2 = mergeSort(mid.next, tail);
+
+        linkedlist res = mergeTwoSortedList1(l1, l2);
+        return res;
+    }
+
+    public void removeDuplicates() {
+        Node temp = this.head;
+        Node itr = temp.next;
+
+        while(itr != null) {
+            if(temp.data == itr.data) {
+                itr = itr.next;
+            } else {
+                temp.next = itr;
+                temp = temp.next;
+                itr = itr.next;
+            }
+        }
+    }
+
+    public void oddEven(){
+        // make dummy nodes
+        Node ehead = new Node();
+        Node temp1 = ehead;
+        Node ohead = new Node();
+        Node temp2 = ohead;
+
+        // iterator -> help in movement
+        Node itr = this.head;
+
+        while(itr != null) {
+            if(itr.data % 2 == 0) {
+                // even
+                temp1.next = itr;
+                temp1 = temp1.next;
+            } else {
+                // odd
+                temp2.next = itr;
+                temp2 = temp2.next;
+            }
+            itr = itr.next;
+        }
+
+        // odd -> even
+        temp2.next = ehead.next;
+        temp1.next = null;
+
+        // management for linkedlist as a class, head, tail and size
+        this.head = ohead.next;
+        this.tail = temp2.next == null ? temp2 : temp1;
+    }
     // ~~~~~~~~~~~~~Input Management~~~~~~~~~~~~~~
 
     public static void demo() {
@@ -361,4 +530,4 @@ public class linkedlist {
     public static void main(String[] args) {
         demo();
     }
-}
+} 
