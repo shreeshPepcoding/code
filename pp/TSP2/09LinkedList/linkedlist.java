@@ -485,6 +485,181 @@ public class linkedlist {
         this.head = ohead.next;
         this.tail = temp2.next == null ? temp2 : temp1;
     }
+    
+    public void kReverse(int k) {
+        linkedlist prev = null;
+
+        while(this.size() > 0) {
+            linkedlist curr = new linkedlist();
+            if(this.size >= k) {
+                // removeFirst from this, addfirst in curr
+                for(int i = 0; i < k; i++) {
+                    int data = this.getFirst();
+                    this.removeFirst();
+                    curr.addFirst(data);
+                }
+            } else {
+                // removeFirst from this, addLast in curr
+                while(this.size() > 0) {
+                    int data = this.getFirst();
+                    this.removeFirst();
+                    curr.addLast(data);
+                }
+            }
+
+            if(prev == null) {
+                // change the reference of prev and curr
+                prev = curr;
+            } else {
+                prev.tail.next = curr.head;
+                prev.tail = curr.tail;
+                prev.size += curr.size;
+            }
+        }
+
+        this.head = prev.head;
+        this.tail = prev.tail;
+        this.size = prev.size;
+    }
+
+    private void displayReverseHelper(Node node){
+        // write your code here
+        if(node == null) return;
+
+        displayReverseHelper(node.next);
+        System.out.print(node.data + " ");
+    }
+    
+    private void reversePRHelper(Node node){
+        // write your code here
+        if(node.next == null) {
+            this.head = node;
+            return;
+        }
+        reversePRHelper(node.next);
+        node.next.next = node;
+    }
+
+    public void reversePR(){
+        // write your code here
+        Node temp = this.head;
+        reversePRHelper(temp);
+        temp.next = null;
+        this.tail = temp;
+    }
+    
+    public boolean IsPalindrome() {
+        // write your code here -> time-O(n^2), space-O(1)
+        int left = 0;
+        int right = this.size - 1;
+
+        while(left < right) {
+            Node lnode = getNthNode(left);
+            Node rnode = getNthNode(right);
+
+            if(lnode.data != rnode.data) return false;
+
+            left++;
+            right--;
+        }
+        return true;
+    }
+
+    private Node getMidNode(Node node) {
+        Node slow = node;
+        Node fast = node.next;
+
+        while(fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        return slow;
+    }
+
+    private Node reversePointer(Node node) {
+        Node prev = null;
+        Node curr = node;
+
+        while(curr != null) {
+            Node next = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = next;
+        }
+
+        return prev;
+    }
+
+    public boolean IsPalindromeInOn() {
+        // write your code here -> time-O(n), space-O(1)
+        Node head1 = this.head;
+
+        Node mid = getMidNode(head1);
+        Node head2 = mid.next;
+        mid.next = null;
+
+        head2 = reversePointer(head2);
+
+        Node t1 = head1;
+        Node t2 = head2;
+
+        boolean res = true;
+
+        while(t1 != null && t2 != null) {
+            if(t1.data != t2.data) {
+                res = false;
+                break;
+            }
+
+            t1 = t1.next;
+            t2 = t2.next;
+        }
+
+        // maintain original list
+        head2 = reversePointer(head2);
+        mid.next = head2;
+
+        return res;
+    }
+
+    public void fold() {
+        if(this.head == null || this.head.next == null || this.head.next.next == null) return;
+        Node head1 = this.head;
+        
+        Node mid = getMidNode(head1);
+        Node head2 = mid.next;
+        mid.next = null;
+        head2 = reversePointer(head2);
+
+        Node t1 = head1;
+        Node t2 = head2;
+
+        Node prev = head1;
+
+        while(t1 != null && t2 != null) {
+            Node n1 = t1.next;
+            Node n2 = t2.next;
+
+            t1.next = t2;
+            t1 = n1;
+            prev = t1 == null ? prev : t1;
+
+            t2.next = n1;
+            t2 = n2;
+
+            prev = t2 == null ? prev : t2;
+        }
+
+        // t1 = head1;
+
+        // while(t1.next != null)
+        //     t1= t1.next;
+
+        this.head = head1;
+        this.tail = prev;
+    }
+
     // ~~~~~~~~~~~~~Input Management~~~~~~~~~~~~~~
 
     public static void demo() {
