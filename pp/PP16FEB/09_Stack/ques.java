@@ -244,14 +244,173 @@ public class ques {
         return area;
     }
 
-    public static void quest() {
-        int[] arr = { 10, 6, 12, 5, 3, 2, 4, 8, 1 };
+    public static int[] ngriForSlidingWindow(int[] arr) {
+        Stack<Integer> st = new Stack<>();
 
-        System.out.println("arr : " + Arrays.toString(arr));
-        System.out.println("ngr : " + Arrays.toString(ngr(arr)));
-        System.out.println("ngl : " + Arrays.toString(ngl(arr)));
-        System.out.println("nsr : " + Arrays.toString(nsr(arr)));
-        System.out.println("nsl : " + Arrays.toString(nsl(arr)));
+        st.push(0);
+        int[] res = new int[arr.length];
+        for (int i = 1; i < arr.length; i++) {
+            while (st.size() > 0 && arr[st.peek()] < arr[i]) {
+                res[st.pop()] = i;
+            }
+            st.push(i);
+        }
+        while (st.size() > 0) {
+            res[st.pop()] = arr.length;    
+        }
+        return res;
+    }
+
+    public static void slidingWindowMax(int[] arr, int k) {
+        int[] ngri = ngriForSlidingWindow(arr);
+
+        int j = 0;
+        for(int i = 0; i <= arr.length - k; i++) {
+            if(j < i)
+                j = i;
+
+            while(i + k > ngri[j]) {
+                j = ngri[j];
+            }
+            System.out.println(arr[j]);
+        }
+    }
+
+    public static void findCelebrity(int[][] arr) {
+        // if a celebrity is there print it's index (not position), if there is not then
+        // print "none"
+        int n = arr.length;
+        Stack<Integer> st = new Stack<>();
+        
+        for(int i = 0; i < n; i++) {
+            st.push(i);
+        }
+
+        while(st.size() > 1) {
+            int i = st.pop();
+            int j = st.pop();
+
+            if(arr[i][j] == 1) {
+                // i knows j -> i is not celebrity
+                st.push(j);
+            } else {
+                // i don't know j -> j is not celebrity
+                st.push(i);
+            }
+        }
+
+        int candidate = st.pop(); // potential candidate for celebrity
+        // check within row, arr[candidate][c] == 0
+        for(int c = 0; c < n; c++) {
+            if(arr[candidate][c] == 1) {
+                System.out.println("none");
+                return;
+            }
+        }
+        // check within col, arr[r][candidate] == 1, except for arr[candidate][candidate];
+        for(int r = 0; r < n; r++) {
+            if(r != candidate && arr[r][candidate] == 0) {
+                System.out.println("none");
+                return;
+            }
+        }
+        System.out.println(candidate);
+    }
+
+    public static class Pair implements Comparable<Pair> {
+        int st;
+        int end;
+
+        public Pair(int st, int end) {
+            this.st = st;
+            this.end = end;
+        }
+
+        public int compareTo(Pair other) {
+            return this.st - other.st;
+        }
+    }
+
+    public static void mergeOverlappingIntervals(int[][] arr) {
+        // merge overlapping intervals and print in increasing order of start time
+        
+        Pair[] pairs = new Pair[arr.length];
+
+        for(int i = 0; i < pairs.length; i++) {
+            int st = arr[i][0];
+            int end = arr[i][1];
+
+            pairs[i] = new Pair(st, end);
+        }
+    
+        Arrays.sort(pairs);
+        // stack
+
+        Pair res = pairs[0];
+        for(int i = 1; i < pairs.length; i++) {
+            Pair p = pairs[i];
+            if(res.end >= p.st) {
+                if(res.end < p.end) {
+                    res.end = p.end;
+                }
+            } else {
+                System.out.println(res.st + " " + res.end);
+                res =  p;
+            }
+        }
+        System.out.println(res.st + " " + res.end);
+
+
+        // Stack<Pair> st = new Stack<>();
+        // st.push(pairs[0]);
+
+        // for(int i = 1; i < pairs.length; i++) {
+        //     Pair p = pairs[i];
+        //     if(st.peek().end >= p.st) {
+        //         if(st.peek().end < p.end) {
+        //             st.peek().end = p.end;
+        //         }
+        //     } else {
+        //         st.push(p);
+        //     }
+        // }
+
+        // Stack<Pair> st2 = new Stack<>();
+        // while(st.size() > 0)
+        //     st2.push(st.pop());
+            
+        // // print intervals
+        // while(st2.size() > 0) {
+        //     Pair rem = st2.pop();
+        //     System.out.println(rem.st + " " + rem.end);
+        // }
+    }
+
+
+    public static void quest() {
+        int[][] arr = {
+            {5, 12},
+            {14, 19},
+            {22, 28},
+            {1, 8},
+            {25, 27},
+            {27, 30}
+        };
+
+        mergeOverlappingIntervals(arr);
+
+        // int[] arr = {2, 9, 3, 8, 1, 7, 12, 6, 14, 4, 32, 0, 7, 19, 8, 12, 6};
+        // int k = 4;
+        // slidingWindowMax(arr, k);
+        
+        // int[] arr = { 10, 6, 12, 5, 3, 2, 4, 8, 1 };
+
+
+        // System.out.println("arr : " + Arrays.toString(arr));
+        // System.out.println("ngr : " + Arrays.toString(ngr(arr)));
+        // System.out.println("ngl : " + Arrays.toString(ngl(arr)));
+        // System.out.println("nsr : " + Arrays.toString(nsr(arr)));
+        // System.out.println("nsl : " + Arrays.toString(nsl(arr)));
 
     }
 
