@@ -17,6 +17,16 @@ public class linkedlist {
         }
     }
 
+    private static class ListNode {
+        int val;
+        ListNode next;
+        ListNode random;
+        public ListNode(int val) {
+            this.val = val;
+            this.next = null;
+        }
+    }
+
     private Node head;
     private Node tail;
     private int size;
@@ -658,6 +668,202 @@ public class linkedlist {
 
         this.head = head1;
         this.tail = prev;
+    }
+
+    public linkedlist addTwoLists(linkedlist one, linkedlist two) {
+        // write your code here
+        Node head1 = one.head;
+        Node head2 = two.head;
+        // don't change original list
+        // 1. reverse
+        head1 = reversePointer(head1);
+        head2 = reversePointer(head2);
+
+        // 2. add
+        Node i = head1;
+        Node j = head2;
+        linkedlist res = new linkedlist();
+        int carry = 0;
+        while(i != null || j != null || carry != 0) {
+            int ival = i == null ? 0 : i.data;
+            i = i == null ? null : i.next;
+
+            int jval = j == null ? 0 : j.data;
+            j = j == null ? null : j.next;
+
+            int sum = ival + jval + carry;
+
+            int val = sum % 10;
+            carry = sum / 10;
+            res.addFirst(val);
+        }
+
+        // 3. make original list again, reverse head1 and head2
+        head1 = reversePointer(head1);
+        head2 = reversePointer(head2);
+        // 4. return result
+        return res;
+    }
+
+    // addition of linkedlist using recursion
+    public static int additionHelper(Node one, int i1, Node two, int i2, linkedlist res) {
+        if(one == null && two == null) {
+            return 0;
+        }
+
+        int d1 = one.data;
+        int d2 = two.data;
+        int sum = 0;
+        if(i1 > i2) {
+            int carry = additionHelper(one.next, i1 - 1, two, i2, res);
+            sum = d1 + carry;
+        } else if(i1 < i2) {
+            int carry = additionHelper(one, i1, two.next, i2 - 1, res);
+            sum = d2 + carry;
+        } else {
+            int carry = additionHelper(one.next, i1 - 1, two.next, i2 - 1, res);
+            sum = d1 + d2 + carry;
+        }
+
+        res.addFirst(sum % 10);
+        return sum / 10;
+    }
+
+    public linkedlist addTwoLists1(linkedlist one, linkedlist two) {
+        linkedlist res = new linkedlist();
+        int carry = additionHelper(one.head, one.size, two.head, two.size, res);
+        if(carry > 0)
+            res.addFirst(carry);
+
+        return res;
+    }    
+
+    public static int findIntersection(linkedlist one, linkedlist two){
+        // write your code here
+        Node t1 = one.head;
+        Node t2 = two.head;
+
+        int s1 = one.size();
+        int s2 = two.size();
+
+        if(s1 > s2) {
+            int diff = s1 - s2;
+            for(int i = 0; i < diff; i++)
+                t1 = t1.next;
+        } else {
+            int diff = s2 - s1;
+            for(int i = 0; i < diff; i++)
+                t2 = t2.next;
+        }
+
+        // while(t1 != null && t2 != null && t1 != t2) {
+        //     t1 = t1.next;
+        //     t2 = t2.next;
+        // }
+        // return t1 == null || t2 == null ? null : t1;
+
+        while(t1 != t2){
+            t1 = t1.next;
+            t2 = t2.next;
+        }
+        return t1.data;
+    }
+
+
+    //Leetcode 160 size + intersection
+    public int size(ListNode node) {
+        int sz = 0;
+        while(node != null) {
+            node = node.next;
+            sz++;
+        }
+        return sz;
+    }
+    
+    public ListNode getIntersectionNode(ListNode head1, ListNode head2) {
+        if(head1 == null || head2 == null) return null;
+        
+        ListNode t1 = head1;
+        ListNode t2 = head2;
+
+        int s1 = size(t1);
+        int s2 = size(t2);
+
+        if(s1 > s2) {
+            int diff = s1 - s2;
+            for(int i = 0; i < diff; i++)
+                t1 = t1.next;
+        } else {
+            int diff = s2 - s1;
+            for(int i = 0; i < diff; i++)
+                t2 = t2.next;
+        }
+
+        while(t1 != null && t2 != null && t1 != t2) {
+            t1 = t1.next;
+            t2 = t2.next;
+        }
+        return t1 == null || t2 == null ? null : t1;
+    }
+
+    public static ListNode copyRandomList(ListNode head) {
+        ListNode dummy = new ListNode(-1);
+        ListNode t1 = dummy;
+        ListNode t2 = head;
+        // 1. clone without random
+        while(t2 != null) {
+            ListNode nn = new ListNode(t2.val);
+            t1.next = nn;
+            t1 = nn;
+
+            t2 = t2.next;
+        }
+
+        ListNode head2 = dummy.next;
+        // 2. connect in zigzag order
+        t1 = head;
+        t2 = head2;
+
+        while(t1 != null && t2 != null) {
+            ListNode n1 = t1.next;
+            ListNode n2 = t2.next;
+
+            t1.next = t2;
+            t2.next = n1;
+
+            t1 = n1;
+            t2 = n2;
+        }
+
+        // 3. set random pointer
+        t1 = head;
+
+        while(t1 != null) {
+            t1.next.random = t1.random == null ? null : t1.random.next;
+            t1 = t1.next.next;
+        }
+
+        // 4. rearrange original list
+        ListNode d1 = new ListNode(-1);
+        t1 = d1;
+        ListNode d2 = new ListNode(-1);
+        t2 = d2;
+
+        ListNode temp = head;
+        while(temp != null) {
+            t1.next = temp;
+            t2.next = temp.next;
+
+            t1 = t1.next;
+            t2 = t2.next;
+            temp = temp.next.next;
+        }
+
+        t1.next = null;
+        t2.next = null;
+
+        // 5. clonned head return
+        return d2.next;
     }
 
     // ~~~~~~~~~~~~~Input Management~~~~~~~~~~~~~~
