@@ -1,6 +1,8 @@
-1 8
-5 12
-14 19
-22 28
-25 27
-27 30
+[ABC]
+[ABC, DEF]
+[ABC, DEF, GHI]
+[ABC, DEF, GHI, JKL]
+[ABC, DEF, GHI, JKL, MNO]
+Stack underflow
+null
+[10, 20]

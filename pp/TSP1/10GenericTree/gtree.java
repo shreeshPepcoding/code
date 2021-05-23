@@ -189,7 +189,6 @@ public class gtree {
 
         while(qu.size() > 0) {
             int sz = qu.size();
-            
             while(sz-- > 0) {
                 // 1. get + remove
                 Node rem = qu.remove();

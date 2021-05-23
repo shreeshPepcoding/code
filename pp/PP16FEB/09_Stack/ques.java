@@ -386,19 +386,47 @@ public class ques {
         // }
     }
 
+    public static void smallestNumberFollowingPattern(String pattern) {
+        Stack<Integer> st = new Stack<>();
+        int count = 1;
+
+        for(int i = 0; i < pattern.length(); i++) {
+            char ch = pattern.charAt(i);
+            if(ch == 'd') {
+                st.push(count);
+                count++;
+            } else {
+                st.push(count);
+                count++;
+                // print stack
+                while(st.size() > 0) {
+                    System.out.print(st.pop());
+                }
+            }
+        }
+        st.push(count);
+        // print stack
+        while(st.size() > 0) {
+            System.out.print(st.pop());
+        }
+    }
+
 
     public static void quest() {
-        int[][] arr = {
-            {5, 12},
-            {14, 19},
-            {22, 28},
-            {1, 8},
-            {25, 27},
-            {27, 30}
-        };
+        String pattern = "ddddiiii";
+        smallestNumberFollowingPattern(pattern);
 
-        mergeOverlappingIntervals(arr);
 
+        // int[][] arr = {
+        //     {5, 12},
+        //     {14, 19},
+        //     {22, 28},
+        //     {1, 8},
+        //     {25, 27},
+        //     {27, 30}
+        // };
+
+        // mergeOverlappingIntervals(arr);
         // int[] arr = {2, 9, 3, 8, 1, 7, 12, 6, 14, 4, 32, 0, 7, 19, 8, 12, 6};
         // int k = 4;
         // slidingWindowMax(arr, k);
