@@ -189,7 +189,6 @@ public class gtree {
 
         while(qu.size() > 0) {
             int sz = qu.size();
-            
             while(sz-- > 0) {
                 // 1. get + remove
                 Node rem = qu.remove();
@@ -204,13 +203,81 @@ public class gtree {
         }
     }
 
+    // using double stack
+    public static void levelOrderLinewiseZZ(Node node){
+        Stack<Node> mainS = new Stack<>();
+        Stack<Node> childS = new Stack<>();
+        mainS.push(node);
+        int lvl = 1;
+        while(mainS.size() > 0) {
+            while(mainS.size() > 0) {
+                Node rem = mainS.pop();
+                System.out.print(rem.data + " ");
+                
+                if(lvl % 2 == 1) {
+                    // odd level -> left to right
+                    for(int i = 0; i < rem.children.size(); i++) {
+                        Node child = rem.children.get(i);
+                        childS.push(child);
+                    }
+                } else {
+                    // even level -> right to left
+                    for(int i = rem.children.size() - 1; i >= 0; i--) {
+                        Node child = rem.children.get(i);
+                        childS.push(child);
+                    }
+                }
+            }
+            System.out.println();
+            lvl++;
+            Stack<Node> temp = mainS;
+            mainS = childS;
+            childS = temp;
+        }
+    }
+
+    public static void levelOrderLinewiseZZ2(Node node){
+        Stack<Node> mainS = new Stack<>();
+        Stack<Node> childS = new Stack<>();
+        mainS.push(node);
+        int lvl = 1;
+        while(mainS.size() > 0) {
+            Node rem = mainS.pop();
+            System.out.print(rem.data + " ");
+            
+            if(lvl % 2 == 1) {
+                // odd level -> left to right
+                for(int i = 0; i < rem.children.size(); i++) {
+                    Node child = rem.children.get(i);
+                    childS.push(child);
+                }
+            } else {
+                // even level -> right to left
+                for(int i = rem.children.size() - 1; i >= 0; i--) {
+                    Node child = rem.children.get(i);
+                    childS.push(child);
+                }
+            }
+
+            if(mainS.size() == 0) {
+                System.out.println();
+                lvl++;
+                Stack<Node> temp = mainS;
+                mainS = childS;
+                childS = temp;
+            }
+        }
+    }
+    
+
     public static void fun() {
         Integer[] data = {10, 20, 50, null, 60, null, null, 30, 70, null, 80, 110, null, 120, null,
                                  null, 90, null, null, 40, 100, null, null, null};
         
         Node root = construct(data);
-        display(root);
-        levelOrderLinewise3(root);
+        levelOrderLinewiseZZ(root);
+        // display(root);
+        // levelOrderLinewise3(root);
         // levelOrderLinewise2(root);
         // levelOrderLinewise1(root);
         // levelOrder(root);
