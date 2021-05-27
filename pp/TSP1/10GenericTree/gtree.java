@@ -269,13 +269,120 @@ public class gtree {
         }
     }
     
+    public static void mirror(Node node){
+        for(Node child : node.children) {
+            mirror(child);
+        }
+
+        // reverse children of current node
+        int left = 0;
+        int right = node.children.size() - 1;
+
+        while(left < right) {
+            Node temp = node.children.get(left);
+            node.children.set(left, node.children.get(right));
+            node.children.set(right, temp);
+            left++;
+            right--;
+        }
+    }
+
+    public static void removeLeaves(Node node) {
+        // preorder -> removal of leaves
+
+        // for(int i = 0; i < node.children.size(); i++) {
+        //     Node child = node.children.get(i);
+        //     if(child.children.size() == 0) {
+        //         node.children.remove(child);
+        //         i--;
+        //     }
+        // }
+
+        // for(Node child : node.children) {
+        //     removeLeaves(child);
+        // }
+        
+        // for(int i = node.children.size() - 1; i >= 0; i--) {
+        //     Node child = node.children.get(i);
+        //     if(child.children.size() == 0) {
+        //         node.children.remove(i);
+        //     }
+        // }
+
+        // for(Node child : node.children) {
+        //     removeLeaves(child);
+        // }
+        
+        ArrayList<Node> st = new ArrayList<>();
+        for(Node child : node.children) {
+            // Node child = node.children.get(i);
+            if(child.children.size() != 0) {
+                st.add(child);
+            }
+        }
+        node.children = st;
+
+        for(Node child : node.children) {
+            removeLeaves(child);
+        }
+    }
+
+    public static Node getTail(Node node) {
+        Node tail = node;
+
+        while(tail.children.size() != 0) {
+            tail = tail.children.get(0);
+        }
+
+        return tail;
+    }
+
+    public static void linearize(Node node){
+        for(Node child : node.children) {
+            linearize(child);
+        }
+
+        for(int i = node.children.size() - 2; i >= 0; i--) {
+            Node last = node.children.get(i + 1);  // last 
+            Node slast = node.children.get(i);     // second last
+
+            node.children.remove(i + 1);
+            Node tail = getTail(slast);
+
+            tail.children.add(last);
+        }
+    }
+
+    // linearize with tail -> efficient version
+    public static Node linearize2(Node node) {
+        if(node.children.size() == 0) return node;
+
+        Node lastNode = node.children.get(node.children.size() - 1);
+        Node tail = linearize2(lastNode);
+
+        for(int i = node.children.size() - 2 ; i >= 0; i--) {
+            Node rem = node.children.remove(i  + 1);
+
+            Node stail = linearize2(node.children.get(i));
+            stail.children.add(rem);
+        }
+
+        return tail;
+    }
 
     public static void fun() {
         Integer[] data = {10, 20, 50, null, 60, null, null, 30, 70, null, 80, 110, null, 120, null,
                                  null, 90, null, null, 40, 100, null, null, null};
         
         Node root = construct(data);
-        levelOrderLinewiseZZ(root);
+        linearize2(root);
+        display(root);
+
+        // levelOrderLinewiseZZ(root);
+        // display(root);
+        // System.out.println();
+        // mirror(root);
+        // removeLeaves(root);
         // display(root);
         // levelOrderLinewise3(root);
         // levelOrderLinewise2(root);
