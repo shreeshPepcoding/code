@@ -369,6 +369,107 @@ public class gtree {
 
         return tail;
     }
+    
+    public static boolean find(Node node, int data) {
+        if(node.data == data) return true;
+
+        boolean res = false;
+        for(Node child : node.children) {
+            res = find(child, data);
+            if(res == true) return true;
+
+            // res = res || find(child, data);
+        }
+
+        return res;
+    }
+
+    public static ArrayList<Integer> nodeToRootPath(Node node, int data){
+        if(node.data == data) {
+            ArrayList<Integer> bres = new ArrayList<>();
+            bres.add(node.data);
+            return bres;
+        }
+
+        for(Node child : node.children) {
+            ArrayList<Integer> rres = nodeToRootPath(child, data);
+            if(rres.size() > 0) {
+                rres.add(node.data);
+                return rres;
+            }
+
+            // if(rres != null) {
+            //     rres.add(node.data, data);
+            //     return rres;
+            // }
+        }
+
+        return new ArrayList<>();
+        // return null;
+    }
+
+    public static int lca(Node node, int d1, int d2) {
+        // write your code here
+        ArrayList<Integer> n2rp1 = nodeToRootPath(node, d1);
+        ArrayList<Integer> n2rp2 = nodeToRootPath(node, d2);
+
+        int i = n2rp1.size() - 1;
+        int j = n2rp2.size() - 1;
+        int res = -1;
+        while(i >= 0 && j >= 0 && n2rp1.get(i) == n2rp2.get(j)) {
+            res = n2rp1.get(i);
+            i--;
+            j--;
+        }
+
+        return res;
+    }
+
+    public static int distanceBetweenNodes(Node node, int d1, int d2){
+        ArrayList<Integer> n2rp1 = nodeToRootPath(node, d1);
+        ArrayList<Integer> n2rp2 = nodeToRootPath(node, d2);
+
+        int i = n2rp1.size() - 1;
+        int j = n2rp2.size() - 1;
+
+        while(i >= 0 && j >= 0 && n2rp1.get(i) == n2rp2.get(j)) {
+            i--;
+            j--;
+        }
+
+        // distance = (i + 1) + (j + 1)
+        return i + j + 2;
+    }
+
+    public static boolean areSimilar(Node n1, Node n2) {
+        if(n1.children.size() != n2.children.size()) return false;
+
+        boolean res = true;
+        for(int i = 0; i < n1.children.size(); i++) {
+            Node child1 = n1.children.get(i);
+            Node child2 = n2.children.get(i);
+
+            res = areSimilar(child1, child2);
+            if(res == false) return false;
+        }
+        return res;
+    }
+
+    public static boolean areMirror(Node n1, Node n2) {
+        if(n1.children.size() != n2.children.size()) return false;
+
+        int sz = n1.children.size();
+        boolean res = true;
+        for(int i = 0; i < sz; i++) {
+            Node child1 = n1.children.get(i);
+            Node child2 = n2.children.get(sz - i - 1);
+
+            res = areMirror(child1, child2);
+            if(res == false) return false;
+        }
+        return res;
+    }
+
 
     public static void fun() {
         Integer[] data = {10, 20, 50, null, 60, null, null, 30, 70, null, 80, 110, null, 120, null,
