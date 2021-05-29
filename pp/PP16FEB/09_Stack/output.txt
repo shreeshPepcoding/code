@@ -1,8 +1,18 @@
-[ABC]
-[ABC, DEF]
-[ABC, DEF, GHI]
-[ABC, DEF, GHI, JKL]
-[ABC, DEF, GHI, JKL, MNO]
-Stack underflow
-null
-[10, 20]
+3
+Queue overflow
+10
+20
+30
+30
+[30, 40, 50, 60, 80, 90]
+30
+Queue overflow
+40
+50
+60
+60
+80
+90
+100
+Queue underflow
+-1

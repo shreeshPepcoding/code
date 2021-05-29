@@ -1,5 +1,7 @@
 import java.util.*;
 
+import org.graalvm.compiler.graph.Node.Successor;
+
 public class gtree {
 
     public static class Node {
@@ -470,14 +472,153 @@ public class gtree {
         return res;
     }
 
+    public static boolean IsSymmetric(Node node) {
+        boolean res = areMirror(node, node);
+        return res;
+    }
+
+    //~~~~~~~~~~~~~~~~~~~~Multi Solver1~~~~~~~~~~~~~~~~~~~~
+    // using global variable
+    static int min = Integer.MAX_VALUE;
+    static int max = Integer.MIN_VALUE;
+    static int ht = 0;
+    static int size = 0;
+
+    public static void multiSolver1(Node node, int depth) {
+        min = Math.min(min, node.data);
+        max = Math.max(max, node.data);
+        ht = Math.max(ht, depth);
+        size++;
+
+        for(Node child : node.children) {
+            multiSolver1(child, depth + 1);
+        }
+    }
+
+    //~~~~~~~~~~~~~~~~~~~~Multi Solver2~~~~~~~~~~~~~~~~~~~~
+    // using return type
+    public static class multiSolver {
+        int min;
+        int max;
+        int ht;
+        int sz;
+
+        public multiSolver(int min,int max, int ht, int sz) {
+            this.min = min;
+            this.max = max;
+            this.ht = ht;
+            this.sz = sz;
+        }
+        
+        public multiSolver() {
+            this.min = Integer.MAX_VALUE;
+            this.max = Integer.MIN_VALUE;
+            this.ht = -1;
+            this.sz = 0;
+        }
+    }
+
+    public static multiSolver multiSolver2(Node node) {
+        multiSolver mres = new multiSolver(node.data, node.data, -1, 1);
+
+        for(Node child : node.children) {
+            multiSolver rres = multiSolver2(child);
+            mres.min = Math.min(mres.min, rres.min);
+            mres.max = Math.max(mres.max, rres.max);
+            mres.ht = Math.max(mres.ht, rres.ht);
+            mres.sz += rres.sz;
+        }
+        
+        mres.ht += 1;
+
+        return mres;
+    }
+
+    public static void multiSolution(Node root) {
+
+        multiSolver res = multiSolver2(root);
+        System.out.println("Min : " + res.min);
+        System.out.println("Max : " + res.max);
+        System.out.println("Height : " + res.ht);
+        System.out.println("Size : " + res.sz);
+
+
+
+        // min = Integer.MAX_VALUE;
+        // max = Integer.MIN_VALUE;
+        // ht = -1;
+        // size = 0;
+
+        // multiSolver1(root, 0);
+
+        // System.out.println("Min : " + min);
+        // System.out.println("Max : " + max);
+        // System.out.println("Height : " + ht);
+        // System.out.println("Size : " + size);
+    }
+
+    
+    static Node predecessor;
+    static Node successor;
+    static int state = 0;
+    public static void predecessorAndSuccessor(Node node, int data) {
+        if(state == 0) {
+            if(node.data == data) {
+                state++;
+            } else {
+                predecessor = node;
+            }
+        } else if(state == 1) {
+            successor = node;
+            state++;
+            return;
+        }
+
+        for(Node child : node.children) {
+            if(state < 2) {
+                predecessorAndSuccessor(child, data);
+            } else {
+                return;
+            }
+        }
+    }
+
+    static int ceil = Integer.MAX_VALUE; // qualified min
+    static int floor = Integer.MIN_VALUE; // qualified max
+    public static void ceilAndFloor(Node node, int data) {
+        if(node.data > data) {
+            // ceil
+            if(node.data < ceil) {
+                ceil = node.data;
+            }
+        }
+
+        if(node.data < data) {
+            // floor
+            if(node.data > floor) {
+                floor = node.data;
+            }
+        }
+
+        for(Node child : node.children) {
+            ceilAndFloor(child, data);
+        }
+    }
+
 
     public static void fun() {
-        Integer[] data = {10, 20, 50, null, 60, null, null, 30, 70, null, 80, 110, null, 120, null,
-                                 null, 90, null, null, 40, 100, null, null, null};
-        
+        Integer[] data = {10, 20, 50, null, 600, null, null, 30, 70, null, 80, 110, null, 120, null,
+                                 null, 90, null, null, 40, 1, null, null, null};
+            
+
+        // Integer[] data = {10, 20, null, null};
         Node root = construct(data);
-        linearize2(root);
-        display(root);
+
+        multiSolution(root);
+        // multiSolution(root);
+
+        // linearize2(root);
+        // display(root);
 
         // levelOrderLinewiseZZ(root);
         // display(root);
