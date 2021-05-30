@@ -1,4 +1,8 @@
-Min : 1
-Max : 600
-Height : 3
-Size : 12
+a b c 
+a b - 
+a - c 
+a - - 
+- b c 
+- b - 
+- - c 
+- - - 
