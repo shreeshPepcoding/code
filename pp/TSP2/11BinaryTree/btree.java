@@ -203,6 +203,180 @@ public class btree {
         post.add(root.data);
     }
 
+    public static void iterativePrePostInTraversal(Node node) {
+        Stack<Pair> st = new Stack<>();
+
+        ArrayList<Integer> pre = new ArrayList<>();
+        ArrayList<Integer> in = new ArrayList<>();
+        ArrayList<Integer> post = new ArrayList<>();
+
+        st.push(new Pair(node, 0));
+
+        while(st.size() > 0) {
+            Pair p = st.peek();
+            if(p.state == 0) {
+                pre.add(p.node.data);
+                p.state++;
+                if(p.node.left != null) {
+                    st.push(new Pair(p.node.left, 0));
+                }
+            } else if(p.state == 1) {
+                in.add(p.node.data);
+                p.state++;
+                if(p.node.right != null) {
+                    st.push(new Pair(p.node.right, 0));
+                }
+            } else {
+                post.add(p.node.data);
+                st.pop();
+            }
+        }
+
+        for(int val : pre) {
+            System.out.print(val + " ");
+        }
+        System.out.println();
+
+        for(int val : in) {
+            System.out.print(val + " ");
+        }
+        System.out.println();
+
+        for(int val : post) {
+            System.out.print(val + " ");
+        }
+        System.out.println();
+    }
+
+    public static boolean find(Node node, int data) {
+        if(node == null) return false;
+
+        if(node.data == data) return true;
+        
+        // boolean res = false;
+        
+        // res = find(node.left, data);
+        // res = res || find(node.right, data);
+
+        // return res;
+
+        boolean lres = find(node.left, data);
+        if(lres == true) return true;
+
+        boolean rres = find(node.right, data);
+        if(rres == true) return true;
+
+        return false;
+    }
+
+    public static ArrayList<Integer> nodeToRootPath(Node node, int data) {
+        if(node == null) return new ArrayList<>();
+
+        if(node.data == data) {
+            ArrayList<Integer> bres = new ArrayList<>();
+            bres.add(node.data);
+            return bres;
+        }
+
+        ArrayList<Integer> lres = nodeToRootPath(node.left, data);
+        if(lres.size() > 0) {
+            lres.add(node.data);
+            return lres;
+        }
+
+        ArrayList<Integer> rres = nodeToRootPath(node.right, data);
+        if(rres.size() > 0) {
+            rres.add(node.data);
+            return rres;
+        }
+
+        return new ArrayList<>();
+    }
+
+    public static void printKLevelsDown(Node node, int k){
+        if(node == null) return;
+
+        if(k == 0) {
+            System.out.println(node.data);
+            return;
+        }
+
+        printKLevelsDown(node.left, k - 1);
+        printKLevelsDown(node.right, k - 1);
+    }
+
+    public static ArrayList<Node> nodeToRoot(Node node, int data) {
+        if(node == null) {
+            return new ArrayList<>();
+        }
+
+        if(node.data == data) {
+            ArrayList<Node> bres = new ArrayList<>();
+            bres.add(node);
+            return bres;
+        }
+
+        ArrayList<Node> lres = nodeToRoot(node.left, data);
+        if(lres.size() > 0) {
+            lres.add(node);
+            return lres;
+        }
+        
+        ArrayList<Node> rres = nodeToRoot(node.right, data);
+        if(rres.size() > 0) {
+            rres.add(node);
+            return rres;
+        }
+
+        return new ArrayList<>();        
+    }
+
+    public static void printKDown(Node node, Node blockage, int k) {
+        if(node == null || node == blockage || k < 0) return;
+
+        if(k == 0) {
+            System.out.println(node.data);
+            return;
+        }
+        
+        printKDown(node.left, blockage, k - 1);
+        printKDown(node.right, blockage, k - 1);
+    }
+
+    public static void printKNodesFar(Node root, int data, int k) {
+        ArrayList<Node> n2rp = nodeToRoot(root, data);
+
+        Node blockage = null;
+        for(int i = 0; i < n2rp.size() && k >= 0; i++) {
+            Node node = n2rp.get(i);
+            printKDown(node, blockage, k);
+            k--;
+            blockage = node;
+        }
+    }
+
+
+    public static void pathToLeafFromRoot(Node node, String path, int sum, int lo, int hi) {
+        if(node == null) return;
+
+        if(node.left != null && node.right != null) {
+            pathToLeafFromRoot(node.left, path + node.data + " ", sum + node.data, lo, hi);
+            pathToLeafFromRoot(node.right, path + node.data + " ", sum + node.data, lo, hi);
+        } else if(node.left != null) {
+            pathToLeafFromRoot(node.left, path + node.data + " ", sum + node.data, lo, hi);
+        } else if(node.right != null) {
+            pathToLeafFromRoot(node.right, path + node.data + " ", sum + node.data, lo, hi);
+        } else {
+            // leaf
+            sum += node.data;
+            path += node.data;
+            if(lo <= sum && sum <= hi) {
+                // print path
+                System.out.println(path);
+            }
+        }
+    }
+
     public static void fun() {
         Integer[] arr = { 50, 25, 12, null, null, 37, 30, null, null, null, 75, 62, null, 70, null, null, 87, null,
                 null };
@@ -210,30 +384,33 @@ public class btree {
 
         display(root);
 
-        // levelOrder(root);
-        System.out.print("Pre Order : ");
-        preOrder(root);
-        System.out.print("\nIn Order : ");
-        inOrder(root);
-        System.out.print("\nPost Order : ");
-        postOrder(root);
+        pathToLeafFromRoot(root, "", 0, 100, 250);
+        // iterativePrePostInTraversal(root);
 
-        pre = new ArrayList<>();
-        in = new ArrayList<>();
-        post = new ArrayList<>();
-        traversal(root);
+        // levelOrder(root);
+        // System.out.print("Pre Order : ");
+        // preOrder(root);
+        // System.out.print("\nIn Order : ");
+        // inOrder(root);
+        // System.out.print("\nPost Order : ");
+        // postOrder(root);
+
+        // pre = new ArrayList<>();
+        // in = new ArrayList<>();
+        // post = new ArrayList<>();
+        // traversal(root);
     
-        System.out.print("\nPre Order : ");
-        for(int val : pre)
-            System.out.print(val + " ");
+        // System.out.print("\nPre Order : ");
+        // for(int val : pre)
+        //     System.out.print(val + " ");
         
-        System.out.print("\nIn Order : ");
-        for(int val : in)
-            System.out.print(val + " ");
+        // System.out.print("\nIn Order : ");
+        // for(int val : in)
+        //     System.out.print(val + " ");
         
-        System.out.print("\nPost Order : ");
-        for(int val : post)
-            System.out.print(val + " ");
+        // System.out.print("\nPost Order : ");
+        // for(int val : post)
+        //     System.out.print(val + " ");
 
         // System.out.println("Size : " + size(root));
         // System.out.println("Sum : " + sum(root));
