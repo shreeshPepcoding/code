@@ -19,6 +19,12 @@ public class btree {
         }
     }
 
+    public class TreeNode {
+        TreeNode left, right;
+        int data;
+
+    }
+
     public static class Pair {
         Node node;
         int state;
@@ -418,7 +424,98 @@ public class btree {
     }
 
     public static Node removeLeaves(Node node){
-        // write your code here
+        if(node == null) return null;
+
+        if(node.left != null && node.right != null) {
+            node.left = removeLeaves(node.left);
+            node.right = removeLeaves(node.right);
+        } else if(node.left != null) {
+            node.left = removeLeaves(node.left);
+        } else if(node.right != null) {
+            node.right = removeLeaves(node.right);
+        } else {
+            // leaf -> removal of node
+            node = null;
+        }
+        return node;
+    }
+
+    public static Node removeLeaves1(Node node) {
+        if(node == null) return null;
+        
+        if(node.left == null && node.right == null) {
+            return null;
+        }
+        node.left = removeLeaves1(node.left);
+        node.right = removeLeaves1(node.right);
+        return node;
+    }
+
+    static int tilt = 0;
+
+    public static int sumForTilt(Node node) {
+        if(node == null) return 0;
+
+        int lsum = sumForTilt(node.left);
+        int rsum = sumForTilt(node.right);
+
+        // add contribution of our level in tilt static variable
+        tilt += Math.abs(lsum - rsum);
+
+        return lsum + rsum + node.data;
+    }
+    
+    public static int tilt(Node node){
+        // write your code here to set the tilt data member
+        tilt = 0;
+        sumForTilt(node);
+        return tilt;
+    }
+
+
+    static int diameter = 0;
+
+    public int heightForDiameter(TreeNode root) {
+        if(root == null) return -1;
+        
+        int lh = heightForDiameter(root.left);
+        int rh = heightForDiameter(root.right);
+
+        diameter = Math.max(diameter, lh + rh + 2);
+
+        return Math.max(lh, rh) + 1;
+    }
+
+    static class DiaPair {
+        int dia;
+        int ht;
+
+        public DiaPair() {
+            this.dia = 0;
+            this.ht = -1;
+        }
+    }
+
+    public DiaPair diameter2(TreeNode root) {
+        if(root == null) return new DiaPair();
+
+        DiaPair lres = diameter2(root.left);
+        DiaPair rres = diameter2(root.right);
+
+        DiaPair mres = new DiaPair();
+
+        mres.ht = Math.max(lres.ht, rres.ht) + 1;
+        mres.dia = Math.max(lres.ht + rres.ht + 2, Math.max(lres.dia, rres.dia));
+        return mres;
+    }
+
+    public int diameterOfBinaryTree(TreeNode root) {
+
+        DiaPair res = diameter2(root);
+        return res.dia;
+        // diameter = 0;
+        // heightForDiameter(root);
+        // return diameter;
     }
 
     public static void fun() {
