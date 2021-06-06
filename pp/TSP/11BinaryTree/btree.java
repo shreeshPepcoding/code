@@ -140,6 +140,15 @@ public class btree {
         return Math.max(node.data, Math.max(lmax, rmax));
     }
 
+    public static int min(Node node) {
+        if(node == null) return Integer.MAX_VALUE;
+
+        int lmin = min(node.left);
+        int rmin = min(node.right);
+
+        return Math.min(node.data, Math.min(lmin, rmin));
+    }
+
     public static int height(Node node) {
         if(node == null) return -1;
         
@@ -518,6 +527,46 @@ public class btree {
         // return diameter;
     }
 
+    public static boolean isBST1(Node node) {
+        if(node == null) return true;
+
+        // self check
+        int lmax = max(node.left);
+        int rmin = min(node.right);
+
+        if(lmax > node.data || rmin < node.data) return false;
+
+        // left check && right check
+        return isBST1(node.left) && isBST1(node.right);
+    }
+
+    public static class BSTPair {
+        int min;
+        int max;
+        boolean isbst;
+
+        public BSTPair() {
+            min = Integer.MAX_VALUE;
+            max = Integer.MIN_VALUE;
+            isbst = true;
+        }
+    }
+
+    public static BSTPair isBST2(Node node) {
+        if(node == null) return new BSTPair();
+        
+        BSTPair lres = isBST2(node.left);
+        BSTPair rres = isBST2(node.right);
+
+        boolean status = lres.max < node.data && rres.min > node.data;
+        BSTPair mres = new BSTPair();
+        mres.min = Math.min(node.data, Math.min(lres.min, rres.min));
+        mres.max = Math.max(node.data, Math.max(lres.max, rres.max));
+        mres.isbst = lres.isbst && rres.isbst && status;
+        
+        return mres;
+    }
+
     public static void fun() {
         Integer[] arr = { 50, 25, 12, null, null, 37, 30, null, null, null, 75, 62, null, 70, null, null, 87, null,
                 null };
@@ -525,7 +574,8 @@ public class btree {
 
         display(root);
 
-        pathToLeafFromRoot(root, "", 0, 100, 250);
+        System.out.println(isBST1(root));
+        // pathToLeafFromRoot(root, "", 0, 100, 250);
         // iterativePrePostInTraversal(root);
 
         // levelOrder(root);
