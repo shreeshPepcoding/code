@@ -333,6 +333,7 @@ public class ques {
         }
 
         public static Node getMidNode(Node lo, Node hi) {
+            // return mid1
             Node slow = lo;
             Node fast = lo.next;
 
@@ -460,6 +461,123 @@ public class ques {
         public void displayReverse() {
             displayReverseHelper(head);
             System.out.println();
+        }
+
+        public Node getMiddle(Node node) {
+            Node slow = node;
+            Node fast = node.next;
+
+            while(fast != null && fast.next != null)  {
+                slow = slow.next;
+                fast = fast.next.next;
+            }
+            return slow;
+        }
+
+        public Node reverseNode(Node node) {
+            Node prev = null;
+            Node curr = node;
+
+            while(curr != null) {
+                Node next = curr.next;
+                curr.next = prev;
+                prev = curr;
+                curr = next;
+            }
+
+            return prev;
+        }
+
+        public boolean IsPalindrome() {
+            // 1. get mid1 node
+            Node mid = getMiddle(head);
+
+            // 2. make head2
+            Node head2 = mid.next;
+            mid.next = null;
+        
+            // 3. reverse head2
+            head2 = reverseNode(head2);
+
+            // 4. check for palindrome
+            Node p1 = head;
+            Node p2 = head2;
+
+            boolean ispalindrome = true;
+            while(p1 != null && p2 != null) {
+                if(p1.data != p2.data) {
+                    ispalindrome = false;
+                    break;
+                }
+                p1 = p1.next;
+                p2 = p2.next;
+            }
+
+            // 5. maintain original list
+            head2 = reverseNode(head2);
+            mid.next = head2;
+
+            return ispalindrome;
+        }
+
+        public void fold() {
+            if(head == null || head.next == null || head.next.next == null) return;
+            // 1. get mid
+            Node mid = getMiddle(head);
+            // 2. make head2 + reverse head2
+            Node head2 = mid.next;
+            mid.next = null;
+            head2 = reverseNode(head2);
+
+            // 3. make connections
+            Node p1 = head;
+            Node p2 = head2;
+
+            Node prev = head;
+        
+            while(p1 != null && p2 != null) {
+                Node n1 = p1.next;
+                Node n2 = p2.next;
+
+                p1.next = p2;
+                p2.next = n1;
+                p1 = n1;
+                p2 = n2;
+                if(p1 != null) prev = p1;
+                if(p2 != null) prev = p2;
+            }
+            // 4. manage head and tail
+            this.tail = prev;
+        }
+        
+        private static int additionHelper(Node h1, int i1, Node h2, int i2, LinkedList res) {
+            if(h1 == null || h2 == null) {
+                return 0;
+            }
+
+            int carry = 0;
+            int sum = 0;
+            if(i1 > i2) {
+                carry = additionHelper(h1.next, i1 - 1, h2, i2, res);
+                sum = h1.data + carry;
+            } else if(i1 < i2) {
+                carry = additionHelper(h1, i1, h2.next, i2 - 1, res);
+                sum = h2.data + carry;
+            } else {
+                carry = additionHelper(h1.next, i1 - 1, h2.next, i2 - 1, res);
+                sum = h1.data + h2.data + carry;
+            }
+            res.addFirst(sum % 10);
+            return sum / 10;
+        }
+
+        public static LinkedList addTwoLists(LinkedList one, LinkedList two) {
+            LinkedList res = new LinkedList();
+
+            int carry = additionHelper(one.head, one.size, two.head, two.size, res);
+            if(carry != 0)
+                res.addFirst(carry);
+            return res;
         }
 
     }
