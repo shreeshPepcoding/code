@@ -123,6 +123,7 @@ public class gtree {
         System.out.println(".");
     }
 
+    // level order using delimiter
     public static void levelOrderLineWise1(Node root) {
         Queue<Node> qu = new LinkedList<>();
         qu.add(root);
@@ -150,14 +151,255 @@ public class gtree {
 
     }
 
+    // level order using two queues
+    public static void levelOrderLineWise2(Node root) {
+        Queue<Node> mainQ = new LinkedList<>();
+        Queue<Node> helperQ = new LinkedList<>();
+        mainQ.add(root);
+        while(mainQ.size() > 0) {
+            Node rem = mainQ.remove();
+            System.out.print(rem.data + " ");
+            for(Node child : rem.children) {
+                helperQ.add(child);
+            }
+            if(mainQ.size() == 0) {
+                System.out.println();
+                // swapping of queues
+                Queue<Node> temp = mainQ;
+                mainQ = helperQ;
+                helperQ = temp;
+            }
+        }
+    }
 
+    public static void levelOrderLineWise3(Node root) {
+        Queue<Node> qu = new LinkedList<>();
+        qu.add(root);
+        while(qu.size() > 0) {
+            int size = qu.size();
+            while(size-- > 0) {
+                // get + remove
+                Node rem = qu.remove();
+                // print
+                System.out.print(rem.data + " ");
+                // add children
+                for(Node child : rem.children) {
+                    qu.add(child);
+                }
+            }
+            // level is end
+            System.out.println();
+        }
+    }
 
+    public static void levelOrderLinewiseZZ(Node root) {
+        Stack<Node> mainS = new Stack<>();
+        Stack<Node> helperS = new Stack<>();
+
+        mainS.push(root);
+
+        int level = 0;
+        // level -> odd => right to left addition of child
+        // level -> even => left to right addition of child
+        while(mainS.size() > 0) {
+            while(mainS.size() > 0) {
+                Node rem = mainS.pop();
+                System.out.print(rem.data + " ");
+                if(level % 2 == 0) {
+                    // left to right
+                    for(Node child : rem.children) {
+                        helperS.push(child);
+                    }
+                } else {
+                    // right to left, helping from reverse loop
+                    for(int i = rem.children.size() - 1; i >= 0; i--) {
+                        Node child = rem.children.get(i);
+                        helperS.push(child);
+                    }
+                }
+            }
+            System.out.println();
+            Stack<Node> temp = mainS;
+            mainS = helperS;
+            helperS = temp;
+
+            level++;
+        }
+    }
+
+    public static void mirror(Node node){
+        // faith
+        for(Node child : node.children) {
+            mirror(child);
+        }
+        // merging -> reverse nodde.children
+        int left = 0;
+        int right = node.children.size() - 1;
+
+        while(left < right) {
+            Node data1 = node.children.get(left);
+            Node data2 = node.children.get(right);
+
+            node.children.set(left, data2);
+            node.children.set(right, data1);
+
+            left++;
+            right--;
+        }
+    }
+
+    public static Node getTail(Node node) {
+        Node tail = node;
+        while(tail.children.size() != 0) {
+            tail = tail.children.get(0);
+        }
+        return tail;
+    }
+
+    public static void linearize(Node root) {
+        for(Node child : root.children) {
+            linearize(child);
+        }
+        // make connection
+        for(int i = root.children.size() - 2; i >= 0; i--) {
+            Node rem = root.children.remove(i + 1);
+            Node tail = getTail(root.children.get(i));
+            tail.children.add(rem);
+        }
+    }
+
+    public static Node lineariseBtr(Node root) {
+        if(root.children.size() == 0) return root;
+        int n = root.children.size();
+        Node tail = lineariseBtr(root.children.get(n - 1));
+        for(int i = n - 2; i >= 0; i--) {
+            Node rem = root.children.remove(i + 1);
+            Node ntail = lineariseBtr(root.children.get(i));
+            ntail.children.add(rem);
+        }
+        return tail;
+    }
+
+    public static boolean find(Node node, int data) {
+        //self check
+        if(node.data == data) return true;
+        // children check
+
+        for(Node child : node.children) {
+            boolean res = find(child, data);
+            if(res == true) return true;
+        }
+        return false;
+    }
+    
+    public static ArrayList<Integer> nodeToRootPath(Node node, int data){
+        if(node.data == data) {
+            ArrayList<Integer> bres = new ArrayList<>();
+            bres.add(data);
+            return bres;
+        }
+
+        for(Node child : node.children) {
+            ArrayList<Integer> rres = nodeToRootPath(child, data);
+            if(rres.size() > 0) {
+                rres.add(node.data);
+                return rres;    
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    public static int lca(Node node, int d1, int d2) {
+        ArrayList<Integer> path1 = nodeToRootPath(node, d1);
+        ArrayList<Integer> path2 = nodeToRootPath(node, d2);
+
+        int i = path1.size() - 1;
+        int j = path2.size() - 1;
+
+        int prev = 0;
+
+        while(i >= 0 && j >= 0) {
+            if(path1.get(i) != path2.get(j)) {
+                break;
+            }
+            prev = path1.get(i);
+            i--;
+            j--;
+        }
+        return prev;
+    }  
+
+    public static int distanceBetweenNodes(Node node, int d1, int d2){
+        ArrayList<Integer> path1 = nodeToRootPath(node, d1);
+        ArrayList<Integer> path2 = nodeToRootPath(node, d2);
+
+        int i = path1.size() - 1;
+        int j = path2.size() - 1;
+
+        while(i >= 0 && j >= 0) {
+            if(path1.get(i) != path2.get(j)) {
+                break;
+            }
+            i--;
+            j--;
+        }
+        return i + j + 2;
+    }
+
+    public static boolean areSimilar(Node root1, Node root2) {
+        if(root1.children.size() != root2.children.size()) return false;
+        
+        // both have left to right diurection for children
+        for(int i = 0; i < root1.children.size(); i++) {
+            Node child1 = root1.children.get(i);
+            Node child2 = root2.children.get(i);
+
+            boolean res = areSimilar(child1, child2);
+            if(res == false)
+                return false;
+        }
+        return true;
+    }
+
+    public static boolean areMirror(Node root1, Node root2) {
+        if(root1.children.size() != root2.children.size()) return false;
+        
+        // both have left to right diurection for children
+        int n = root1.children.size();
+        for(int i = 0; i < n; i++) {
+            Node child1 = root1.children.get(i);
+            Node child2 = root2.children.get(n - i - 1);
+
+            boolean res = areMirror(child1, child2);
+            if(res == false)
+                return false;
+        }
+        return true;
+    }
+
+    public static boolean IsSymmetric(Node root) {
+        return areMirror(root, root);
+    }
+    
     public static void fun() {
         Integer[] data = {10, 20, 50, null, 60, null, null, 30, 70, null, 80, 110, null,
              120, null, null, 90, null, null, 40, 100, null, null, null};
 
         Node root = construct(data);
-        levelOrderLineWise1(root);
+
+        display(root);
+        System.out.println();
+        System.out.println(lca(root, 80, 110));
+        // ArrayList<Integer> path = nodeToRootPath(root, 110);
+        // System.out.println(path);
+        // linearize(root);
+        // lineariseBtr(root);
+        // display(root);
+        
+        // mirror(root);
+        // levelOrderLinewiseZZ(root);
+
+        // levelOrderLineWise3(root);
         // levelOrder(root);
 
         // traversals(root);
@@ -165,6 +407,22 @@ public class gtree {
         // display(root);
         // System.out.println("Min : " + min(root));
     }
+
+    public static void test() {
+        ArrayList<Integer> list = new ArrayList<>();
+        list.add(10);
+        list.add(20);
+        list.add(30);
+        list.add(40);
+        list.add(50);
+
+
+        for(int i = list.size() - 1; i >= 0; i--) {
+            int val = list.remove(i);
+            System.out.println(val);
+        }
+    }
+
 
     public static void main(String[] args) {
         fun();
