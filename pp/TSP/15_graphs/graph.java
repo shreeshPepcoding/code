@@ -29,40 +29,38 @@ public class graph {
             System.out.println();
         }
     }
-
-
     
     public static ArrayList<Edge>[] createGraph() {
         // n-> number of vertices
-        int n = 7;
+        int n = 8;
         ArrayList<Edge>[] graph = new ArrayList[n];
         for(int i = 0; i < n; i++) {
             graph[i] = new ArrayList<>();
         }
 
-        int[][] data = {
-            {0, 1, 10},
-            {0, 3, 40}, 
-            {1, 2, 10},
-            {2, 3, 10}, 
-            {3, 4, 2}, 
-            {4, 5, 3},
-            {4, 6, 8}, 
-            {5, 6, 3}
-        };
+        // int[][] data = {
+        //     {0, 1, 10},
+        //     {0, 3, 40}, 
+        //     {1, 2, 10},
+        //     {2, 3, 10}, 
+        //     {3, 4, 2}, 
+        //     {4, 5, 3},
+        //     {4, 6, 8}, 
+        //     {5, 6, 3}
+        // };
 
-        // addEdge(graph, 0, 1, 10);
-        // addEdge(graph, 0, 3, 40);
-        // addEdge(graph, 1, 2, 10);
+        addEdge(graph, 0, 1, 10);
+        addEdge(graph, 0, 3, 40);
+        addEdge(graph, 1, 2, 10);
         // addEdge(graph, 2, 3, 10);
         // addEdge(graph, 3, 4, 2);
-        // addEdge(graph, 4, 5, 3);
-        // addEdge(graph, 4, 6, 8);
+        addEdge(graph, 4, 5, 3);
+        addEdge(graph, 4, 6, 8);
         // addEdge(graph, 5, 6, 3);
 
-        for(int i = 0; i < data.length; i++) {
-            addEdge(graph,  data[i][0], data[i][1], data[i][2]);
-        }
+        // for(int i = 0; i < data.length; i++) {
+        //     addEdge(graph,  data[i][0], data[i][1], data[i][2]);
+        // }
 
         return graph;
     }
@@ -107,13 +105,192 @@ public class graph {
         vis[src] = false;
     }
 
+    static class Pair implements Comparable<Pair> {
+        int wsf;
+        String psf;
+  
+        Pair(int wsf, String psf){
+           this.wsf = wsf;
+           this.psf = psf;
+        }
+  
+        public int compareTo(Pair o){
+           return this.wsf - o.wsf;
+        }
+    }
+
+    static String spath;
+    static Integer spathwt = Integer.MAX_VALUE;
+    static String lpath;
+    static Integer lpathwt = Integer.MIN_VALUE;
+    static String cpath;
+    static Integer cpathwt = Integer.MAX_VALUE;
+    static String fpath;
+    static Integer fpathwt = Integer.MIN_VALUE;
+    static PriorityQueue<Pair> pq = new PriorityQueue<>();
+    public static void multisolver(ArrayList<Edge>[] graph, int src, int dst, boolean[] vis,
+                            int factor, int k, String psf, int wsf) {
+        if(src == dst) {
+            // smallest path
+            if(wsf < spathwt) {
+                spath = psf;
+                spathwt = wsf;
+            }
+            // largest path
+            if(wsf > lpathwt) {
+                lpath = psf;
+                lpathwt = wsf;
+            }
+            // ceil path using factor
+            if(wsf > factor) {
+                if(wsf < cpathwt) {
+                    cpath = psf;
+                    cpathwt = wsf;
+                }
+            }
+            // floor path using factor
+            if(wsf < factor) {
+                if(fpathwt < wsf) {
+                    fpathwt = wsf;
+                    fpath = psf;
+                }
+            }
+            // kth largest using min priority queue
+            if(pq.size() < k) {
+                pq.add(new Pair(wsf, psf));
+            } else {
+                if(pq.peek().wsf < wsf) {
+                    pq.remove();
+                    pq.add(new Pair(wsf, psf));
+                }
+            }
+            return;
+        }
+        vis[src] = true;
+        for(Edge e : graph[src]) {
+            int nbr = e.nbr;
+            int wt = e.wt;
+
+            if(vis[nbr] == false) {
+                multisolver(graph, nbr, dst, vis, factor, k, psf + nbr, wsf + wt);
+            }
+        }
+        vis[src] = false;
+    }
+
+    public static void getConnectedComp(ArrayList<Edge>[] graph, int src, boolean[] vis, ArrayList<Integer> comp) {
+        vis[src] = true;
+        comp.add(src);
+
+        for(Edge e : graph[src]) {
+            int nbr = e.nbr;
+            if(vis[nbr] == false) {
+                getConnectedComp(graph, nbr, vis, comp);
+            }
+        }
+    }
+
+    public static ArrayList<ArrayList<Integer>> getConnectedComponents(ArrayList<Edge>[] graph) {
+        ArrayList<ArrayList<Integer>> comps = new ArrayList<>();
+        int n = graph.length;
+        boolean[] vis = new boolean[n];
+
+        for(int v = 0; v < n; v++) {
+            if(vis[v] == false) {
+                ArrayList<Integer> comp = new ArrayList<>();
+                getConnectedComp(graph, v, vis, comp);
+                comps.add(comp);
+            }
+        }
+
+        System.out.println(comps);
+        return comps;
+    }
+
+    public static void gcc(ArrayList<Edge>[] graph, int src, boolean[] vis) {
+        vis[src] = true;
+        for(Edge e : graph[src]) {
+            int nbr = e.nbr;
+            if(vis[nbr] == false) {
+                gcc(graph, nbr, vis);
+            }
+        }
+    }
+
+    public static boolean isConnected(ArrayList<Edge>[] graph) {
+        int count = 0;
+        int n = graph.length;
+        boolean[] vis = new boolean[n];
+
+        for(int v = 0; v < n; v++) {
+            if(vis[v] == false) {
+                count++;
+                if(count > 1) {
+                    return false;
+                }
+                gcc(graph, v, vis);
+            }
+        }
+        return true;
+    }
+
+
+    // order of direction -> top, left, down, right
+    static int[] xdir = {-1, 0, 1, 0};
+    static int[] ydir = {0, -1, 0, 1};
+
+    public static void gccForIsland(int[][] graph, int x, int y) {
+        graph[x][y] = -1;
+        for(int d = 0; d < 4; d++) {
+            int r = x + xdir[d];
+            int c = y + ydir[d];
+
+            if(r >= 0 && r < graph.length && c >= 0 && c < graph[0].length && graph[r][c] == 0) {
+                gccForIsland(graph, r, c);
+            }
+        }
+        
+    }
+
+    public static int numOfIsland(int[][] graph) {
+        int count = 0;
+
+        for(int i = 0; i < graph.length; i++) {
+            for(int j = 0; j < graph[i].length; j++) {
+                if(graph[i][j] == 0) {
+                    count++;
+                    gccForIsland(graph, i, j);
+                }
+            }
+        }
+
+        return count;
+    }
+
     public static void fun() {
         int n = 7;
         ArrayList<Edge>[] graph = createGraph();
         boolean[] vis = new boolean[n];
 
+
+
+        int[][] arr = {
+            {0, 1, 1, 0, 0},
+            {0, 0, 1, 0, 1},
+            {1, 0, 1, 1, 1},
+            {1, 1, 1, 0, 1},
+            {1, 0, 0, 0, 1},
+            {0, 1, 1, 1, 1}
+        };
+
+        int numOfIslands = numOfIsland(arr);
+        System.out.println(numOfIslands);
+
+
+        // display(graph);
+        // getConnectedComponents(graph);
         // System.out.println(hasPath(graph, 0, 6, vis));
-        printAllPaths(graph, 0, 6, vis, "", 0);
+        // printAllPaths(graph, 0, 6, vis, "", 0);
 
         // display(graph);
     }
