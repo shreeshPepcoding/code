@@ -380,16 +380,185 @@ public class gtree {
     public static boolean IsSymmetric(Node root) {
         return areMirror(root, root);
     }
-    
+
+    // multi solver pair
+    public static class MSPair {
+        int min;
+        int max;
+        int ht;
+        int size;
+
+        public MSPair() {
+            this.min = Integer.MAX_VALUE;
+            this.max = Integer.MIN_VALUE;
+            this.ht = -1;
+            this.size = 0;
+        }
+    }
+
+    public static MSPair multiSolver(Node root) {
+        MSPair mres = new MSPair();
+        mres.min = mres.max = root.data;
+        for(Node child : root.children) {
+            MSPair rres = multiSolver(child);
+            // min
+            mres.min = Math.min(mres.min, rres.min);
+            // max
+            mres.max = Math.max(mres.max, rres.max);
+            // ht
+            mres.ht = Math.max(mres.ht, rres.ht);
+            // size
+            mres.size += rres.size;
+        }
+
+        mres.ht += 1;
+        mres.size += 1;
+        return mres;
+    }
+
+    static int state = 0;    
+    static Node predecessor;
+    static Node successor;
+    public static void predecessorAndSuccessor(Node node, int data) {
+        if(state == 0) {
+            if(node.data == data) {
+                state++;
+            } else {
+                predecessor = node;
+            }
+        } else if(state == 1) {
+            successor = node;
+            state++;
+        } else {
+            return;
+        }
+
+        for(Node child : node.children) {
+            if(state > 1) return;
+            predecessorAndSuccessor(child, data);
+        }
+    }
+
+    static int ceil = Integer.MAX_VALUE;
+    static int floor = Integer.MIN_VALUE;
+    public static void ceilAndFloor(Node node, int factor) {
+        if(node.data > factor) {
+            // valid elements for ceil
+            if(node.data < ceil) {
+                ceil = node.data;
+            }
+        } else if(node.data < factor) {
+            // valid elements for floor
+            if(node.data > floor) {
+                floor = node.data;
+            }
+        }
+
+        for(Node child : node.children) {
+            ceilAndFloor(child, factor);
+        }
+    }
+
+    public static int kthLargest(Node node, int k){
+        int factor = Integer.MAX_VALUE;
+
+        for(int i = 0; i < k; i++) {
+            floor = Integer.MIN_VALUE;
+            ceilAndFloor(node, factor);
+            factor = floor;
+        }
+
+        return factor;
+    }
+
+    static Node maxNode = null;
+    static int maxSum = Integer.MIN_VALUE;
+    public static int sum(Node node) {
+        int s = node.data;
+
+        for(Node child : node.children) {
+            s += sum(child);
+        }
+
+        // maximise maxSum 
+        if(s > maxSum) {
+            maxNode = node;
+            maxSum = s;
+        }
+        return s;
+    }
+
+
+    static int diameter = 0;
+    public static void diameter(Node node) {
+
+        for(Node child : node.children) {
+            diameter(child);
+        }
+        // preparing my diameter
+        int max = -1;
+        int smax = -1; // second max
+        for(Node child : node.children) {
+            int ht = height(child);
+
+            if(ht > max) {
+                smax = max;
+                max = ht;
+            } else if(ht > smax) {
+                smax = ht;
+            }
+        }
+
+        diameter = Math.max(diameter, max + smax + 2);
+    }
+
+
+    public static int heightForDia(Node node) {
+        int max = -1;
+        int smax = -1;
+
+        for(Node child : node.children) {
+            int ht = heightForDia(child);
+
+            if(ht > max) {
+                smax = max;
+                max = ht;
+            } else if(ht > smax) {
+                smax = ht;
+            }
+        }
+
+        diameter = Math.max(diameter, max + smax + 2);
+        return max + 1;
+    }
+
+
     public static void fun() {
-        Integer[] data = {10, 20, 50, null, 60, null, null, 30, 70, null, 80, 110, null,
-             120, null, null, 90, null, null, 40, 100, null, null, null};
+        Integer[] data = {-100, 20, -50, null, 60, null, null, 30, -70, null, 80, 110, null,
+             -120, null, null, 90, null, null, -40, 100, null, null, null};
 
         Node root = construct(data);
 
-        display(root);
-        System.out.println();
-        System.out.println(lca(root, 80, 110));
+        sum(root);
+        System.out.println(maxNode.data + "@" + maxSum);
+
+        // ceilAndFloor(root, 60);
+        // System.out.println("Floor : " + floor);
+        // System.out.println("Ceil : " + ceil);
+
+        // predecessorAndSuccessor(root, 120);
+        // System.out.println("Succ : " + successor.data);
+        // System.out.println("Pred : " + predecessor.data);
+
+        // MSPair res = multiSolver(root);
+        // System.out.println("Min : " + res.min);
+        // System.out.println("Max : " + res.max);
+        // System.out.println("Height : " + res.ht);
+        // System.out.println("Size : " + res.size);
+
+        // display(root);
+        // System.out.println();
+        // System.out.println(lca(root, 80, 110));
         // ArrayList<Integer> path = nodeToRootPath(root, 110);
         // System.out.println(path);
         // linearize(root);
