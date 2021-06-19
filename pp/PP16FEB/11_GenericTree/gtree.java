@@ -533,14 +533,67 @@ public class gtree {
     }
 
 
+    public static class IPair {
+        Node node;
+        int state;
+
+        public IPair(Node node, int state) {
+            this.node = node;
+            this.state = state;
+        }
+    }
+
+    public static void iterativePrePost(Node root) {
+        Stack<IPair> st = new Stack<>();
+
+        st.push(new IPair(root, -1));
+        ArrayList<Integer> pre = new ArrayList<>();
+        ArrayList<Integer> post = new ArrayList<>();
+
+
+        while(st.size() > 0) {
+            IPair p = st.peek();
+            if(p.state == -1) {
+                // pre area
+                pre.add(p.node.data);
+                p.state++;
+            } else if(0 <= p.state && p.state < p.node.children.size()) {
+                // in area
+                Node child = p.node.children.get(p.state);
+                st.push(new IPair(child, -1));
+                p.state++;
+            } else { 
+                // post area
+                post.add(p.node.data);
+                st.pop();
+            }
+        }
+
+        // print pre order
+        for(int val : pre) {
+            System.out.print(val + " ");
+        }
+        System.out.println();
+        // print post order
+        for(int val : post) {
+            System.out.print(val + " ");
+        }
+        System.out.println();
+    }
+
+
     public static void fun() {
         Integer[] data = {-100, 20, -50, null, 60, null, null, 30, -70, null, 80, 110, null,
              -120, null, null, 90, null, null, -40, 100, null, null, null};
 
         Node root = construct(data);
+        iterativePrePost(root);
 
-        sum(root);
-        System.out.println(maxNode.data + "@" + maxSum);
+
+
+
+        // sum(root);
+        // System.out.println(maxNode.data + "@" + maxSum);
 
         // ceilAndFloor(root, 60);
         // System.out.println("Floor : " + floor);
