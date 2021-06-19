@@ -364,6 +364,21 @@ public class graph {
         return false;
     }
 
+    public static boolean dfsFroCycle(ArrayList<Edge>[] graph, int src, boolean[] vis, int par) {
+        vis[src] = true;
+        for(Edge e : graph[src]) {
+            int nbr = e.nbr;
+            // cycle is present
+            if(vis[nbr] == true && nbr != par) {
+                return true;
+            }
+            if(vis[nbr] == false) {
+                boolean res = dfsFroCycle(graph, nbr, vis, src);
+                if(res == true) return true;
+            }
+        }
+        return false;
+    }
 
     public static boolean isCyclic(ArrayList<Edge>[] graph) {
         int n = graph.length;
@@ -371,18 +386,108 @@ public class graph {
 
         for(int v = 0; v < n; v++) {
             if(vis[v] == false) {
-                boolean res = bfsForCycle(graph, v, vis);
+                // boolean res = bfsForCycle(graph, v, vis);
+                boolean res = dfsFroCycle(graph, v, vis, -1);
                 if(res == true) return true;
             }
         }
         return false;
     }
 
+    public static class BPair {
+        int vtx;
+        int level; // discovery time
+
+        public BPair(int vtx, int level) {
+            this.vtx = vtx;
+            this.level = level;
+        }
+    }
+
+    public static boolean isBipertiteComp(ArrayList<Edge>[] graph, int src, int[] vis) {
+        Queue<BPair> qu = new LinkedList<>();
+
+        qu.add(new BPair(src, 0));
+        while(qu.size() > 0) {
+            BPair rem = qu.remove();
+            
+            if(vis[rem.vtx] != -1) {
+                // already discovered
+                // 1. if again discovered with same level-> continue
+                // 2. if again discovered, but with different level -> return false, 
+                // because odd size cycle is present in graph
+                if(vis[rem.vtx] == rem.level) 
+                    continue;
+                else 
+                    return false;
+            } 
+            vis[rem.vtx] = rem.level;
+
+            for(Edge e : graph[rem.vtx]) {
+                int nbr = e.nbr;
+                if(vis[nbr] == -1) {
+                    qu.add(new BPair(nbr, rem.level + 1));
+                }
+            }
+        }
+        return true;
+    }
+
+    public static boolean isBipartite(ArrayList<Edge>[] graph) {
+        int n = graph.length;
+        int[] vis = new int[n];
+        Arrays.fill(vis, -1);
+        
+        for(int v = 0; v < n; v++) {
+            if(vis[v] == -1) {
+                boolean res = isBipertiteComp(graph, v, vis);
+                if(res == false) return false;
+            }
+        }
+        return true;
+    }
+
+    public static int spreadInfection(ArrayList<Edge>[] graph, int src, int t) {
+        Queue<BPair> qu = new LinkedList<>();
+        
+        int[] vis = new int[graph.length];
+        qu.add(new BPair(src, 1));
+        int count = 0;
+        while(qu.size() > 0) {
+            // 1. get + remove
+            BPair rem = qu.remove();
+            // 2. mark * 
+            if(vis[rem.vtx] != 0) {
+                continue;
+            }
+            vis[rem.vtx] = rem.level;
+            // 3. work
+            if(rem.level > t) {
+                break;
+            }
+            System.out.println(rem.vtx + " become sick at time " + rem.level);
+            count++;
+            // 4. add neighbours
+            for(Edge e : graph[rem.vtx]) {
+                int nbr = e.nbr;
+                if(vis[nbr] == 0) {
+                    qu.add(new BPair(nbr, rem.level + 1));
+                }
+            }
+        }
+        return count;
+    }
+
     public static void fun() {
         int n = 7;
         ArrayList<Edge>[] graph = createGraph();
-        
-        bfs(graph, 2);
+        spreadInfection(graph, 6, 5);
+
+
+        // System.out.println(isBipartite(graph));
+
+
+        // bfs(graph, 2);
         
         // boolean[] vis = new boolean[n];
 

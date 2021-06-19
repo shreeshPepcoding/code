@@ -1,7 +1,7 @@
-2 @ 2
-1 @ 21
-3 @ 23
-0 @ 210
-4 @ 234
-5 @ 2345
-6 @ 2346
+6 become sick at time 1
+4 become sick at time 2
+5 become sick at time 2
+3 become sick at time 3
+0 become sick at time 4
+2 become sick at time 4
+1 become sick at time 5
