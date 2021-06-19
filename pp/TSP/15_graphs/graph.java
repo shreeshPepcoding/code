@@ -32,7 +32,7 @@ public class graph {
     
     public static ArrayList<Edge>[] createGraph() {
         // n-> number of vertices
-        int n = 8;
+        int n = 7;
         ArrayList<Edge>[] graph = new ArrayList[n];
         for(int i = 0; i < n; i++) {
             graph[i] = new ArrayList<>();
@@ -52,11 +52,13 @@ public class graph {
         addEdge(graph, 0, 1, 10);
         addEdge(graph, 0, 3, 40);
         addEdge(graph, 1, 2, 10);
-        // addEdge(graph, 2, 3, 10);
-        // addEdge(graph, 3, 4, 2);
+        addEdge(graph, 2, 3, 10);
+        addEdge(graph, 3, 4, 2);
         addEdge(graph, 4, 5, 3);
         addEdge(graph, 4, 6, 8);
-        // addEdge(graph, 5, 6, 3);
+        addEdge(graph, 5, 6, 3);
+        // addEdge(graph, 2, 5, 0);
+
 
         // for(int i = 0; i < data.length; i++) {
         //     addEdge(graph,  data[i][0], data[i][1], data[i][2]);
@@ -267,24 +269,138 @@ public class graph {
         return count;
     }
 
+    public static void hamiltonian(ArrayList<Edge>[] graph, int src, int osrc, HashSet<Integer> vis, String psf) {
+        if(vis.size() == graph.length - 1) {
+            psf += src;
+            System.out.print(psf);
+
+            // thinking about star(cyclic) and dot(normal)
+            boolean isCyclic = false;
+            for(Edge e : graph[osrc]) {
+                if(e.nbr == src) {
+                    isCyclic = true;
+                    break;
+                }
+            }
+
+            if(isCyclic == true) {
+                System.out.println("*");
+            } else {
+                System.out.println(".");
+            }
+            return;
+        }
+        
+        vis.add(src);
+        for(Edge e : graph[src]) {
+            int nbr = e.nbr;
+            if(vis.contains(nbr) == false) {
+                hamiltonian(graph, nbr, osrc, vis, psf + src);
+            }
+        }
+        vis.remove(src);
+    }
+
+    public static class BFSPair {
+        int vtx;
+        String psf;
+
+        BFSPair(int vtx, String psf) {
+            this.vtx = vtx;
+            this.psf = psf;
+        }
+    }
+
+    public static void bfs(ArrayList<Edge>[] graph, int src) {
+        Queue<BFSPair> qu = new LinkedList<>();
+        qu.add(new BFSPair(src, "" + src));
+        boolean[] vis = new boolean[graph.length];
+
+        while(qu.size() > 0) {
+            // 1. get + remove
+            BFSPair rem = qu.remove();
+            // 2. mark *
+            if(vis[rem.vtx] == true) {
+                // already visited -> continue
+                continue;
+            } else {
+                // unvisited -> mark it as visited
+                vis[rem.vtx] = true;
+            }
+            // 3. work -> printing
+            System.out.println(rem.vtx + " @ " + rem.psf);
+            // 4. add unvisited neighbours
+            for(Edge e : graph[rem.vtx]) {
+                if(vis[e.nbr] == false) {
+                    qu.add(new BFSPair(e.nbr, rem.psf + e.nbr));
+                }
+            }
+        }
+    }
+
+    public static boolean bfsForCycle(ArrayList<Edge>[] graph, int src, boolean[] vis) {
+        Queue<Integer> qu = new LinkedList<>();
+        qu.add(src);
+
+        while(qu.size() > 0) {
+            // 1. get + remove
+            int rem = qu.remove();
+            // 2. mark *
+            if(vis[rem] == true) {
+                // already visited -> cycle is detected
+                return true;
+            } else {
+                // unvisited -> mark it as visited
+                vis[rem] = true;
+            }
+            // 3. work*
+            // 4. add unvisited neighbours
+            for(Edge e : graph[rem]) {
+                if(vis[e.nbr] == false) {
+                    qu.add(e.nbr);
+                }
+            }
+        }
+        return false;
+    }
+
+
+    public static boolean isCyclic(ArrayList<Edge>[] graph) {
+        int n = graph.length;
+        boolean[] vis = new boolean[n];
+
+        for(int v = 0; v < n; v++) {
+            if(vis[v] == false) {
+                boolean res = bfsForCycle(graph, v, vis);
+                if(res == true) return true;
+            }
+        }
+        return false;
+    }
+
     public static void fun() {
         int n = 7;
         ArrayList<Edge>[] graph = createGraph();
-        boolean[] vis = new boolean[n];
+        
+        bfs(graph, 2);
+        
+        // boolean[] vis = new boolean[n];
+
+        // HashSet<Integer> vis = new HashSet<>();
+        // hamiltonian(graph, 5, 5, vis, "");
 
 
+        // int[][] arr = {
+        //     {0, 1, 1, 0, 0},
+        //     {0, 0, 1, 0, 1},
+        //     {1, 0, 1, 1, 1},
+        //     {1, 1, 1, 0, 1},
+        //     {1, 0, 0, 0, 1},
+        //     {0, 1, 1, 1, 1}
+        // };
 
-        int[][] arr = {
-            {0, 1, 1, 0, 0},
-            {0, 0, 1, 0, 1},
-            {1, 0, 1, 1, 1},
-            {1, 1, 1, 0, 1},
-            {1, 0, 0, 0, 1},
-            {0, 1, 1, 1, 1}
-        };
-
-        int numOfIslands = numOfIsland(arr);
-        System.out.println(numOfIslands);
+        // int numOfIslands = numOfIsland(arr);
+        // System.out.println(numOfIslands);
 
 
         // display(graph);
