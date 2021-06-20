@@ -168,26 +168,301 @@ public class btree {
         }
     }
 
+    public static void iterativePrePostInTraversal(Node node) {
+        Stack<Pair> st = new Stack<>();
+        st.push(new Pair(node, 0));
+        ArrayList<Integer> pre = new ArrayList<>();
+        ArrayList<Integer> in = new ArrayList<>();
+        ArrayList<Integer> post = new ArrayList<>();
+
+        while(st.size() > 0) {
+            Pair p = st.peek();
+            if(p.state == 0) {
+                pre.add(p.node.data);
+                if(p.node.left != null)
+                    st.push(new Pair(p.node.left, 0));
+                
+                p.state++;
+            } else if(p.state == 1) {
+                in.add(p.node.data);
+                if(p.node.right != null)
+                    st.push(new Pair(p.node.right, 0));
+                
+                p.state++;
+            } else {
+                post.add(p.node.data);
+                st.pop();
+            }
+        }
+
+        for(int val : pre) {
+            System.out.print(val + " ");
+        }
+        System.out.println();
+
+        for(int val : in) {
+            System.out.print(val + " ");
+        }
+        System.out.println();
+
+        for(int val : post) {
+            System.out.print(val + " ");
+        }
+        System.out.println();
+    }
+
+    public static class Spair {
+        int indx;
+        String ans;
+        int state;
+
+        public Spair(int indx, String ans, int state) {
+            this.indx = indx;
+            this.ans = ans;
+            this.state = state;
+        }
+    }
+
+    public static void iterativeSubseq(String str) {
+        Stack<Spair> st = new Stack<>();
+        st.push(new Spair(0, "", 0));
+
+        while(st.size() > 0) {
+            Spair p = st.peek();
+            if(p.indx == str.length()) {
+                // base case
+                System.out.println(p.ans);
+                st.pop();
+            } else if(p.state == 0) {
+                // no call
+                st.push(new Spair(p.indx + 1, p.ans + "- ", 0));
+                p.state++;
+            } else if(p.state == 1) {
+                // yes call
+                st.push(new Spair(p.indx + 1, p.ans + str.charAt(p.indx) + " ", 0));
+                p.state++;
+            } else {
+                // wipe out
+                st.pop();
+            }
+        }
+    }
+
+    public static boolean find(Node node, int data){
+        if(node == null) return false;
+
+        if(node.data == data) return true;
+
+        boolean res = false;
+        res = find(node.left, data);
+        if(res == true) return true;
+
+        res = find(node.right, data);
+
+        return res;
+    }
+    
+    public static ArrayList<Integer> nodeToRootPath(Node node, int data){
+        if(node == null) return new ArrayList<>();
+
+        if(node.data == data) {
+            ArrayList<Integer> bres = new ArrayList<>();
+            bres.add(node.data);
+            return bres;
+        }
+
+        ArrayList<Integer> res;
+        res = nodeToRootPath(node.left, data);
+        if(res.size() > 0) {
+            res.add(node.data);
+            return res;
+        }
+
+        res = nodeToRootPath(node.right, data);
+        if(res.size() > 0) {
+            res.add(node.data);
+            return res;
+        }
+
+        return new ArrayList<>();
+    }
+
+    public static void printKLevelsDown(Node node, int k){
+        if(node == null) return;
+        
+        if(k == 0) {
+            System.out.println(node.data);
+            return;
+        }
+
+        printKLevelsDown(node.left, k - 1);
+        printKLevelsDown(node.right, k - 1);
+    }
+
+    public static ArrayList<Node> nodeToRootPath2(Node node, int data) {
+        if(node == null) return new ArrayList<>();
+
+        if(node.data == data) {
+            ArrayList<Node> bres = new ArrayList<>();
+            bres.add(node);
+            return bres;
+        }
+
+        ArrayList<Node> res;
+        res = nodeToRootPath2(node.left, data);
+        if(res.size() > 0) {
+            res.add(node);
+            return res;
+        }
+
+        res = nodeToRootPath2(node.right, data);
+        if(res.size() > 0) {
+            res.add(node);
+            return res;
+        }
+
+        return new ArrayList<>();
+    }
+
+    public static void printKdown(Node node, Node blockage, int k) {
+        if(node == null || node == blockage) return;
+
+        if(k == 0) {
+            System.out.println(node.data);
+            return;
+        }
+
+        printKdown(node.left, blockage, k - 1);
+        printKdown(node.right, blockage, k - 1);
+    }
+
+    public static void printKNodesFar(Node node, int data, int k) {
+        ArrayList<Node> path = nodeToRootPath2(node, data);
+        Node blockage = null;
+        for(int i = 0; i < path.size() && k - i >= 0; i++) {
+            Node nroot = path.get(i);
+            printKdown(nroot, blockage, k - i);
+            blockage = nroot;
+        }
+    }
+
+    public static void pathToLeafFromRoot(Node node, String path, int sum, int lo, int hi){
+        if(node == null) {
+            // specially for root == null
+            return;
+        }
+
+        if(node.left != null && node.right != null) {
+            // left + right
+            pathToLeafFromRoot(node.left, path + node.data + " ", sum + node.data, lo, hi);
+            pathToLeafFromRoot(node.right, path + node.data + " ", sum + node.data, lo, hi);
+        } else if(node.left != null) {
+            // left
+            pathToLeafFromRoot(node.left, path + node.data + " ", sum + node.data, lo, hi);
+        } else if(node.right != null) {
+            // right
+            pathToLeafFromRoot(node.right, path + node.data + " ", sum + node.data, lo, hi);
+        } else {
+            // leaf
+            sum += node.data;
+            path += node.data;
+
+            if(lo <= sum && sum <= hi) {
+                System.out.println(path); 
+            }
+        }
+    }
+
+    public static Node createLeftCloneTree(Node node){
+        if(node == null) return null;
+        Node lc = createLeftCloneTree(node.left);
+        Node rc = createLeftCloneTree(node.right);
+
+        Node nn = new Node(node.data);
+        node.left = nn;
+        node.right = rc;
+        nn.left = lc;
+        
+        return node;
+    }
+
+    public static Node transBackFromLeftClonedTree(Node node){
+        if(node == null) return null;
+
+        Node lc = transBackFromLeftClonedTree(node.left.left);
+        Node rc = transBackFromLeftClonedTree(node.right);
+
+        node.left = lc;
+        node.right = rc;
+
+        return node;
+    }
+
+    public static void printSingleChild1(Node node) {
+        if(node == null) return; // for root null
+
+        if(node.left != null && node.right != null) {
+            // both child
+            printSingleChild1(node.left);
+            printSingleChild1(node.right);
+        } else if(node.left != null) {
+            // left child
+            System.out.println(node.left.data);
+            printSingleChild1(node.left);
+        } else if(node.right != null) {
+            // right
+            System.out.println(node.right.data);
+            printSingleChild1(node.right);
+        } else {
+            // i'm leaf
+            return;
+        }
+    }
+
+    public static void printSingleChild2(Node node, Node parent) {
+        if(node == null) return; // for root null
+
+        if(parent != null && parent.left == node && parent.right == null || 
+            parent != null && parent.right == node && parent.left == null) {
+            // node is single left child of parent + node is single right child
+            System.out.println(node.data);
+        }
+
+        printSingleChild2(node.left, node);
+        printSingleChild2(node.right, node);
+    }
+
+
 
     public static void fun() {
         Integer[] data = { 50, 25, 12, null, null, 37, 30, null, null, null, 75, 62, null, 70, null, null, 87, null,
                 null };
-        Node root = construct(data);
-        display(root);
-        System.out.println("Max : " + max(root));
-        System.out.println("Min : " + min(root));
-        System.out.println("Height : " + height(root));
-        System.out.println("Size : " + size(root));
-        System.out.println("Sum : " + sum(root));
 
-        System.out.print("Pre Order : ");
-        preOrder(root);
-        System.out.print("\nIn Order : ");
-        inOrder(root);
-        System.out.print("\nPost Order : ");
-        postOrder(root);
-        System.out.println("\nLevelOrder -> ");
-        levelOrder(root);
+        Node root = construct(data);
+        display(createLeftCloneTree(root));
+        // pathToLeafFromRoot(root, "", 0, 140, 250);
+        // printKNodesFar(root, 25, 1);
+
+        // System.out.println(find(root, 40));
+        // System.out.println(nodeToRootPath(root, 40));
+        // iterativeSubseq("abc");
+        // iterativePrePostInTraversal(root);
+
+        // display(root);
+        // System.out.println("Max : " + max(root));
+        // System.out.println("Min : " + min(root));
+        // System.out.println("Height : " + height(root));
+        // System.out.println("Size : " + size(root));
+        // System.out.println("Sum : " + sum(root));
+
+        // System.out.print("Pre Order : ");
+        // preOrder(root);
+        // System.out.print("\nIn Order : ");
+        // inOrder(root);
+        // System.out.print("\nPost Order : ");
+        // postOrder(root);
+        // System.out.println("\nLevelOrder -> ");
+        // levelOrder(root);
     }
 
     public static void main(String[] args) {
