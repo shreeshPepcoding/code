@@ -49,16 +49,25 @@ public class graph {
         //     {5, 6, 3}
         // };
 
-        addEdge(graph, 0, 1, 10);
-        addEdge(graph, 0, 3, 40);
-        addEdge(graph, 1, 2, 10);
-        addEdge(graph, 2, 3, 10);
-        addEdge(graph, 3, 4, 2);
-        addEdge(graph, 4, 5, 3);
-        addEdge(graph, 4, 6, 8);
-        addEdge(graph, 5, 6, 3);
+        // addEdge(graph, 0, 1, 10);
+        // addEdge(graph, 0, 3, 40);
+        // addEdge(graph, 1, 2, 10);
+        // addEdge(graph, 2, 3, 10);
+        // addEdge(graph, 3, 4, 2);
+        // addEdge(graph, 4, 5, 3);
+        // addEdge(graph, 4, 6, 8);
+        // addEdge(graph, 5, 6, 3);
         // addEdge(graph, 2, 5, 0);
 
+
+        addEdge(graph, 0, 1, 30);
+        addEdge(graph, 0, 3, 20);
+        addEdge(graph, 1, 2, 5);
+        addEdge(graph, 2, 3, 5);
+        addEdge(graph, 3, 4, 2);
+        addEdge(graph, 4, 5, 3);
+        addEdge(graph, 4, 6, 3);
+        addEdge(graph, 5, 6, 4);
 
         // for(int i = 0; i < data.length; i++) {
         //     addEdge(graph,  data[i][0], data[i][1], data[i][2]);
@@ -478,23 +487,113 @@ public class graph {
         return count;
     }
 
+    public static class DPair implements Comparable<DPair> {
+        int wsf;
+        int vtx;
+        String psf;
+
+        public DPair(int vtx, String psf, int wsf) {
+            this.vtx = vtx;
+            this.psf = psf;
+            this.wsf = wsf;
+        }
+
+        public int compareTo(DPair o) {
+            return this.wsf - o.wsf;
+        }
+    }
+
+    public static void dijkstras(ArrayList<Edge>[] graph, int src) {
+        PriorityQueue<DPair> pq = new PriorityQueue<>();
+        pq.add(new DPair(src, "" + src, 0));
+        boolean[] vis = new boolean[graph.length];
+
+        while(pq.size() > 0) {
+            // 1. get + remove
+            DPair rem = pq.remove();
+            // 2. mark*
+            if(vis[rem.vtx] == true) {
+                continue;
+            }
+            vis[rem.vtx] = true;
+            // 3. work -> printing of paths
+            System.out.println(rem.vtx + " via " + rem.psf + " @ " + rem.wsf);
+            // 4. add neighbours
+            for(Edge e : graph[rem.vtx]) {
+                int nbr = e.nbr;
+                if(vis[nbr] == false) {
+                    pq.add(new DPair(nbr, rem.psf + nbr, rem.wsf + e.wt));
+                }
+            }
+        }
+    }
+
+    public static class Phelper implements Comparable<Phelper> {
+        int vtx;
+        int parent;
+        int wt;
+
+        public Phelper(int vtx, int parent, int wt) {
+            this.vtx = vtx;
+            this.parent = parent;
+            this.wt = wt;
+        }
+
+        public int compareTo(Phelper o) {
+            return this.wt - o.wt;
+        } 
+    }
+
+    public static void prims(ArrayList<Edge>[] graph) {
+        PriorityQueue<Phelper> pq = new PriorityQueue<>();
+        pq.add(new Phelper(3, -1, 0));
+
+        int n = graph.length;
+        ArrayList<Edge>[] mst = new ArrayList[n];
+        for(int v = 0; v < n; v++) {
+            mst[v] = new ArrayList<>();
+        }
+
+        boolean[] vis = new boolean[n];
+
+        while(pq.size() > 0) {
+            // 1. get + rem
+            Phelper rem = pq.remove();
+            // 2. mark
+            if(vis[rem.vtx] == true) continue;
+            vis[rem.vtx] = true;
+            // 3. work -> print(for question) + add edge(mst graph)
+            if(rem.parent != -1) {
+                System.out.println("[" + rem.vtx + "-" + rem.parent + "@" + rem.wt + "]");
+                addEdge(mst, rem.vtx, rem.parent, rem.wt);
+            }
+
+            // 4. add neighbour
+            for(Edge e : graph[rem.vtx]) {
+                if(vis[e.nbr] == false) {
+                    pq.add(new Phelper(e.nbr, rem.vtx, e.wt));
+                }
+            }
+        }
+        display(mst);
+    }
+
+    
+
+
     public static void fun() {
         int n = 7;
         ArrayList<Edge>[] graph = createGraph();
-        spreadInfection(graph, 6, 5);
+        prims(graph);
+        // dijkstras(graph, 0);
 
 
+        // spreadInfection(graph, 6, 5);
         // System.out.println(isBipartite(graph));
-
-
         // bfs(graph, 2);
-        
         // boolean[] vis = new boolean[n];
-
         // HashSet<Integer> vis = new HashSet<>();
         // hamiltonian(graph, 5, 5, vis, "");
-
-
         // int[][] arr = {
         //     {0, 1, 1, 0, 0},
         //     {0, 0, 1, 0, 1},
