@@ -578,13 +578,148 @@ public class graph {
         display(mst);
     }
 
-    
+
+    // ~~~~~~Topological sort-> valid for directed and acyclic graph~~~~~~~~
+    public static void tsHelper(ArrayList<Edge>[] graph, int src, boolean[] vis, Stack<Integer> st) {
+        vis[src] = true;
+        for(Edge e : graph[src]) {
+            int nbr = e.nbr;
+            if(vis[nbr] == false) {
+                tsHelper(graph, nbr, vis, st);
+            }
+        }
+
+        st.push(src);
+    }
+
+    public static void topologicalSort(ArrayList<Edge>[] graph) {
+        int n = graph.length;
+
+        boolean[] vis = new boolean[n];
+
+        Stack<Integer> st = new Stack<>();
+        for(int v = 0; v < n; v++) {
+            if(vis[v] == false) {
+                tsHelper(graph, v, vis, st);
+            }
+        }
+
+        // order of compilation is just reverse of topological sort
+        // and in stack we achieve topological sort
+        // but for now, we have to print topo. sort
+        while(st.size() > 0) {
+            System.out.println(st.pop());
+        }
+    }
+
+    // cycle detection in directed graph : https://practice.geeksforgeeks.org/problems/detect-cycle-in-a-directed-graph/1
+    public boolean dfsCycle(ArrayList<ArrayList<Integer>> graph, int src, boolean[] vis, boolean[] mypath) {
+        vis[src] = true;
+        mypath[src] = true;
+        for(int nbr : graph.get(src)) {
+            if(mypath[nbr] == true) {
+                return true;
+            } else if(vis[nbr] == false) {
+                boolean res = dfsCycle(graph, nbr, vis, mypath);
+                if(res == true) return true;
+            }
+        }
+
+        mypath[src] = false;
+        return false;
+    }
+
+    public boolean isCyclic(int n, ArrayList<ArrayList<Integer>> graph)  {
+        boolean[] vis = new boolean[n];
+        boolean[] mypath = new boolean[n];
+        for(int v = 0; v < n; v++) {
+            if(vis[v] == false) {
+                boolean res = dfsCycle(graph, v, vis, mypath);
+                if(res == true) return true;
+            }
+        }
+        return false; 
+    }
+
+    // leetcode 994: https://leetcode.com/problems/rotting-oranges/
+    public static class OPair {
+        int x;
+        int y;
+        int t;
+
+        public OPair(int x, int y, int t) {
+            this.x = x;
+            this.y = y;
+            this.t = t;
+        }
+    }
+    public static int orangesRotting(int[][] graph) {
+        /* 1. make a queue and add rotted orange in it with time t = 0
+        as well as maintain a count of fresh + rotted orange for final result */
+
+        Queue<OPair> qu = new LinkedList<>();
+        int orange = 0;
+        for(int i = 0; i < graph.length; i++) {
+            for(int j = 0; j < graph[i].length; j++) {
+                if(graph[i][j] == 2) {
+                    qu.add(new OPair(i, j, 0));
+                    orange++;
+                } else if(graph[i][j] == 1) {
+                    orange++;
+                }
+            }
+        }
+        if(orange == 0) return 0;
+        // make a direction array for edges of graph
+        int[] xdir = {-1, 0, 1, 0};
+        int[] ydir = {0, -1, 0, 1};
+        // 2. process bfs and find max time; -> marking as -1
+        int time = -1;
+
+        while(qu.size() > 0) {
+            int size = qu.size();
+            while(size-- > 0) {
+                OPair rem = qu.remove();
+                if(graph[rem.x][rem.y] == -1) {
+                    continue;
+                }
+                graph[rem.x][rem.y] = -1;
+                time = rem.t;
+                orange--;
+                for(int d = 0; d < 4; d++) {
+                    int r = rem.x + xdir[d];
+                    int c = rem.y + ydir[d];
+ 
+                    // check validity + unvisited orange
+                    if(0 <= r && r < graph.length && 0 <= c && c < graph[0].length && graph[r][c] == 1) {
+                        qu.add(new OPair(r, c, rem.t + 1));
+                    }
+                }
+            }
+        }
+        // System.out.println("total time : " + time);
+        // System.out.println("Orange remains : " + orange);
+        return orange == 0 ? time : -1;
+    }
 
 
     public static void fun() {
-        int n = 7;
-        ArrayList<Edge>[] graph = createGraph();
-        prims(graph);
+        // int n = 7;
+        // ArrayList<Edge>[] graph = createGraph();
+
+        int[][] grid = {
+            {2, 0, 1, 0, 1},
+            {0, 1, 2, 0, 0},
+            {1, 1, 0, 1, 1},
+            {0, 1, 1, 1, 1},
+            {1, 2, 1, 1, 2}
+        };
+
+        orangesRotting(grid);
+
+
+
+        // prims(graph);
         // dijkstras(graph, 0);
 
 
