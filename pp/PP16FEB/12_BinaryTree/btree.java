@@ -415,7 +415,7 @@ public class btree {
             printSingleChild1(node.right);
         } else {
             // i'm leaf
-            return;
+            return; 
         }
     }
 
@@ -432,7 +432,119 @@ public class btree {
         printSingleChild2(node.right, node);
     }
 
+    public static Node removeLeaves(Node node){
+        Node lc = node.left;
+        Node rc = node.right;
+        if(lc != null && rc != null) {
+            lc = removeLeaves(lc);
+            rc = removeLeaves(rc);
+        } else if(lc != null) {
+            lc = removeLeaves(lc);
+        } else if(rc != null) {
+            rc = removeLeaves(rc);
+        } else {
+            // i'm leaf, so return null
+            return null;
+        }
+        node.left = lc;
+        node.right = rc;
+        return node;
+    }
 
+    static int tilt = 0;
+    public static int tilt(Node node){
+        if(node == null) return 0;
+
+        int lsum = tilt(node.left);
+        int rsum = tilt(node.right);
+
+        tilt += Math.abs(lsum - rsum);
+        return lsum + rsum + node.data;
+    }
+
+    // iBST -> O(n^2)
+    public static boolean isBST(Node node) {
+        if(node == null) return true;
+        // self check
+        int lmax = max(node.left);
+        int rmin = min(node.right);
+
+        boolean res = (lmax < node.data) && (node.data < rmin);
+        // left check && right check
+        res = res && isBST(node.left) && isBST(node.right);
+        return res;
+    }
+
+    // isBST -> O(n) with help of wraper class
+    public static class BSTPair {
+        int min;
+        int max;
+        boolean isBST;
+        int size;
+
+        public BSTPair() {
+            this.min = Integer.MAX_VALUE;
+            this.max = Integer.MIN_VALUE;
+            this.isBST = true;
+            this.size = 0;
+        }
+    }
+
+    public static BSTPair isBST2(Node node) {
+        if(node == null) {
+            return new BSTPair();
+        }
+
+        BSTPair lpair = isBST2(node.left);
+        BSTPair rpair = isBST2(node.right);
+
+        boolean res = lpair.max < node.data && node.data < rpair.min;
+
+        BSTPair mpair = new BSTPair();
+        mpair.min = Math.min(node.data, Math.min(lpair.min, rpair.min));
+        mpair.max = Math.max(node.data, Math.max(lpair.max, rpair.max));
+        mpair.isBST = res && lpair.isBST && rpair.isBST;
+
+        return mpair;
+    }
+
+    static boolean isBalance = true;
+    public static int isBalanced(Node node) {
+        if(node == null) return -1;
+
+        int lh = isBalanced(node.left);
+        
+        if(isBalance == false) 
+            return 0;
+        
+        int rh = isBalanced(node.right);
+
+        isBalance = isBalance && (Math.abs(lh - rh) <= 1);
+        return Math.max(lh, rh) + 1;
+    }
+
+    static Node bstNode = null;
+    static int bstSize = 0;
+
+    public static BSTPair largestBST(Node node) {
+        BSTPair lpair = largestBST(node.left);
+        BSTPair rpair = largestBST(node.right);
+
+        boolean res = lpair.max < node.data && node.data < rpair.min;
+
+        BSTPair mpair = new BSTPair();
+        mpair.min = Math.min(node.data, Math.min(lpair.min, rpair.min));
+        mpair.max = Math.max(node.data, Math.max(lpair.max, rpair.max));
+        mpair.isBST = res && lpair.isBST && rpair.isBST;
+        mpair.size = lpair.size + rpair.size + 1;
+
+        if(mpair.isBST == true && mpair.size > bstSize) {
+            bstSize = mpair.size;
+            bstNode = node;
+        }
+
+        return mpair;
+    }
 
     public static void fun() {
         Integer[] data = { 50, 25, 12, null, null, 37, 30, null, null, null, 75, 62, null, 70, null, null, 87, null,
