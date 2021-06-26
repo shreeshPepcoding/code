@@ -393,15 +393,209 @@ public class dp {
     }
 
     // ~~~~~~~~~~~~~~~Goldmine~~~~~~~~~~~~~~
-    
+    public static int goldmineHelper_rec(int[][] mine, int x, int y) {
+        if(y == mine[0].length - 1) {
+            return mine[x][y];
+        }
 
+        int cost = 0;
+        // top-right
+        if(x - 1 >= 0) {
+            cost = Math.max(cost, goldmineHelper_rec(mine, x - 1, y + 1));
+        }
+        // right -> no need for check of y
+        cost = Math.max(cost, goldmineHelper_rec(mine, x, y + 1));
+        // down-right
+        if(x + 1 < mine.length) {
+            cost = Math.max(cost, goldmineHelper_rec(mine, x + 1, y + 1));
+        }
+        return cost + mine[x][y];
+    }
+
+    public static int goldmineHelper_memo(int[][] mine, int x, int y, Integer[][] dp) {
+        if(y == mine[0].length - 1) {
+            return dp[x][y] = mine[x][y];
+        }
+
+        if(dp[x][y] != null) {
+            return dp[x][y];
+        }
+
+        int cost = 0;
+        // top-right
+        if(x - 1 >= 0) {
+            cost = Math.max(cost, goldmineHelper_memo(mine, x - 1, y + 1, dp));
+        }
+        // right -> no need for check of y
+        cost = Math.max(cost, goldmineHelper_memo(mine, x, y + 1, dp));
+        // down-right
+        if(x + 1 < mine.length) {
+            cost = Math.max(cost, goldmineHelper_memo(mine, x + 1, y + 1, dp));
+        }
+        return dp[x][y] = cost + mine[x][y];
+    }
+
+    public static int goldmine_rec(int[][] mine) {
+        int profit = 0;
+
+        Integer[][] dp = new Integer[mine.length][mine[0].length];
+        for(int x = 0; x < mine.length; x++) {
+            profit = Math.max(profit, goldmineHelper_memo(mine, x, 0, dp));
+        }
+        return profit;
+    }
+
+    public static int goldmine_tab1(int[][] mine, int x, int y, int[][] dp) {
+        int res = 0;
+        for(y = mine[0].length - 1; y >= 0; y--) {
+            for(x = 0; x < mine.length; x++) {
+                if(y == mine[0].length - 1) {
+                    dp[x][y] = mine[x][y];
+                } else if(x == 0){
+                    dp[x][y] = Math.max(dp[x][y + 1], dp[x + 1][y + 1]) + mine[x][y];
+                } else if(x == mine.length - 1) {
+                    dp[x][y] = Math.max(dp[x][y + 1], dp[x - 1][y + 1]) + mine[x][y];
+                } else {
+                    dp[x][y] = Math.max(dp[x - 1][ y + 1], Math.max(dp[x][y + 1], dp[x + 1][y + 1])) + mine[x][y];
+                }
+                res = Math.max(res, dp[x][y]);
+            }
+        }
+        return res;
+    }
+
+    public static int goldmine_tab2(int[][] mine, int x, int y, int[][] dp) {
+        int profit = 0;
+        for(y = mine[0].length - 1; y >= 0; y--) {
+            for(x = 0; x < mine.length; x++) {
+                if(y == mine[0].length - 1) {
+                    dp[x][y] = mine[x][y];
+                    profit = Math.max(profit, dp[x][y]);
+                    continue;
+                }
+                int cost = 0;
+                // top-right
+                if(x - 1 >= 0) {
+                    cost = Math.max(cost, dp[x - 1][y + 1]);
+                }
+                // right -> no need for check of y
+                cost = Math.max(cost, dp[x][y + 1]);
+                // down-right
+                if(x + 1 < mine.length) {
+                    cost = Math.max(cost, dp[x + 1][y + 1]);
+                }
+                dp[x][y] = cost + mine[x][y];
+                profit = Math.max(profit, dp[x][y]);
+            }
+        }
+        return profit;
+    }
 
     public static void goldmine() {
+        int[][] mine = {};
+        int res = goldmine_rec(mine);
+        System.out.println(res);
+    }
 
+    // ~~~~~~~~~~~~~~~~Target Sum Subset~~~~~~~~~~
+    public static boolean targetSumSubset_rec(int[] arr, int indx, int target) {
+        if(target == 0) return true; 
+        if(indx == arr.length) {
+            return false;
+        }
+        boolean res = false;
+        
+        // no call
+        res = targetSumSubset_rec(arr, indx + 1, target);
+        
+        // yes call
+        if(target - arr[indx] >= 0) {
+            res = res || targetSumSubset_rec(arr, indx + 1, target - arr[indx]);
+        }
+        
+        return res;
+    }
+
+    public static boolean targetSumSubset_memo(int[] arr, int indx, int target, Boolean[][] dp) {
+        if(target == 0) return dp[indx][target] = true; 
+        if(indx == arr.length) {
+            return dp[indx][target] = false;
+        }
+
+        if(dp[indx][target] != null) {
+            return dp[indx][target];
+        }
+
+        boolean res = false;
+        // yes call
+        if(target - arr[indx] >= 0) {
+            res = targetSumSubset_rec(arr, indx + 1, target - arr[indx]);
+        }
+        // no call
+        res = res || targetSumSubset_rec(arr, indx + 1, target);
+        return dp[indx][target] = res;
+    }
+
+    public static boolean targetSumSubset_tab1(int[] arr, int target) {
+        boolean[][] dp = new boolean[arr.length + 1][target + 1];
+        
+        for(int indx = 0; indx < dp.length; indx++) {
+            for(int targ = 0; targ < dp[0].length; targ++) {
+                if(targ == 0) {
+                    dp[indx][targ] = true;
+                } else if(indx == 0) {
+                    dp[indx][targ] = false;
+                } else {
+                    int val = arr[indx - 1];
+                    if(targ < val) {
+                        // only no call
+                        dp[indx][targ] = dp[indx - 1][targ];
+                    } else {
+                        // no call OR(||) yes call
+                        dp[indx][targ] = dp[indx - 1][targ] || dp[indx - 1][targ - val];
+                    }
+                }
+            }
+        }
+        return dp[dp.length - 1][dp[0].length - 1];
+    }
+
+    public static boolean targetSumSubset_tab2(int[] arr, int target) {
+        boolean[][] dp = new boolean[arr.length + 1][target + 1];
+        for(int indx = arr.length; indx >= 0; indx--) {
+            for(int targ = 0; targ <= target; targ++) {
+                if(targ == 0) {
+                    dp[indx][targ] = true; 
+                    continue;
+                }
+                    
+                if(indx == arr.length) {
+                    dp[indx][targ] = false;
+                    continue;
+                }
+
+                boolean res = false;
+                // yes call
+                if(targ - arr[indx] >= 0) {
+                    res = dp[indx + 1][targ - arr[indx]];
+                }
+                // no call
+                res = res || dp[indx + 1][targ];
+                dp[indx][targ] = res;
+            }
+        }
+        return dp[0][target];
+    }
+
+    public static void targetSumSubset() {
+        int[] arr = {4, 2, 7, 1, 3};
+        int target = 10;
+        targetSumSubset_rec(arr, 0, target);
     }
 
     public static void ques() {
-        goldmine();
+        targetSumSubset();
+        // goldmine();
         // mazePath();
         // climbStair();
         // fib();
