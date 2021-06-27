@@ -721,6 +721,164 @@ public class dp {
 
     }
     
+    // ~~~~~~~~~~~~~~~~~~~~~~Knapsack~~~~~~~~~~~~~~~
+    public static int knapsack01_rec(int[] wts, int[] vals, int indx, int cap) {
+        if(indx == -1) {
+            return 0;
+        }
+
+        int v1 = 0;
+        // yes call
+        if(cap - wts[indx] >= 0) {
+            v1 = knapsack01_rec(wts, vals, indx - 1, cap - wts[indx]) + vals[indx];
+        }
+        // no call
+        int v2 = knapsack01_rec(wts, vals, indx - 1, cap);
+        return Math.max(v1, v2);
+    }
+
+    public static int knapsack01_memo(int[] wts, int[] vals, int indx, int cap, int[][] dp) {
+        if(indx == -1) {
+            return dp[indx + 1][cap] = 0;
+        }
+
+        if(dp[indx + 1][cap] != 0) {
+            return dp[indx + 1][cap];
+        }
+
+        int v1 = 0;
+        // yes call
+        if(cap - wts[indx] >= 0) {
+            v1 = knapsack01_memo(wts, vals, indx - 1, cap - wts[indx], dp) + vals[indx];
+        }
+        // no call
+        int v2 = knapsack01_memo(wts, vals, indx - 1, cap, dp);
+        return dp[indx + 1][cap] = Math.max(v1, v2);
+    }
+
+    public static int knapsack01_tab(int[] wts, int[] vals, int indx, int Cap, int[][] dp) {
+        
+        for(indx = 1; indx <= vals.length; indx++) {
+            for(int cap = 1; cap <= Cap; cap++) {
+                if(cap < wts[indx - 1]) {
+                    dp[indx][cap] = dp[indx - 1][cap];
+                } else {
+                    // yes call
+                    int v1 = dp[indx - 1][cap - wts[indx - 1]] + vals[indx - 1];
+                    // no call
+                    int v2 = dp[indx - 1][cap];
+
+                    dp[indx][cap] = Math.max(v1, v2);
+                }
+            }
+        }
+        return dp[wts.length][Cap];
+    }
+
+    public static int unboundedKnapsack_rec(int[] wts, int[] vals, int indx, int cap) {
+        if(cap == 0 || indx == -1) {
+            return 0;
+        }
+
+        int v1 = 0;
+        // yes call
+        if(cap - wts[indx] >= 0) {
+            v1 = unboundedKnapsack_rec(wts, vals, indx, cap - wts[indx]) + vals[indx];
+        }
+        // no call
+        int v2 = unboundedKnapsack_rec(wts, vals, indx - 1, cap);
+
+        return Math.max(v1, v2);
+    }
+
+    public static int unboundedKnapsack_memo(int[] wts, int[] vals, int indx, int cap, int[][] dp) {
+        if(cap == 0 || indx == -1) {
+            return dp[indx + 1][cap] = 0;
+        }
+
+        if(dp[indx + 1][cap] != 0) return dp[indx + 1][cap];
+
+        int v1 = 0;
+        // yes call
+        if(cap - wts[indx] >= 0) {
+            v1 = unboundedKnapsack_memo(wts, vals, indx, cap - wts[indx], dp) + vals[indx];
+        }
+        // no call
+        int v2 = unboundedKnapsack_memo(wts, vals, indx - 1, cap, dp);
+
+        return dp[indx + 1][cap] = Math.max(v1, v2);
+    }
+
+    public static int unoundedKnapsack_tab(int[] wts, int[] vals, int cap) {
+        int[] dp = new int[cap + 1];
+
+        // outer loop for box
+        // inner loop for cap
+        for(int i = 0; i < wts.length; i++) {
+            for(int c = wts[i]; c <= cap; c++) {
+                // no call
+                int v1 = dp[c];
+                // yes call
+                int v2 = dp[c - wts[i]] + vals[i];
+
+                dp[c] = Math.max(v1, v2);
+            }
+        }
+        return dp[cap];
+    }
+
+    public static class Fpair implements Comparable<Fpair> {
+        int val;
+        int wt;
+        Double frac;
+
+        public Fpair(int val, int wt) {
+            this.val = val;
+            this.wt = wt;
+            this.frac = val * 1.0 / wt;
+        }
+
+        @Override
+        public int compareTo(Fpair other) {
+
+            // this is wrong consition because we are running our pq on a double variable
+            // return this.frac - other.frac;
+            if(this.frac > other.frac) {
+                return 1;
+            } else if(this.frac < other.frac) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
+    }
+
+    public static void printFractionalKnapsack(int[] wts, int[] vals, int cap) {
+        PriorityQueue<Fpair> pq = new PriorityQueue<>(Collections.reverseOrder());
+
+        for(int i = 0; i < wts.length; i++) {
+            pq.add(new Fpair(vals[i], wts[i]));
+        }
+
+        double profit = 0;
+        while(pq.size() > 0 && cap > 0){
+            Fpair rem = pq.remove();
+
+            if(rem.wt <= cap) {
+                profit += rem.val;
+                cap -= rem.wt;
+            } else {
+                profit += rem.frac * cap;
+                cap = 0;
+            }
+        } 
+
+        System.out.println(profit);
+    }
+
+    public static void knapsack() {
+    
+    }
 
 
     public static void ques() {
