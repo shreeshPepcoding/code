@@ -1044,11 +1044,114 @@ public class dp {
         System.out.println(res);
     }
 
+    // ~~~~~~~~~~~~~Count A^i B^j C^k ~~~~~~~~~~~~~~~
+    public static int countAiBjCk(String str) {
+        int a_count = 0;
+        int b_count = 0;
+        int c_count = 0;
 
+        for(int i = 0; i < str.length(); i++) {
+            char ch = str.charAt(i);
+
+            if(ch == 'a') {
+                a_count = 2 * a_count + 1;
+            } else if(ch == 'b') {
+                b_count = 2 * b_count + a_count;
+            } else {
+                c_count = 2 * b_count + c_count;
+            }
+        }
+
+        return c_count;
+    }
+
+    // ~~~~~~~~~~~~~Max Sum Non Adjacent Elements~~~~~~~~~~~~
+    public static int maxSumNonAdjacentEle_rec(int[] arr, int indx, int status) {
+        if(indx == -1) {
+            return 0;
+        }
+        int maxSum = (int)-1e9;
+        if(status == 0) {
+            // this is call of include
+            maxSum = maxSumNonAdjacentEle_rec(arr, indx - 1, 1) + arr[indx];
+        }
+        // exclude call
+        maxSum = Math.max(maxSum, maxSumNonAdjacentEle_rec(arr, indx - 1, 0));
+        return maxSum;
+    }
+
+    public static int maxSumNonAdjacentEle_memo(int[] arr, int indx, int status, int[][] dp) {
+        if(indx == -1) {
+            return dp[status][indx + 1] = 0;
+        }
+
+        if(dp[status][indx + 1] != 0) return dp[status][indx + 1];
+
+        int maxSum = (int)-1e9;
+        if(status == 0) {
+            // this is call of include
+            maxSum = maxSumNonAdjacentEle_memo(arr, indx - 1, 1, dp) + arr[indx];
+        }
+        // exclude call
+        maxSum = Math.max(maxSum, maxSumNonAdjacentEle_memo(arr, indx - 1, 0, dp));
+        return dp[status][indx + 1] =  maxSum;
+    }
+
+    public static int maxSumNonAdjacentEle_tab_optimise(int[] arr) {
+        int include = 0;
+        int exclude = 0;
+
+        for(int i = 0; i < arr.length; i++) {
+            int n_include = exclude + arr[i];
+            int n_exclude = Math.max(include, exclude);
+
+            include = n_include;
+            exclude = n_exclude;
+        }
+
+        return Math.max(include, exclude);
+    }
+    
+    public static void MaxSumNonAdjacentEle() {
+        int[] arr = {5, 10, 10, 100, 5, 6};
+        // int res = maxSumNonAdjacentEle_rec(arr, arr.length - 1, 0);
+        int n = arr.length;
+        int[][] dp = new int[2][n + 1];
+        int res = maxSumNonAdjacentEle_memo(arr, n - 1, 0, dp);
+        System.out.println(res);
+    }
+
+    // ~~~~~~~~~~~~~~~~~Paint House~~~~~~~~~~~~~~
+    public static int paintHouse(int[][] cost) {
+
+        int red = 0;
+        int green = 0;
+        int blue = 0;
+
+        for(int i = 0; i < cost.length; i++) {
+            // red -> index = 0
+            int n_red = Math.min(green, blue) + cost[i][0];
+            // green -> index = 1
+            int n_green = Math.min(blue, red) + cost[i][1];
+            // blue -> index = 2
+            int n_blue = Math.min(green, red) + cost[i][2];
+
+            red = n_red;
+            green = n_green;
+            blue = n_blue;
+        }
+        return Math.min(red, Math.min(blue, green));
+    }
+
+
+    public static void paintHouse() {
+
+    }
 
     public static void ques() {
-        countEncoding();
-        
+        MaxSumNonAdjacentEle();
+
+        // countEncoding();
         // countBinaryString();
         // coinChange();
         // targetSumSubset();
