@@ -1,0 +1,11 @@
+Uganda = 70, England = 105, pak = 110, UK = 120, India = 150, Nigeria = 80, 
+Uganda = 70, England = 110, pak = 110, UK = 120, India = 160, Nigeria = 80, 
+160
+null
+110
+Uganda = 70, England = 110, UK = 120, India = 160, Nigeria = 80, 
+110
+Uganda = 70, UK = 120, India = 160, Nigeria = 80, 
+true
+false
+[Uganda, UK, India, Nigeria]
