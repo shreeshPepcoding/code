@@ -1143,9 +1143,98 @@ public class dp {
         return Math.min(red, Math.min(blue, green));
     }
 
+    public static int paintHouseManyColors(int[][] cost) {
+        int n = cost.length;
+        int k = cost[0].length;
+        int[][] dp = new int[n][k];
+
+        int min1 = (int)1e9; // min value
+        int min2 = (int)1e9; // second min value
+
+        for(int i = 0; i < n; i++) {
+            int min11 = (int)1e9; // new min value
+            int min22 = (int)1e9; // new second min value
+            for(int j = 0; j < k; j++) {
+                if(i == 0) {
+                    dp[i][j] = cost[i][j];
+                } else {
+                    if(dp[i - 1][j] != min1) {
+                        dp[i][j] = cost[i][j] + min1;
+                    } else {
+                        dp[i][j] = cost[i][j] + min2;
+                    }
+                }
+                if(dp[i][j] <= min11) {
+                    min22 = min11;
+                    min11 = dp[i][j];
+                } else if(dp[i][j] < min22) {
+                    min22 = dp[i][j];
+                }
+            }
+            min1 = min11;
+            min2 = min22;
+        }
+        return min1;
+    }
+
+    public static long paintFence(int n, int k) {
+        long same = 0;
+        long distinct = k;
+
+        for(int i = 1; i < n; i++) {
+            long n_same = distinct;
+            long n_distinct = (same + distinct) * (k - 1);
+
+            same = n_same;
+            distinct = n_distinct;
+        }
+
+        return same + distinct;
+    }
 
     public static void paintHouse() {
 
+    }
+
+    // ~~~~~~~~~Tiling Questions~~~~~~~~~~~
+    public static long tiling2X1(int n) {
+        long a = 1;
+        long b = 2;
+        // long is logically correct but for portal we have to use int
+        for(int i = 1; i < n; i++) {
+            long c = a + b;
+            a = b;  
+            b = c;
+        }
+
+        return a;
+    }
+
+    public static long tilingMX1(int n, int m) {
+        long[] dp = new long[n + 1];
+
+        for(int i = 0; i <= n; i++) {
+            if(i < m) {
+                dp[i] = 1;
+            } else {
+                dp[i] = dp[i - 1] + dp[i - m];
+            }
+        }
+        return dp[n];
+    }
+
+    // ~~~~~~~~~~~~~~~~Friends Pairing~~~~~~~~~~~~~~~
+    public static int friendsPair(int n) {
+        int[] dp = new int[n + 1];
+
+        dp[0] = 1;
+        dp[1] = 1;
+
+        for(int i = 2; i <= n; i++) {
+            //         single + pairing 
+            dp[i] = dp[i - 1] + (i - 1) * dp[i - 2];
+        }
+        return dp[n];
     }
 
     public static void ques() {
