@@ -1237,6 +1237,65 @@ public class dp {
         return dp[n];
     }
 
+    // ~~~~~~~~~~~~~~~Partition into K Subset~~~~~~~~
+    public static long partitionKSubset(int n, int k) {
+        long[][] dp = new long[n + 1][k + 1];
+
+        for(int i = 0; i <= n; i++) {
+            for(int j = 0; j <= i && j <= k; j++) {
+                if(j == 0) {
+                    dp[i][j] = 0;
+                } else if(i == j) {
+                    dp[i][j] = 1;
+                } else {
+                    dp[i][j] = dp[i - 1][j - 1] + j * dp[i - 1][j];
+                }
+            }
+        }
+        return dp[n][k];
+    }
+    
+    // ~~~~~~~~~~~~~~~~Stock Buy Sell~~~~~~~~~~~~~~~~
+    public static int stockBuySellOneTransaction(int[] price) {
+        int profit = 0;
+        int minPrice = price[0];
+        for(int day = 1; day < price.length; day++) {
+            profit = Math.max(profit, price[day] - minPrice);
+            minPrice = Math.min(minPrice, price[day]);
+        }
+        return profit;
+    }
+
+    public static int stockBuySellInfiniteTransaction(int[] price) {
+        int profit = 0;
+        int bd = 0; // buying day
+        int sd = 0; // selling day
+        for(int i = 1; i < price.length; i++) {
+            if(price[i - 1] > price[i]) {
+                profit += price[sd] - price[bd];
+                sd = bd = i;
+            } else {
+                sd = i;
+            }
+        }
+        profit += price[sd] - price[bd];
+        return profit;
+    }
+
+    public static int stockBuySellInfiniteTransactionWithFee(int[] price, int fees) {
+        int pwb = -price[0];    // profit with buy
+        int pws = 0;            // profit with sell    
+
+        for(int i = 1; i < price.length; i++) {
+            int npwb = Math.max(pwb, pws - price[i]); // new price with buy
+            int npws = Math.max(pws, pwb + price[i] - fees); // new profit with sell
+
+            pwb = npwb;
+            pws = npws;
+        }
+        return pws;
+    }
+
     public static void ques() {
         MaxSumNonAdjacentEle();
 
