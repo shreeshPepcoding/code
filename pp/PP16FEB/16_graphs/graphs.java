@@ -392,11 +392,267 @@ public class graphs {
         return false;
     }
 
+    public static class BPair {
+        int src;
+        int lvl;
+        public BPair(int src, int lvl) {
+            this.src = src;
+            this.lvl = lvl;
+        }
+    }
+
+    public static boolean bipartiteHelper(ArrayList<Edge>[] graph, int src, int[] vis) {
+        // bfs
+        Queue<BPair> qu = new LinkedList<>();
+        qu.add(new BPair(src, 0));
+        
+        while(qu.size() > 0) {
+            // 1. Get + Remove
+            BPair rem = qu.remove();
+
+            // 2. mark
+            if(vis[rem.src] != -1) {
+                // already marked
+                if(vis[rem.src] != rem.lvl) {
+                    return false;
+                } else {
+                    continue;
+                }
+            }
+            vis[rem.src] = rem.lvl;
+            // 3. work
+            // 4. add unvisited neighbours
+            for(Edge e : graph[rem.src]) {
+                if(vis[e.nbr] == -1) {
+                    qu.add(new BPair(e.nbr, rem.lvl + 1));
+                }
+            }
+        }
+        return true;
+    }
+
+    public static boolean bipartite(ArrayList<Edge>[] graph) {
+        int n = graph.length;
+        int[] vis = new int[n];
+        Arrays.fill(vis, -1);
+
+        for(int v = 0; v < n; v++) {
+            if(vis[v] == -1) {
+                boolean res = bipartiteHelper(graph, v, vis);
+                if(res == false) return false;
+            }
+        }
+        return true;
+    }  
+
+    public static int spreadOfInfection(ArrayList<Edge>[] graph, int src, int t) {
+        Queue<BPair> qu = new LinkedList<>();
+        qu.add(new BPair(src, 1));
+        int count = 0;
+        boolean[] vis = new boolean[graph.length];
+        while(qu.size() > 0) {
+            BPair rem = qu.remove();
+            if(vis[rem.src] == true) {
+                continue;
+            }
+            vis[rem.src] = true;
+            if(rem.lvl == t + 1)
+                break;
+
+            count++;
+            for(Edge e : graph[rem.src]) {
+                if(vis[e.nbr] == false) {
+                    qu.add(new BPair(e.nbr, rem.lvl + 1));
+                }
+            }
+        }
+        return count;
+    }
+
+    // leetcode : https://leetcode.com/problems/rotting-oranges/
+    public static class OPair {
+        int x;
+        int y;
+        int t; 
+        public OPair(int x, int y, int t) {
+            this.x = x;
+            this.y = y;
+            this.t = t;
+        }
+    }
+
+    public int orangesRotting(int[][] grid) {
+        Queue<OPair> qu = new LinkedList<>();
+        // 1. iterate on grid and find out fresh orange count and fill qu as well
+        int count = 0;
+        for(int i = 0; i < grid.length; i++) {
+            for(int j = 0; j < grid[0].length; j++) {
+                if(grid[i][j] == 1) {
+                    count++;
+                } else if(grid[i][j] == 2) {
+                    qu.add(new OPair(i, j, 0));
+                }
+            }
+        }
+        // add count of rotted orange as well
+        count += qu.size();
+
+        // bfs
+        int time = 0;
+        while(!qu.isEmpty()) {
+            OPair rem = qu.remove();
+            int x = rem.x;
+            int y = rem.y;
+            int t = rem.t;
+            if(grid[x][y] == -1) {
+                continue;
+            }
+            grid[x][y] = -1; // marking
+            count--;
+            time = t;
+
+            for(int d = 0; d < 4; d++) {
+                int r = x + xdir[d];
+                int c = y + ydir[d];
+
+                if(r >= 0 && r < grid.length && c >= 0 && c < grid[0].length && 
+                    grid[r][c] == 1) {
+                    qu.add(new OPair(r, c, t + 1));
+                }
+            }
+        }
+
+        return count == 0 ? time : -1;
+    }
+
+    public static void fireInTheCity(int[][] grid) {
+        Queue<OPair> qu = new LinkedList<>();
+        for(int i = 0; i < grid.length; i++) {
+            for(int j = 0; j < grid[0].length; j++) {
+                if(grid[i][j] == 2) {
+                    qu.add(new OPair(i, j, 0));
+                }
+            }
+        }
+        // bfs
+        while(!qu.isEmpty()) {
+            OPair rem = qu.remove();
+            int x = rem.x;
+            int y = rem.y;
+            int t = rem.t;
+            if(grid[x][y] == -1) {
+                continue;
+            }
+            grid[x][y] = -1; // marking
+            System.out.println(x + ", " + y  + " burns at time t = " + t);
+            for(int d = 0; d < 4; d++) {
+                int r = x + xdir[d];
+                int c = y + ydir[d];
+
+                if(r >= 0 && r < grid.length && c >= 0 && c < grid[0].length && 
+                    grid[r][c] == 1) {
+                    qu.add(new OPair(r, c, t + 1));
+                }
+            }
+        }        
+    }
+
+    public static class DHelper implements Comparable<DHelper> {
+        int src;
+        String psf;
+        int wsf;
+ 
+        public DHelper(int src, String psf, int wsf) {
+            this.src = src;
+            this.psf = psf;
+            this.wsf = wsf;
+        }
+
+        public int compareTo(DHelper o) {
+            return this.wsf - o.wsf;
+        } 
+    }
+
+    public static void dijkstras(ArrayList<Edge>[] graph, int src) {
+        PriorityQueue<DHelper> pq = new PriorityQueue<>();
+        pq.add(new DHelper(src, "" + src, 0));
+        boolean[] vis = new boolean[graph.length];
+
+        while(pq.size() > 0) {
+            DHelper rem = pq.remove();
+            if(vis[rem.src] == true) {
+                continue;
+            }
+            vis[rem.src] = true;
+            System.out.println(rem.src + " via " + rem.psf + " @ " + rem.wsf);
+            for(Edge e : graph[rem.src]) {
+                if(vis[e.nbr] == false) {
+                    pq.add(new DHelper(e.nbr, rem.psf + e.nbr, rem.wsf + e.wt));
+                }
+            }
+        }
+    }
+
+    public static class PHelper implements Comparable<PHelper> {
+        int src;
+        int parent;
+        int wt;
+
+        public PHelper(int src, int parent, int wt) {
+            this.src = src;
+            this.parent = parent;
+            this.wt = wt;
+        }
+
+        public int compareTo(PHelper o) {
+            return this.wt - o.wt;
+        }
+    }
+
+    public static void Prims(ArrayList<Edge>[] graph) {
+        PriorityQueue<PHelper> pq = new PriorityQueue<>();
+        pq.add(new PHelper(0, -1, 0));
+        boolean[] vis = new boolean[graph.length];
+        while(!pq.isEmpty()) {
+            PHelper rem = pq.remove();
+            if(vis[rem.src] == true) {
+                continue;
+            }
+            vis[rem.src] = true;
+            if(rem.parent != -1) {
+                System.out.println("[" + rem.src + "-" + rem.parent + "@" + rem.wt + "]");
+            }
+            for(Edge e : graph[rem.src]) {
+                if(vis[e.nbr] == false) {
+                    pq.add(new PHelper(e.nbr, rem.src, e.wt));
+                }
+            }
+        }
+    }
+
+
     public static void fun() {
         int n = 7;
         ArrayList<Edge>[] graph = creation();
-        display(graph);
-        bfs(graph, 2);
+        dijkstras(graph, 0); 
+        
+
+        // int[][] grid = {
+        //     {2,	1,	1,	1,	0,	1},
+        //     {1,	1,	1,	0,	0,	1},
+        //     {1,	0,	1,	1,	1,	1},
+        //     {1,	0,	1,	1,	1,	1},
+        //     {1,	1,	1,	1,	1,	0},
+        //     {1,	1,	1,	2,	1,	0},
+        //     {2,	1,	1,	1,	1,	1},
+        //     {1,	1,	1,	0,	0,	0},
+        //     {1,	1,	1,	1,	0,	2}
+        // };
+        // fireInTheCity(grid);
+        
+        
+        // display(graph);
+        // bfs(graph, 2);
 
         // boolean[] vis = new boolean[n];
         // hamiltonian(graph, 0, 0, vis, "");
