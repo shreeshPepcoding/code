@@ -630,6 +630,30 @@ public class graphs {
         }
     }
 
+    public static void topologicalSortHelper(ArrayList<Edge>[] graph, int src, boolean[] vis, Stack<Integer> st) {
+        vis[src] = true;
+        for(Edge e : graph[src]) {
+            if(vis[e.nbr] == false) {
+                topologicalSortHelper(graph, e.nbr, vis, st);
+            }
+        }
+        st.push(src);
+    }
+
+    public static void topologicalSort(ArrayList<Edge>[] graph) {
+        boolean[] vis = new boolean[graph.length];
+        Stack<Integer> st = new Stack<>();
+        for(int v = 0; v < graph.length; v++) {
+            if(vis[v] == false) {
+                topologicalSortHelper(graph, v, vis, st);
+            }
+        }
+
+        while(st.size() > 0) {
+            System.out.println(st.pop());
+        }
+    }
+
 
     public static void fun() {
         int n = 7;
