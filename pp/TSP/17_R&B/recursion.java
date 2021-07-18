@@ -1,3 +1,4 @@
+import java.util.*;
 
 public class recursion {
 
@@ -378,7 +379,102 @@ public class recursion {
         }
     }
 
+    // cs-> current selection, ts-> total selection, fmap->freq. map, asf->answer so far
+    public static void generateWords(int cs, int ts, HashMap<Character, Integer> fmap, String asf) {
+        if(cs > ts) {
+            System.out.println(asf);
+            return;
+        }
 
+        for(char ch : fmap.keySet()) {
+            if(fmap.get(ch) > 0) {
+                int oldFreq = fmap.get(ch);
+                fmap.put(ch, oldFreq - 1);
+                generateWords(cs + 1, ts, fmap, asf + ch);
+                fmap.put(ch, oldFreq);
+            }
+        }        
+    }
+
+    // cc-> current character, li-> last index
+    public static void generateWords(int cc, String str, Character[] spots, HashMap<Character, Integer> li) {
+        if(cc == str.length()) {
+            for(char c : spots) {
+                System.out.print(c);
+            }
+            System.out.println();
+            return;
+        }
+
+        char ch = str.charAt(cc);
+        int lsi = li.get(ch); // last spot index
+
+        for(int box = lsi + 1; box < spots.length; box++) {
+            if(spots[box] == null) {
+                spots[box] = ch;
+                li.put(ch, box);
+                generateWords(cc + 1, str, spots, li);
+                spots[box] = null;
+                li.put(ch, lsi);
+            }
+        }
+    }
+
+    // i->index, ustr -> unique string, ssf->selected so far, ts->total selection
+    public static void combination(int i,String ustr,int ssf, int ts, String asf ){
+        if(i == ustr.length()) {
+            if(ssf == ts) {
+                System.out.println(asf);
+            }
+            return;
+        }
+
+        char ch = ustr.charAt(i);
+        // yes call
+        combination(i + 1, ustr, ssf + 1, ts, asf + ch);
+        // no call
+        combination(i + 1, ustr, ssf, ts, asf);
+    }
+
+    // lc-> last character
+    public static void combination(String ustr, int ssf, int ts, String asf, int lc) {
+        if(ssf == ts) {
+            System.out.println(asf);
+            return;
+        }
+        for(int i = lc + 1; i < ustr.length(); i++) {
+            char ch = ustr.charAt(i);
+            combination(ustr, ssf + 1, ts, asf + ch, i);
+        }
+    }
+
+    public static void permutation(String ustr, int ssf, int i, Character[] slots) {
+        if(i == ustr.length()) {
+            // print
+            if(ssf == slots.length) {
+                for(char c : slots) {
+                    System.out.print(c);
+                }
+                System.out.println();
+            }
+            return;
+        }
+        
+        char ch = ustr.charAt(i);
+
+        // yes call
+        for(int s = 0; s < slots.length; s++) {
+            if(slots[s] == null) {
+                // place
+                slots[s] = ch;
+                permutation(ustr, ssf + 1, i + 1, slots);
+                // unplace
+                slots[s] = null;
+            }
+        }
+        // no call
+        permutation(ustr, ssf, i + 1, slots);
+    }
 
     public static void fun() {
 
