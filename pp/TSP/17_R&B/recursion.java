@@ -1117,7 +1117,7 @@ public class recursion {
             ans.remove(ans.size() - 1);
         }
 	}
-
+    
     // magnets
     public static int signCountInRow(char[][] ans, int row, char sign) {
         int count = 0;
@@ -1177,8 +1177,8 @@ public class recursion {
                 if(ans[r][c] == '+') pcount++;
                 else if(ans[r][c] == '-') ncount++;
             }
-            if(left[r] != pcount) return false;
-            if(right[r] != ncount) return false;
+            if(left[r] != -1 && left[r] != pcount) return false;
+            if(right[r] != -1 && right[r] != ncount) return false;
         }
         // check for col
         for(int c = 0; c < ans[0].length; c++) {
@@ -1188,8 +1188,8 @@ public class recursion {
                 if(ans[r][c] == '+') pcount++;
                 else if(ans[r][c] == '-') ncount++;
             }
-            if(top[c] != pcount) return false;
-            if(bottom[c] != ncount) return false;
+            if(top[c] != -1 && top[c] != pcount) return false;
+            if(bottom[c] != -1 && bottom[c] != ncount) return false;
         }
         return true;
     }
@@ -1270,15 +1270,6 @@ public class recursion {
 		return false;
 	}
 
-+ - + - X - 
-- + - + X + 
-X - + - + - 
-X + - + X + 
-X X X X X - 
-1 -1 -1 2 1 -1
-2 3 -1 -1 -1
--1 -1 -1 1 -1
-2 -1 -1 2 -1 3
     public static void fun() {
 
     }
