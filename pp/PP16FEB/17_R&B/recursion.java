@@ -457,6 +457,126 @@ public class recursion {
         permutation(ustr, indx + 1, ssf, slots);
     }
 
+    // Words - K Length Words - 2, cs-> current slot, ts-> total slot
+    public static void permutation(String ustr, int cs, int ts, String asf, HashSet<Character> vis) {
+        if(cs == ts) {
+            System.out.println(asf);
+            return;
+        }
+        for(int i = 0; i < ustr.length(); i++) {
+            char ch = ustr.charAt(i);
+            if(!vis.contains(ch)) {
+                // add in visited
+                vis.add(ch);
+                permutation(ustr, cs + 1, ts, asf + ch, vis);
+                // remove from visited
+                vis.remove(ch);
+            }
+        }
+    }
+
+    // Words - K Selection - 3
+    public static void words_K_Selection3(String ustr, int indx, HashMap<Character, Integer> fmap, String asf, int k) {
+        if(asf.length() == k) {
+            System.out.println(asf);
+            return;
+        }
+        if(indx == ustr.length()) return;
+        
+        char ch = ustr.charAt(indx);
+        int freq = fmap.get(ch);
+        // yes call
+        int len = asf.length();
+        for(int i = freq; i > 0; i--) {
+            if(len + i <= k) {
+                String str = "";
+                for(int j = 0; j < i; j++) {
+                    str += ch;
+                }
+                words_K_Selection3(ustr, indx + 1, fmap, asf + str, k);
+            }
+        }
+        // no call
+        words_K_Selection3(ustr, indx + 1, fmap, asf, k);
+    }
+
+    // Words - K Selection - 4
+    public static void words_K_Selection4(String ustr, int cs, int ts, String asf, int li,
+        HashMap<Character, Integer> fmap) {
+        if(cs == ts) {
+            System.out.println(asf);
+            return;
+        }
+        for(int i = li; i < ustr.length(); i++) {
+            char ch = ustr.charAt(i);
+            int freq = fmap.get(ch);
+            if(freq > 0) {
+                // freq reduce
+                fmap.put(ch, freq - 1);
+                words_K_Selection4(ustr, cs + 1, ts, asf + ch, i, fmap);
+                // freq regain
+                fmap.put(ch, freq);
+            }
+        } 
+    }
+
+    // Words - K Length Words - 3
+    public static void words_K_Length_Words3(String str, int indx, Character[] slots, 
+        HashMap<Character, Integer> lastIndx, int ssf) {
+        if(indx == str.length()) {
+            if(ssf == slots.length) {
+                for(char c : slots) {
+                    System.out.print(c);
+                }
+                System.out.println();
+            }
+            return;
+        }
+        
+        char ch = str.charAt(indx);
+        int li = lastIndx.get(ch);
+        
+        // yes call
+        for(int s = li + 1; s < slots.length; s++) {
+            if(slots[s] == null) {
+                // place in slots
+                slots[s] = ch;
+                // update last index
+                lastIndx.put(ch, s);
+                words_K_Length_Words3(str, indx + 1, slots, lastIndx, ssf + 1);
+                // reset l;;ast index 
+                lastIndx.put(ch, li);
+                // unplace in slot
+                slots[s] = null;
+            }
+        }
+        // no call
+        if(li == -1) {
+            words_K_Length_Words3(str, indx + 1, slots, lastIndx, ssf);
+        }
+    }
+
+    // Words - K Length Words - 4
+    public static void words_K_Length_Words4(String ustr, int cs, int ts, String asf, HashMap<Character, Integer> fmap) {
+        if(cs == ts) {
+            System.out.println(asf);
+            return;
+        }
+        
+        for(int i = 0; i < ustr.length(); i++) {
+            char ch = ustr.charAt(i);
+            int freq = fmap.get(ch);
+            if(freq > 0) {
+                // reduce freq
+                fmap.put(ch, freq - 1);
+                words_K_Length_Words4(ustr, cs + 1, ts, asf + ch, fmap);
+                // gain freq
+                fmap.put(ch, freq);
+            }
+        }
+    }
+
+
     public static void fun() {
 
     }
