@@ -576,6 +576,126 @@ public class recursion {
         }
     }
 
+    // Coin Change - Combinations - 1
+    // amtsf -> amount so fat, tamt -> total amount
+    public static void coinChange1(int indx, int[] coins, int amtsf, int tamt, String asf){
+        if(indx == coins.length) {
+            if(amtsf == tamt) {
+                System.out.println(asf + ".");
+            }
+            return;
+        }
+        
+        int coin = coins[indx];
+
+        // yes call
+        if(amtsf + coin <= tamt) {
+            coinChange1(indx + 1, coins, amtsf + coin, tamt, asf + coin + "-");
+        }
+        // no call
+        coinChange1(indx + 1, coins, amtsf, tamt, asf);
+    }
+
+    // Coin Change - Combinations - 2
+    public static void coinChange2(int indx, int[] coins, int amtsf, int tamt, String asf) {
+        if(amtsf == tamt) {
+            System.out.println(asf + ".");
+            return;
+        }
+        if(indx == coins.length) {
+            return;
+        }
+        
+        int coin = coins[indx];
+        // yes call
+        if(amtsf + coin <= tamt) {
+            coinChange2(indx, coins, amtsf + coin, tamt, asf + coin + "-");
+        }
+        // no call
+        coinChange2(indx + 1, coins, amtsf, tamt, asf);
+    }
+
+    // Coin Change - Permutations - 1
+    public static void coinChange(int[] coins, int amtsf, int tamt, String asf, boolean[] used){
+        if(amtsf == tamt) {
+            System.out.println(asf + ".");
+            return;
+        }
+
+        for(int i = 0; i < coins.length; i++) {
+            int coin = coins[i];
+            if(used[i] == false && coin + amtsf <= tamt) {
+                used[i] = true;
+                coinChange(coins, amtsf + coin, tamt, asf + coin + "-", used);
+                used[i] = false;
+            }
+        }
+    }
+
+    // Coin Change - Permutations - 2
+    public static void coinChange(int[] coins, int amtsf, int tamt, String asf) {
+        if(amtsf == tamt) {
+            System.out.println(asf + ".");
+            return;
+        }
+
+        for(int coin : coins) {
+            if(coin + amtsf <= tamt) {
+                coinChange(coins, amtsf + coin, tamt, asf + coin + "-");
+            }
+        }
+    }
+
+    // Abbreviation Using Backtracking
+    public static void solution(String str, String asf,int count, int indx){
+        if(indx == str.length()) {
+            String res = asf + (count != 0 ? count : "");
+            System.out.println(res);
+            return;
+        }
+
+        char ch = str.charAt(indx);
+        // yes call
+        solution(str, asf + (count != 0 ? count : "") + ch , 0, indx + 1);
+        // no call
+        solution(str, asf, count + 1, indx + 1);
+    }
+
+    // max score
+    public static int solution(String[] words, int[] farr, int[] score, int indx) {
+        if(indx == words.length) return 0;
+        String word = words[indx];
+        // yes call
+        // reduce freq and make sure that remaining freq greater than equal to 0 and also count score
+        int myscore = 0;
+        boolean flag = true;
+        for(int i = 0; i < word.length(); i++) {
+            char ch = word.charAt(i);
+            int charIndx = (int)(ch - 'a');
+            farr[charIndx]--;
+            if(farr[charIndx] < 0) {
+                flag = false; // we can't make yes call for current word
+            }
+            myscore += score[charIndx];
+        }
+
+        int yes_score = 0;
+        if(flag == true) {
+            yes_score = myscore + solution(words, farr, score, indx + 1);
+        }
+
+        // increase freq
+        for(int i = 0; i < word.length(); i++) {
+            char ch = word.charAt(i);
+            int charIndx = (int)(ch - 'a');
+            farr[charIndx]++;
+        }
+
+        // no call
+        int no_score = solution(words, farr, score, indx + 1);
+
+        return Math.max(yes_score, no_score);
+	}
 
     public static void fun() {
 
