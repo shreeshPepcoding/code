@@ -3,8 +3,7 @@ import java.util.*;
 public class recursion {
 
     // ===================================================================================
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~PERMUTATION AND COMBINATIONS
-    // SET~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~PERMUTATION AND COMBINATIONS SET~~~~~~~~~~~~~~~~~~~~~~~~~~
     // ===================================================================================
 
     // ci-> current items. ti-> total items
@@ -679,8 +678,7 @@ public class recursion {
     }
 
     // ===================================================================================
-    // ~~~~~~~~~~~~~~~~~~~~~~Questions On Recursion and
-    // Backtracking~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~Questions On Recursion and Backtracking~~~~~~~~~~~~~~~~~~~~~~
     // ===================================================================================
     // print abbreviations
     public static void solution(String str, String asf, int count, int indx) {
@@ -1442,6 +1440,113 @@ public class recursion {
             ans.get(i).remove(ans.get(i).size() - 1);
         }
     }
+
+    // Tug Of War, soset1 (sum1) -> sum of set 1, soset 2 (sum2)-> sum of set 2
+    static int mindiff = Integer.MAX_VALUE;
+	static String ans = "";
+	public static void solve(int[] arr, int indx, ArrayList<Integer> s1, ArrayList<Integer> s2, int sum1, int sum2) {
+        if(indx == arr.length) {
+            int diff = Math.abs(sum1 - sum2);
+            if(diff < mindiff) {
+                mindiff = diff;
+                ans = "" + s1 + " " + s2;
+            }
+            return;
+        }
+        int val = arr[indx];
+        // val in set1
+        if(s1.size() < (arr.length + 1) / 2) {
+            s1.add(val);
+            solve(arr, indx + 1, s1, s2, sum1 + val, sum2);
+            s1.remove(s1.size() - 1);
+        }
+        // val in set2
+        if(s1.size() > 0 && s2.size() < (arr.length + 1) / 2) {
+            s2.add(val);
+            solve(arr, indx + 1, s1, s2, sum1, sum2 + val);
+            s2.remove(s2.size() - 1);
+        }
+	}
+
+    // pattern matching
+    public static void solution(String str, String pattern, HashMap<Character,String> map, String asf, int indx){
+		if(indx == pattern.length()) {
+            if(str.length() == 0)
+                System.out.println(asf + ".");
+            return;
+        }
+
+        char ch = pattern.charAt(indx);
+        String mapping = map.get(ch);
+
+        for(int i = 0; i < str.length(); i++) {
+            String substr = str.substring(0, i + 1);
+            String roq = str.substring(i + 1);
+
+            // mapping
+            map.put(ch, substr);
+            if(mapping.length() > 0) {
+                if(substr.equals(mapping) == true) {
+                    solution(roq, pattern, map, asf, indx + 1);
+                }
+            } else {
+                solution(roq, pattern, map, asf + ch + " -> " + substr + ", ", indx + 1);
+            }
+            // reset mapping
+            map.put(ch, mapping);
+        }
+	}
+
+    // word break
+    public static void wordBreak(String str, String ans, HashSet<String> set){
+		if(str.length() == 0) {
+            System.out.println(ans);
+            return;
+        }
+
+        for(int i = 0; i < str.length(); i++) {
+            String word = str.substring(0, i + 1);
+            String roq = str.substring(i + 1);
+            if(set.contains(word)) {
+                wordBreak(roq, ans + word + " ", set);
+            }
+        }
+	}
+
+    // remove invalid parenthesis
+    public static void solution(String str, int minRemoval, HashSet<String> ans) {
+		if(minRemoval == 0) {
+            if(getMin(str) == 0 && ans.contains(str) == false) {
+                ans.add(str);
+                System.out.println(str);
+            }
+            return;
+        }
+
+        for(int i = 0; i < str.length(); i++) {
+            String left = str.substring(0, i);
+            String right = str.substring(i + 1);
+            solution(left + right, minRemoval - 1, ans);
+        }
+	}
+
+	public static int getMin(String str){
+		Stack<Character> st = new Stack<>();
+
+        for(int i = 0; i < str.length(); i++) {
+            char ch = str.charAt(i);
+            if(ch == '(') {
+                st.push(ch);
+            } else {
+                if(st.size() > 0 && st.peek() == '(') {
+                    st.pop();
+                } else {
+                    st.push(ch);
+                }
+            }
+        }
+		return st.size();
+	}
 
     public static void fun() {
 
