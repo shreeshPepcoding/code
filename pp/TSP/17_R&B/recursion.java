@@ -3,7 +3,8 @@ import java.util.*;
 public class recursion {
 
     // ===================================================================================
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~PERMUTATION AND COMBINATIONS SET~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~PERMUTATION AND COMBINATIONS
+    // SET~~~~~~~~~~~~~~~~~~~~~~~~~~
     // ===================================================================================
 
     // ci-> current items. ti-> total items
@@ -678,7 +679,8 @@ public class recursion {
     }
 
     // ===================================================================================
-    // ~~~~~~~~~~~~~~~~~~~~~~Questions On Recursion and Backtracking~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~Questions On Recursion and
+    // Backtracking~~~~~~~~~~~~~~~~~~~~~~
     // ===================================================================================
     // print abbreviations
     public static void solution(String str, String asf, int count, int indx) {
@@ -835,37 +837,40 @@ public class recursion {
 
     public static boolean isSafeToPlaceNum(int[][] board, int row, int col, int num) {
         // check in row
-        for(int c = 0; c < board[0].length; c++) {
-            if(board[row][c] == num) return false;
+        for (int c = 0; c < board[0].length; c++) {
+            if (board[row][c] == num)
+                return false;
         }
         // check in column
-        for(int r = 0; r < board.length; r++) {
-            if(board[r][col] == num) return false;
+        for (int r = 0; r < board.length; r++) {
+            if (board[r][col] == num)
+                return false;
         }
         // check in submatrix
         // rr and cc is starting point of submatrix
         int rr = row - (row % 3);
         int cc = col - (col % 3);
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
-                if(board[i + rr][j + cc] == num) return false;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (board[i + rr][j + cc] == num)
+                    return false;
             }
         }
         return true;
     }
 
     public static void solveSudoku(int[][] board, int i, int j) {
-        if(i == board.length) {
+        if (i == board.length) {
             display(board);
             return;
         }
 
-        if(board[i][j] == 0) {
-            for(int num = 1; num < 10; num++) {
-                if(isSafeToPlaceNum(board, i, j, num)) {
+        if (board[i][j] == 0) {
+            for (int num = 1; num < 10; num++) {
+                if (isSafeToPlaceNum(board, i, j, num)) {
                     // place
                     board[i][j] = num;
-                    if(j == board[0].length - 1) {
+                    if (j == board[0].length - 1) {
                         solveSudoku(board, i + 1, 0);
                     } else {
                         solveSudoku(board, i, j + 1);
@@ -875,7 +880,7 @@ public class recursion {
                 }
             }
         } else {
-            if(j == board[0].length - 1) {
+            if (j == board[0].length - 1) {
                 solveSudoku(board, i + 1, 0);
             } else {
                 solveSudoku(board, i, j + 1);
@@ -885,7 +890,7 @@ public class recursion {
 
     // sudoku from 1D using box number
     public static void solveSudoku1D(int[][] board, ArrayList<Integer> list, int indx) {
-        if(indx == list.size()) {
+        if (indx == list.size()) {
             display(board);
             return;
         }
@@ -894,8 +899,8 @@ public class recursion {
         int r = bno / board.length;
         int c = bno % board.length;
 
-        for(int num = 1; num < 10; num++) {
-            if(isSafeToPlaceNum(board, r, c, num)) {
+        for (int num = 1; num < 10; num++) {
+            if (isSafeToPlaceNum(board, r, c, num)) {
                 board[r][c] = num;
                 solveSudoku1D(board, list, indx + 1);
                 board[r][c] = 0;
@@ -904,11 +909,11 @@ public class recursion {
     }
 
     public static void solveSudoku1(int[][] board) {
-        ArrayList<Integer> list = new  ArrayList<>();
+        ArrayList<Integer> list = new ArrayList<>();
 
-        for(int i = 0; i < board.length; i++) {
-            for(int j = 0; j < board.length; j++) {
-                if(board[i][j] == 0) {
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                if (board[i][j] == 0) {
                     int bno = board.length * i + j; // bno -> box number
                     list.add(bno);
                 }
@@ -922,7 +927,7 @@ public class recursion {
     // s1 -> SEND, s2 -> MORE, s3-> MONEY, unique -> SENDMORY
     public static int IntegerFromMap(String str, HashMap<Character, Integer> map) {
         int num = 0;
-        for(int i = 0; i < str.length(); i++) {
+        for (int i = 0; i < str.length(); i++) {
             char ch = str.charAt(i);
             int n = map.get(ch);
 
@@ -931,18 +936,18 @@ public class recursion {
         return num;
     }
 
-    public static void solution(String unique, int idx, HashMap<Character, Integer> charIntMap,
-        boolean[] usedNumbers, String s1, String s2, String s3) {
-        if(idx == unique.length()) {
+    public static void solution(String unique, int idx, HashMap<Character, Integer> charIntMap, boolean[] usedNumbers,
+            String s1, String s2, String s3) {
+        if (idx == unique.length()) {
             int n1 = IntegerFromMap(s1, charIntMap);
             int n2 = IntegerFromMap(s2, charIntMap);
             int n3 = IntegerFromMap(s3, charIntMap);
 
-            if(n1 + n2 == n3) {
+            if (n1 + n2 == n3) {
                 // print mapping in sorted order
-                for(int i = 0; i < 26; i++) {
-                    char ch = (char)(i + 'a');
-                    if(charIntMap.containsKey(ch) == true) {
+                for (int i = 0; i < 26; i++) {
+                    char ch = (char) (i + 'a');
+                    if (charIntMap.containsKey(ch) == true) {
                         System.out.print(ch + "-" + charIntMap.get(ch) + " ");
                     }
                 }
@@ -950,10 +955,10 @@ public class recursion {
             }
             return;
         }
-        char ch = unique.charAt(idx);   
+        char ch = unique.charAt(idx);
 
-        for(int i = 0; i < 10; i++) {
-            if(usedNumbers[i] == false) {
+        for (int i = 0; i < 10; i++) {
+            if (usedNumbers[i] == false) {
                 usedNumbers[i] = true;
                 charIntMap.put(ch, i);
                 solution(unique, idx + 1, charIntMap, usedNumbers, s1, s2, s3);
@@ -966,19 +971,19 @@ public class recursion {
     // crossword
     public static boolean canPlaceHorizontal(char[][] grid, int r, int c, String word) {
         // left check
-        if(c > 0 && grid[r][c - 1] != '+') {
+        if (c > 0 && grid[r][c - 1] != '+') {
             return false;
-        } 
+        }
         // right check
-        if(c - 1 + word.length() >= grid[0].length) { 
+        if (c - 1 + word.length() >= grid[0].length) {
             return false;
         }
 
-        if((c - 1 + word.length() < grid[0].length - 1) && (grid[r][c + word.length()] != '+')) {
+        if ((c - 1 + word.length() < grid[0].length - 1) && (grid[r][c + word.length()] != '+')) {
             return false;
         }
-        for(int j = 0; j < word.length(); j++) {
-            if(grid[r][j + c] != '-' && grid[r][j + c] != word.charAt(j)) {
+        for (int j = 0; j < word.length(); j++) {
+            if (grid[r][j + c] != '-' && grid[r][j + c] != word.charAt(j)) {
                 return false;
             }
         }
@@ -987,19 +992,19 @@ public class recursion {
 
     public static boolean canPlaceVertical(char[][] grid, int r, int c, String word) {
         // top check
-        if(r > 0 && grid[r - 1][c] != '+') {
+        if (r > 0 && grid[r - 1][c] != '+') {
             return false;
-        } 
+        }
         // bottom check
-        if(r - 1 + word.length() >= grid.length) { 
+        if (r - 1 + word.length() >= grid.length) {
             return false;
         }
 
-        if((r - 1 + word.length() < grid.length - 1) && (grid[r + word.length()][c] != '+')) {
+        if ((r - 1 + word.length() < grid.length - 1) && (grid[r + word.length()][c] != '+')) {
             return false;
         }
-        for(int i = 0; i < word.length(); i++) {
-            if(grid[i + r][c] != '-' && grid[i + r][c] != word.charAt(i)) {
+        for (int i = 0; i < word.length(); i++) {
+            if (grid[i + r][c] != '-' && grid[i + r][c] != word.charAt(i)) {
                 return false;
             }
         }
@@ -1008,8 +1013,8 @@ public class recursion {
 
     public static boolean[] placeHorizontal(char[][] grid, int r, int c, String word) {
         boolean[] status = new boolean[word.length()];
-        for(int j = 0; j < word.length(); j++) {
-            if(grid[r][c + j] == '-') {
+        for (int j = 0; j < word.length(); j++) {
+            if (grid[r][c + j] == '-') {
                 grid[r][c + j] = word.charAt(j);
                 status[j] = true;
             }
@@ -1019,8 +1024,8 @@ public class recursion {
 
     public static boolean[] placeVertical(char[][] grid, int r, int c, String word) {
         boolean[] status = new boolean[word.length()];
-        for(int i = 0; i < word.length(); i++) {
-            if(grid[r + i][c] == '-') {
+        for (int i = 0; i < word.length(); i++) {
+            if (grid[r + i][c] == '-') {
                 grid[r + i][c] = word.charAt(i);
                 status[i] = true;
             }
@@ -1029,69 +1034,70 @@ public class recursion {
     }
 
     public static void unplaceHorizontal(char[][] grid, int r, int c, boolean[] status) {
-        for(int i = 0; i < status.length; i++) {
-            if(status[i] == true) {
+        for (int i = 0; i < status.length; i++) {
+            if (status[i] == true) {
                 grid[r][c + i] = '-';
             }
         }
     }
 
     public static void unplaceVertical(char[][] grid, int r, int c, boolean[] status) {
-        for(int i = 0; i < status.length; i++) {
-            if(status[i] == true) {
+        for (int i = 0; i < status.length; i++) {
+            if (status[i] == true) {
                 grid[r + i][c] = '-';
             }
         }
     }
 
     public static void print(char[][] arr) {
-		for(int i = 0 ; i < arr.length; i++) {
-			for(int j = 0 ; j < arr.length; j++) { 
-				System.out.print(arr[i][j]);
-			}
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = 0; j < arr.length; j++) {
+                System.out.print(arr[i][j]);
+            }
             System.out.println();
-		}
-	}
+        }
+    }
 
-    public static void solution(char[][] grid, String[] words, int vidx){
-        if(vidx == words.length) {
+    public static void solution(char[][] grid, String[] words, int vidx) {
+        if (vidx == words.length) {
             // print
             print(grid);
             return;
         }
 
-		String word = words[vidx];
-        for(int i = 0; i < grid.length; i++) {
-            for(int j = 0; j < grid[0].length; j++) {
-                if(grid[i][j] == '-' || grid[i][j] == word.charAt(0)) {
+        String word = words[vidx];
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == '-' || grid[i][j] == word.charAt(0)) {
                     // horizontal try
-                    if(canPlaceHorizontal(grid, i, j, word)) {
-                        // place 
+                    if (canPlaceHorizontal(grid, i, j, word)) {
+                        // place
                         boolean[] status = placeHorizontal(grid, i, j, word);
                         solution(grid, words, vidx + 1);
                         // unplace
                         unplaceHorizontal(grid, i, j, status);
                     }
                     // vertical try
-                    if(canPlaceVertical(grid, i, j, word)) {
+                    if (canPlaceVertical(grid, i, j, word)) {
                         // place
                         boolean[] status = placeVertical(grid, i, j, word);
                         solution(grid, words, vidx + 1);
                         // unplace
                         unplaceVertical(grid, i, j, status);
                     }
-                }   
+                }
             }
         }
-	}
+    }
 
     // k-partition
     public static int count = 1;
+
     public static void solution(int i, int n, int k, int rssf, ArrayList<ArrayList<Integer>> ans) {
-        if(i > n) {
-            if(ans.size() == k) {
+        if (i > n) {
+            if (ans.size() == k) {
                 System.out.print(count + ". ");
-                for(int j = 0; j < ans.size(); j++) {
+                for (int j = 0; j < ans.size(); j++) {
                     ArrayList<Integer> list = ans.get(j);
                     System.out.print(list + " ");
                 }
@@ -1101,7 +1107,7 @@ public class recursion {
             return;
         }
         // n - 1, k work, add with previous options
-        for(int j = 0; j < ans.size(); j++) {
+        for (int j = 0; j < ans.size(); j++) {
             ArrayList<Integer> list = ans.get(j);
             list.add(i);
             solution(i + 1, n, k, rssf, ans);
@@ -1109,20 +1115,20 @@ public class recursion {
         }
 
         // n - 1, k - 1, start from myself if size + 1 <= k
-        if(ans.size() + 1 <= k) {
+        if (ans.size() + 1 <= k) {
             ArrayList<Integer> mres = new ArrayList<>();
             mres.add(i);
             ans.add(mres);
             solution(i + 1, n, k, rssf, ans);
             ans.remove(ans.size() - 1);
         }
-	}
-    
+    }
+
     // magnets
     public static int signCountInRow(char[][] ans, int row, char sign) {
         int count = 0;
-        for(int c = 0; c < ans[0].length; c++) {
-            if(ans[row][c] == sign) {
+        for (int c = 0; c < ans[0].length; c++) {
+            if (ans[row][c] == sign) {
                 count++;
             }
         }
@@ -1131,23 +1137,23 @@ public class recursion {
 
     public static int signCountInCol(char[][] ans, int col, char sign) {
         int count = 0;
-        for(int r = 0; r < ans.length; r++) {
-            if(ans[r][col] == sign) {
+        for (int r = 0; r < ans.length; r++) {
+            if (ans[r][col] == sign) {
                 count++;
             }
         }
         return count;
     }
 
-    public static boolean isValid(char[][] ans, int[] top, int[] left, int[] right, 
-        int[] bottom, int r, int c, char sign) {
+    public static boolean isValid(char[][] ans, int[] top, int[] left, int[] right, int[] bottom, int r, int c,
+            char sign) {
         // make a check for valid polarity
-        int[] xdir = {-1,0,0};
-		int[] ydir = {0,1,-1};
-        for(int d = 0; d < 3; d++) {
+        int[] xdir = { -1, 0, 0 };
+        int[] ydir = { 0, 1, -1 };
+        for (int d = 0; d < 3; d++) {
             int rr = r + xdir[d];
             int cc = c + ydir[d];
-            if(rr >= 0 && rr < ans.length && cc >= 0 && cc < ans[0].length && ans[rr][cc] == sign) {
+            if (rr >= 0 && rr < ans.length && cc >= 0 && cc < ans[0].length && ans[rr][cc] == sign) {
                 return false;
             }
         }
@@ -1156,66 +1162,73 @@ public class recursion {
         int cic = signCountInCol(ans, c, sign); // cic -> count in column
 
         // top and left -> +ve sign, bottom ans right -> -ve sign
-        if(sign == '+') {
-            if((top[c] != -1 && cic >= top[c]) || (left[r] != -1 && cir >= left[r])) {
+        if (sign == '+') {
+            if ((top[c] != -1 && cic >= top[c]) || (left[r] != -1 && cir >= left[r])) {
                 return false;
             }
         } else {
-            if((bottom[c] != -1 && cic >= bottom[c]) || (right[r] != -1 && cir >= right[r])) {
+            if ((bottom[c] != -1 && cic >= bottom[c]) || (right[r] != -1 && cir >= right[r])) {
                 return false;
             }
-        }
-        return true;
-    }
-        
-    public static boolean isCorrectResult(char[][] ans, int[] top, int[] left, int[] bottom, int[] right) {
-        // check for row
-        for(int r = 0; r < ans.length; r++) {
-            int pcount = 0; // positive count
-            int ncount = 0; // negative count
-            for(int c = 0; c < ans[0].length; c++) {
-                if(ans[r][c] == '+') pcount++;
-                else if(ans[r][c] == '-') ncount++;
-            }
-            if(left[r] != -1 && left[r] != pcount) return false;
-            if(right[r] != -1 && right[r] != ncount) return false;
-        }
-        // check for col
-        for(int c = 0; c < ans[0].length; c++) {
-            int pcount = 0; // positive count
-            int ncount = 0; // negative count
-            for(int r = 0; r < ans.length; r++) {
-                if(ans[r][c] == '+') pcount++;
-                else if(ans[r][c] == '-') ncount++;
-            }
-            if(top[c] != -1 && top[c] != pcount) return false;
-            if(bottom[c] != -1 && bottom[c] != ncount) return false;
         }
         return true;
     }
 
-        
-    public static boolean solution(char[][] arr, int[] top, int[] left, int[] right, int[] bottom, 
-                                    char[][] ans, int row, int col) {
-        if(col == arr[0].length) {
+    public static boolean isCorrectResult(char[][] ans, int[] top, int[] left, int[] bottom, int[] right) {
+        // check for row
+        for (int r = 0; r < ans.length; r++) {
+            int pcount = 0; // positive count
+            int ncount = 0; // negative count
+            for (int c = 0; c < ans[0].length; c++) {
+                if (ans[r][c] == '+')
+                    pcount++;
+                else if (ans[r][c] == '-')
+                    ncount++;
+            }
+            if (left[r] != -1 && left[r] != pcount)
+                return false;
+            if (right[r] != -1 && right[r] != ncount)
+                return false;
+        }
+        // check for col
+        for (int c = 0; c < ans[0].length; c++) {
+            int pcount = 0; // positive count
+            int ncount = 0; // negative count
+            for (int r = 0; r < ans.length; r++) {
+                if (ans[r][c] == '+')
+                    pcount++;
+                else if (ans[r][c] == '-')
+                    ncount++;
+            }
+            if (top[c] != -1 && top[c] != pcount)
+                return false;
+            if (bottom[c] != -1 && bottom[c] != ncount)
+                return false;
+        }
+        return true;
+    }
+
+    public static boolean solution(char[][] arr, int[] top, int[] left, int[] right, int[] bottom, char[][] ans,
+            int row, int col) {
+        if (col == arr[0].length) {
             col = 0;
             row++;
         }
-        if(row == ans.length) {
-            if(isCorrectResult(ans, top, left, bottom, right))
+        if (row == ans.length) {
+            if (isCorrectResult(ans, top, left, bottom, right))
                 return true;
             else
                 return false;
         }
         // yes call
-        if(arr[row][col] == 'L') {
+        if (arr[row][col] == 'L') {
             // [L | R] -> + -
-            if(isValid(ans, top, left, right, bottom, row, col, '+') && 
-            isValid(ans, top, left, right, bottom, row, col + 1, '-')) {
+            if (isValid(ans, top, left, right, bottom, row, col, '+')
+                    && isValid(ans, top, left, right, bottom, row, col + 1, '-')) {
                 // place + -
                 ans[row][col] = '+';
                 ans[row][col + 1] = '-';
-                if(solution(arr, top, left, right, bottom, ans, row, col + 2) == true) {
+                if (solution(arr, top, left, right, bottom, ans, row, col + 2) == true) {
                     return true;
                 }
                 // unplace + -
@@ -1223,26 +1236,26 @@ public class recursion {
                 ans[row][col + 1] = 'X';
             }
             // [L | R] -> - +
-            if(isValid(ans, top, left, right, bottom, row, col, '-') && 
-            isValid(ans, top, left, right, bottom, row, col + 1, '+')) {
+            if (isValid(ans, top, left, right, bottom, row, col, '-')
+                    && isValid(ans, top, left, right, bottom, row, col + 1, '+')) {
                 // place - +
                 ans[row][col] = '-';
                 ans[row][col + 1] = '+';
-                if(solution(arr, top, left, right, bottom, ans, row, col + 2) == true) {
+                if (solution(arr, top, left, right, bottom, ans, row, col + 2) == true) {
                     return true;
                 }
                 // unplace - +
                 ans[row][col] = 'X';
                 ans[row][col + 1] = 'X';
             }
-        } else if(arr[row][col] == 'T') {
+        } else if (arr[row][col] == 'T') {
             // [T | B] -> + -
-            if(isValid(ans, top, left, right, bottom, row, col, '+') && 
-            isValid(ans, top, left, right, bottom, row + 1, col, '-')) {
+            if (isValid(ans, top, left, right, bottom, row, col, '+')
+                    && isValid(ans, top, left, right, bottom, row + 1, col, '-')) {
                 // place + -
                 ans[row][col] = '+';
                 ans[row + 1][col] = '-';
-                if(solution(arr, top, left, right, bottom, ans, row, col + 1) == true) {
+                if (solution(arr, top, left, right, bottom, ans, row, col + 1) == true) {
                     return true;
                 }
                 // unplace + -
@@ -1250,12 +1263,12 @@ public class recursion {
                 ans[row + 1][col] = 'X';
             }
             // [T | B] -> - +
-            if(isValid(ans, top, left, right, bottom, row, col, '-') && 
-            isValid(ans, top, left, right, bottom, row + 1, col, '+')) {
+            if (isValid(ans, top, left, right, bottom, row, col, '-')
+                    && isValid(ans, top, left, right, bottom, row + 1, col, '+')) {
                 // place - +
                 ans[row][col] = '-';
                 ans[row + 1][col] = '+';
-                if(solution(arr, top, left, right, bottom, ans, row, col + 1) == true) {
+                if (solution(arr, top, left, right, bottom, ans, row, col + 1) == true) {
                     return true;
                 }
                 // unplace - +
@@ -1264,11 +1277,171 @@ public class recursion {
             }
         }
         // no call
-        if(solution(arr, top, left, right, bottom, ans, row, col + 1)) {
+        if (solution(arr, top, left, right, bottom, ans, row, col + 1)) {
             return true;
         }
-		return false;
-	}
+        return false;
+    }
+
+    // Friends Pairing - 2
+    static int counter = 1;
+
+    public static void solution(int i, int n, boolean[] used, String asf) {
+        if (i > n) {
+            System.out.println(counter + "." + asf);
+            counter++;
+            return;
+        }
+        if (used[i] == true) {
+            // already included in lower levels, so no option at current level
+            solution(i + 1, n, used, asf);
+        } else {
+            // single call
+            used[i] = true;
+            solution(i + 1, n, used, asf + "(" + i + ") ");
+            // pairup calls
+            for (int j = i + 1; j <= n; j++) {
+                if (used[j] == false) {
+                    used[j] = true;
+                    solution(i + 1, n, used, asf + "(" + i + "," + j + ") ");
+                    used[j] = false;
+                }
+            }
+            used[i] = false;
+        }
+    }
+
+    // All Palindromic Permutations
+    public static String reverse(String str) {
+        String res = "";
+        for (int i = str.length() - 1; i >= 0; i--) {
+            res += str.charAt(i);
+        }
+        return res;
+    }
+
+    public static void generatepw(int cs, int ts, HashMap<Character, Integer> fmap, Character oddc, String asf) {
+        if (cs == ts) {
+            String rev = reverse(asf);
+            if (oddc == null) {
+                System.out.println(asf + rev);
+            } else {
+                System.out.println(asf + oddc + rev);
+            }
+            return;
+        }
+
+        for (char ch : fmap.keySet()) {
+            int freq = fmap.get(ch);
+            if (freq > 0) {
+                // use current character, reduce freq
+                fmap.put(ch, freq - 1);
+                generatepw(cs + 1, ts, fmap, oddc, asf + ch);
+                // regain freq.
+                fmap.put(ch, freq);
+            }
+        }
+    }
+
+    public static void solve(HashMap<Character, Integer> fmap) {
+        int oddCount = 0;
+        Character ch = null; // blank character
+        int len = 0;
+        for (char key : fmap.keySet()) {
+            len += fmap.get(key);
+            if (fmap.get(key) % 2 == 1) {
+                oddCount++;
+                ch = key;
+            }
+            fmap.put(key, fmap.get(key) / 2);
+        }
+        if (oddCount > 1) {
+            System.out.println(-1);
+            return;
+        }
+        generatepw(0, len / 2, fmap, ch, "");
+    }
+
+    // All Palindromic Partitions
+    public static boolean isPlaindromic(String str) {
+        int left = 0;
+        int right = str.length() - 1;
+        while (left < right) {
+            if (str.charAt(left) != str.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+
+    public static void solution(String str, String asf) {
+        if (str.length() == 0) {
+            System.out.println(asf);
+            return;
+        }
+
+        for (int i = 0; i < str.length(); i++) {
+            String option = str.substring(0, i + 1);
+            String roq = str.substring(i + 1);
+            if (isPlaindromic(option)) {
+                solution(roq, asf + "(" + option + ") ");
+            }
+        }
+    }
+
+    // K Subsets With Equal Sum
+    public static boolean isSumSame(int[] arr) {
+        int val = arr[0];
+        for(int ele : arr) {
+            if(ele != val) return false;
+        }
+        return true;
+    }
+
+    public static void solution(int[] arr, int indx, int sum, int k, int[] subsetSum, int ssf, ArrayList<ArrayList<Integer>> ans) {
+        if(indx == arr.length) {
+            if(ssf == k) {
+                if(isSumSame(subsetSum) == true) {
+                    for(ArrayList<Integer> list : ans) {
+                        System.out.print(list + " ");
+                    }
+                    System.out.println();
+                }
+            }
+            return;
+        }
+        int val = arr[indx];
+        int i = 0;
+        // merging with existing set
+        while(i < ans.size() && ans.get(i).size() > 0) {
+            if(subsetSum[i] + val <= (sum / k)) {
+                // increase subset sum
+                subsetSum[i] += val;
+                // add in answer so far
+                ans.get(i).add(val);
+                solution(arr, indx + 1, sum, k, subsetSum, ssf, ans);
+                // decrease subset sum
+                subsetSum[i] -= val;
+                // remove from asf
+                ans.get(i).remove(ans.get(i).size() - 1);
+            }
+            i++;
+        }
+        if(i < k) {
+            // single call with new set
+            // increase subset sum
+            subsetSum[i] += val;
+            // add in answer so far
+            ans.get(i).add(val);
+            solution(arr, indx + 1, sum, k, subsetSum, ssf + 1, ans);
+            // decrease subset sum
+            subsetSum[i] -= val;
+            // remove from asf
+            ans.get(i).remove(ans.get(i).size() - 1);
+        }
+    }
 
     public static void fun() {
 
