@@ -697,6 +697,186 @@ public class recursion {
         return Math.max(yes_score, no_score);
 	}
 
+    // N Queens Branch and Bound
+    static boolean[] cols;
+    static boolean[] normal_diagonal;
+    static boolean[] reverse_diagonal;
+
+    public static boolean isQueenSafeB_B(int r, int c) {
+        if(cols[c] == true) return false;
+        if(normal_diagonal[r + c] == true) return false;
+        if(reverse_diagonal[r - c + cols.length - 1] == true) return false;
+        return true;
+    }
+
+    public static void nQueensB_B(int n, int row, String asf) {
+        if(row == n) {
+            System.out.println(asf);
+            return;
+        }
+
+        for(int col = 0; col < n; col++) {
+            if(isQueenSafeB_B(row, col)) {
+                // mark
+                cols[col] = true;
+                normal_diagonal[row + col] = true;
+                reverse_diagonal[row - col + n - 1] = true;
+                nQueensB_B(n, row + 1, asf + row + "-" + col + ", "); 
+                // unmark
+                cols[col] = false;
+                normal_diagonal[row + col] = false;
+                reverse_diagonal[row - col + n - 1] = false;
+            }
+        }
+    }
+
+    // josephus problem
+    public static int solution(int n, int k){
+        if(n == 1) return 0;
+        return (solution(n - 1, k) + k) % n; // y = (x + k) % n, x => solution(n-1, k)
+    }
+
+    // lexicographical numbers
+    public static void printOrder(int i, int n) {
+        if(i > n) return;
+        System.out.println(i);
+        for(int j = 0; j < 10; j++) {
+            printOrder(i * 10 + j, n);
+        }
+    }
+
+    // goldmine 2
+    static int[][] dir = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
+    public static int goldmine(int[][] arr, int i, int j) {
+        // mark
+        int profit = arr[i][j];
+        arr[i][j]  *= -1;
+        // travel on unvisited neighbour
+        for(int d = 0; d < 4; d++) {
+            int r = i + dir[d][0];
+            int c = j + dir[d][1];
+
+            if(r >= 0 && r < arr.length && c >= 0 && c < arr[0].length && arr[r][c] > 0) {
+                profit += goldmine(arr, r, c);
+            }
+        }
+        return profit;
+    }
+
+    static int max = 0;
+	public static void getMaxGold(int[][] arr){
+		for(int i = 0; i < arr.length; i++) {
+            for(int j = 0; j < arr[0].length; j++) {
+                if(arr[i][j] > 0) {
+                    max = Math.max(max, goldmine(arr, i, j));
+                }
+            }
+        }
+	}
+
+    // solve sudoku
+    public static boolean isSafeInSudoku(int[][] board, int row, int col, int num) {
+        // row check
+        for(int r = row, c = 0; c < board[0].length; c++) {
+            if(board[r][c] == num) return false;
+        }
+        // col check
+        for(int r = 0, c = col; r < board.length; r++) {
+            if(board[r][c] == num) return false;
+        }
+        // submatrix check
+        // starting point of matrix
+        int rr = row - row % 3;
+        int cc = col - col % 3;
+        for(int r = 0; r < 3; r++) {
+            for(int c = 0; c < 3; c++) {
+                if(board[r + rr][c + cc] == num) return false;
+            }
+        }
+        return true;
+    }
+    
+    public static void display(int[][] board){
+        for(int i = 0; i < board.length; i++){
+            for(int j = 0; j < board[0].length; j++){
+            System.out.print(board[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    public static void solveSudoku(int[][] board, int i, int j) {
+        if(j >= board[0].length) {
+            j = 0;
+            i++;
+        }
+        if(i == board.length) {
+            display(board);
+            return;
+        }
+        if(board[i][j] != 0) {
+            // continue on next level
+            solveSudoku(board, i, j + 1);
+        } else {
+            // provide option of every digit
+            for(int n = 1; n < 10; n++) {
+                if(isSafeInSudoku(board, i, j, n)) {
+                    board[i][j] = n;
+                    solveSudoku(board, i, j + 1);
+                    board[i][j] = 0;
+                }
+            }
+        }
+    }
+
+    // cryptArithmatic
+    public static int stringIntoIntFromMapping(String s, HashMap<Character, Integer> map) {
+        int ans = 0;
+        for(int i = 0; i < s.length(); i++) {
+            ans = ans * 10 + map.get(s.charAt(i));
+        }
+        return ans;
+    }
+
+    public static void solution(String unique, int indx, HashMap<Character, Integer> charIntMap, 
+        boolean[] usedNumbers, String s1, String s2, String s3) {
+
+        if(indx == unique.length()) {
+            int n1 = stringIntoIntFromMapping(s1, charIntMap);
+            int n2 = stringIntoIntFromMapping(s2, charIntMap);
+            int n3 = stringIntoIntFromMapping(s3, charIntMap);
+
+            if(n1 + n2 == n3) {
+                // valid mapping
+                // print mapping in sorted order
+                for(int i = 0; i < 26; i++) {
+                    char ch = (char)(i + 'a');
+                    if(charIntMap.containsKey(ch)) {
+                        System.out.print(ch + "-" + charIntMap.get(ch) + " ");
+                    }
+                }
+                System.out.println();
+            }
+            return;
+        }        
+
+        char ch = unique.charAt(indx);
+        for(int digit = 0; digit < 10; digit++) {
+            if(usedNumbers[digit] == false) {
+                // use 
+                usedNumbers[digit] = true;
+                charIntMap.put(ch, digit);
+
+                solution(unique, indx + 1, charIntMap, usedNumbers, s1, s2, s3);
+
+                // make it available
+                usedNumbers[digit] = false;
+                charIntMap.put(ch, -1);
+            }
+        }
+    }
+
+
     public static void fun() {
 
     }
