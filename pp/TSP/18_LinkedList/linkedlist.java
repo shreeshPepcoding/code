@@ -209,6 +209,118 @@ public class linkedlist {
         return res;
     }
 
+    // leetcode 19. https://leetcode.com/problems/remove-nth-node-from-end-of-list/
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        // step 1. make a forward pointer and move it by n
+        ListNode forw = head; // forward
+        for(int i = 0; i < n; i++) 
+            forw = forw.next;
+        
+        if(forw == null) return head.next; // in that case n is equal to size
+        // step 2. point head with current pointer
+        ListNode curr = head;
+        // step 3. move current and forward pointer simultaneously
+        while(forw.next != null) {
+            curr = curr.next;
+            forw = forw.next;
+        }
+        // step 4. disconnect nth node using current.next
+        curr.next = curr.next.next;
+        return head;
+    }
+
+    // leetcode 141. https://leetcode.com/problems/linked-list-cycle/
+    public boolean hasCycle(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head;
+        
+        while(fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+
+            if(slow == fast) return true;
+        }
+
+        return false;
+    }
+
+    // leetcode 142. https://leetcode.com/problems/linked-list-cycle-ii/
+    public ListNode detectCycle(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head;
+        while(fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if(slow == fast) {
+                break;
+            }
+        }
+        if(fast == null || fast.next == null) return null;
+        slow = head;
+        while(slow != fast) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        return slow;
+    }
+
+    // leetcode 160. https://leetcode.com/problems/intersection-of-two-linked-lists/
+    // method 1 -> using floyd cycle detection
+    public ListNode getIntersectionNode1(ListNode head1, ListNode head2) {
+        ListNode tail = head1;
+        while(tail.next != null)
+            tail = tail.next;
+
+        tail.next = head1;
+
+        ListNode res = detectCycle(head2);
+        tail.next = null;
+        return res;
+    }
+
+    // method 2 -> usinf difference method
+    private int size(ListNode head) {
+        int s = 0;
+        ListNode t1 = head;
+        while(t1 != null) {
+            t1 = t1.next;
+            s++;
+        }
+        return s;
+    }
+
+    public ListNode getIntersectionNode2(ListNode head1, ListNode head2) {
+        int s1 = size(head1);
+        int s2 = size(head2);
+
+        ListNode t1 = head1;
+        ListNode t2 = head2;
+
+        if(s1 > s2) {
+            for(int i = 0; i < s1 - s2; i++)
+                t1 = t1.next;
+        } else {
+            for(int i = 0; i < s2 - s1; i++)
+                t2 = t2.next;
+        }
+
+        while(t1 != null) {
+            if(t1 == t2) return t1;
+            t1 = t1.next;
+            t2 = t2.next;
+        }
+        return null;
+    }
+
+    // leetcode 328. https://leetcode.com/problems/odd-even-linked-list/
+    public ListNode oddEvenList(ListNode head) {
+        // write your code here
+    }   
+    // addition
+    // subtraction
+    // multiplication
+
+
     public static void ques() {
         // lists
     }
