@@ -876,6 +876,254 @@ public class recursion {
         }
     }
 
+    // crossword puzzle
+    public static boolean canPlaceHorizontally(char[][] arr, int i, int j, String word) {
+        int len = word.length();
+        // 1. management of starting point
+        if(j > 0 && arr[i][j - 1] == '-') return false;
+        // 2. Availability of space for word
+        if(j + len > arr[0].length) return false;
+        // 3. perfectly fitting 
+        if(j + len < arr[0].length && arr[i][j + len] == '-') return false;
+        // 4. In available space all the cells are valid or not
+        for(int k = 0; k < len; k++) {
+            if(arr[i][j + k] != '-' && arr[i][j + k] != word.charAt(k)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean[] placeHorizontally(char[][] arr, int i, int j, String word) {
+        int len = word.length();
+        boolean[] info = new boolean[len];
+        for(int k = 0; k < len; k++) {
+            if(arr[i][j + k] == '-') {
+                arr[i][j + k] = word.charAt(k);
+                info[k] = true;
+            }
+        }
+        return info;
+    }
+
+    public static void unplaceWordHorizontally(char[][] arr, int i, int j, boolean[] info) {
+        for(int k = 0; k < info.length; k++) {
+            if(info[k] == true) {
+                arr[i][j + k] = '-';
+            }
+        }
+    }
+
+    public static boolean canPlaceVertically(char[][] arr, int i, int j, String word) {
+        int len = word.length();
+        // 1. management of starting point
+        if(i > 0 && arr[i - 1][j] == '-') return false;
+        // 2. Availability of space for word
+        if(i + len > arr.length) return false;
+        // 3. perfectly fitting 
+        if(i + len < arr.length && arr[i + len][j] == '-') return false;
+        // 4. In available space all the cells are valid or not
+        for(int k = 0; k < len; k++) {
+            if(arr[i + k][j] != '-' && arr[i + k][j] != word.charAt(k)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean[] placeVertically(char[][] arr, int i, int j, String word) {
+        int len = word.length();
+        boolean[] info = new boolean[len];
+        for(int k = 0; k < len; k++) {
+            if(arr[i + k][j] == '-') {
+                arr[i + k][j] = word.charAt(k);
+                info[k] = true;
+            }
+        }
+        return info;
+    }
+
+    public static void unplaceWordVertically(char[][] arr, int i, int j, boolean[] info) {
+        for(int k = 0; k < info.length; k++) {
+            if(info[k] == true) {
+                arr[i + k][j] = '-';
+            }
+        }
+    }
+
+    public static void print(char[][] arr){
+		for(int i = 0 ; i < arr.length; i++){
+			for(int j = 0 ; j < arr.length; j++){
+				System.out.print(arr[i][j]);
+			}
+                  System.out.println();
+		}
+		
+	}
+
+    public static void solution(char[][] arr, String[] words, int indx){
+        if(indx == words.length) {
+            print(arr);
+            return;
+        }
+
+		String word = words[indx];
+        for(int i = 0; i < arr.length; i++) {
+            for(int j = 0; j < arr[0].length; j++) {
+                if(arr[i][j] == '-' || arr[i][j] == word.charAt(0)) {
+                    // horizontal
+                    if(canPlaceHorizontally(arr, i, j, word)) {
+                        // place
+                        boolean[] info = placeHorizontally(arr, i, j, word);
+                        // call
+                        solution(arr, words, indx + 1);
+                        // unplace
+                        unplaceWordHorizontally(arr, i, j, info);
+                    }
+                    // vertical
+                    if(canPlaceVertically(arr, i, j, word)) {
+                        // place
+                        boolean[] info = placeVertically(arr, i, j, word);
+                        // call
+                        solution(arr, words, indx + 1);
+                        // unplace
+                        unplaceWordVertically(arr, i, j, info);
+                    }
+                }
+            }
+        }
+	}
+
+    // magnets
+    public static int signRowCount(char[][] arr, char sign, int r) {
+        int count = 0;
+        for(int c = 0; c < arr[0].length; c++) {
+            if(arr[r][c] == sign) 
+                count++;
+        }
+        return count;
+    }
+
+    public static int signColCount(char[][] arr, char sign, int c) {
+        int count = 0;
+        for(int r = 0; r < arr.length; r++) {
+            if(arr[r][c] == sign) 
+                count++;
+        }
+        return count;
+    }
+
+    public static boolean isSafeToPlace(char[][] ans, int i, int j, char sign, int[] top, int[] left, int[] right, int[] bottom) {
+        int[][] dir = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
+        // 1. polarity check
+        for(int d = 0; d < 4; d++) {
+            int r = i + dir[d][0];
+            int c = j + dir[d][1];
+            if(r >= 0 && r < ans.length && c >= 0 && c < ans[0].length && ans[r][c] == sign) {
+                return false;
+            }
+        }
+        // 2. valid count of sign
+        int rc = signRowCount(ans, sign, i);
+        int cc = signColCount(ans, sign, j);
+
+        if(sign == '+') {
+            if((top[j] != -1 && cc >= top[j]) || (left[i] != -1 && rc >= left[i])) return false;
+        } else {
+            if((bottom[j] != -1 && cc >= bottom[j]) || (right[i] != -1 && rc >= right[i])) return false;
+        }
+        return true;
+    }
+
+    public static boolean isFinalSafe(char[][] ans, int[] top, int[] left, int[] right, int[] bottom) {
+        // col
+        for(int c = 0; c < ans[0].length; c++) {
+            int pcc = signColCount(ans, '+', c); // positive column count
+            int ncc = signColCount(ans, '-', c); // negative column count
+
+            if((top[c] != -1 && top[c] != pcc )|| (bottom[c] != -1 && bottom[c] != ncc))
+                return false;
+        }
+        // row
+        for(int r = 0; r < ans.length; r++) {
+            int prc = signRowCount(ans, '+', r); // positive Row count
+            int nrc = signRowCount(ans, '-', r); // negative Row count
+
+            if((left[r] != -1 && left[r] != prc) || (right[r] != -1 && right[r] != nrc))
+                return false;
+        }
+        return true;
+    }
+
+    public static boolean solution(char[][] arr, int[] top, int[] left, int[] right, 
+        int[] bottom, char[][] ans, int i, int j) {
+        if(j == arr[0].length) {
+            i++;
+            j = 0;
+        }
+        if(i == arr.length) {
+            if(isFinalSafe(ans, top, left, right, bottom))
+                return true;
+            return false;
+        }
+        // yes call
+        if(arr[i][j] == 'L') {
+            // L|R -> |+|-|
+            if(isSafeToPlace(ans, i, j, '+', top, left, right, bottom) && 
+            isSafeToPlace(ans, i, j + 1, '-', top, left, right, bottom)) {
+                // place
+                ans[i][j] = '+';
+                ans[i][j + 1] = '-';
+                if(solution(arr, top, left, right, bottom, ans, i, j + 2))
+                    return true;
+                // unplace
+                ans[i][j] = 'X';
+                ans[i][j + 1] = 'X';
+            }
+            // L|R -> |-|+|
+            if(isSafeToPlace(ans, i, j, '-', top, left, right, bottom) && 
+            isSafeToPlace(ans, i, j + 1, '+', top, left, right, bottom)) {
+                // place
+                ans[i][j] = '-';
+                ans[i][j + 1] = '+';
+                if(solution(arr, top, left, right, bottom, ans, i, j + 2))
+                    return true;
+                // unplace
+                ans[i][j] = 'X';
+                ans[i][j + 1] = 'X';
+            }
+        } else if(arr[i][j] == 'T') {
+            // T|B -> |+|-|
+            if(isSafeToPlace(ans, i, j, '+', top, left, right, bottom) && 
+            isSafeToPlace(ans, i + 1, j, '-', top, left, right, bottom)) {
+                // place
+                ans[i][j] = '+';
+                ans[i + 1][j] = '-';
+                if(solution(arr, top, left, right, bottom, ans, i, j + 1))
+                    return true;
+                // unplace
+                ans[i][j] = 'X';
+                ans[i + 1][j] = 'X';
+            }
+            // T|B -> |-|+|
+            if(isSafeToPlace(ans, i, j, '-', top, left, right, bottom) && 
+            isSafeToPlace(ans, i + 1, j, '+', top, left, right, bottom)) {
+                // place
+                ans[i][j] = '-';
+                ans[i + 1][j] = '+';
+                if(solution(arr, top, left, right, bottom, ans, i, j + 1))
+                    return true;
+                // unplace
+                ans[i][j] = 'X';
+                ans[i + 1][j] = 'X';
+            }
+        }
+        // no call
+        if(solution(arr, top, left, right, bottom, ans, i, j + 1))
+            return true;
+		return false;
+	}
+
 
     public static void fun() {
 
