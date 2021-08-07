@@ -316,9 +316,158 @@ public class linkedlist {
     public ListNode oddEvenList(ListNode head) {
         // write your code here
     }   
-    // addition
+    
     // subtraction
+    
+
+    // reverse using addFirst Technique
+    static ListNode thead;
+    static ListNode ttail;
+
+    public static void addFirst(ListNode node) {
+        if(thead == null) {
+            thead = ttail = node;
+        } else {
+            node.next = thead;
+            thead = node;
+        }
+    }
+
+    public static ListNode reverseUsingAddFirst(ListNode head) {
+        thead = ttail = null;
+        ListNode next = head;
+        while(next != null) {
+            ListNode i = next;
+            next = i.next;
+            i.next = null;
+            addFirst(i);
+        }
+        return thead;
+    }
+
+    // addition
+    public static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        if(l1 == null || l2 == null) {
+            return l1 == null ? l2 : l1;
+        }
+        ListNode n1 = reverseUsingAddFirst(l1);
+        ListNode n2 = reverseUsingAddFirst(l2);
+
+        ListNode res = new ListNode(-1);
+        ListNode temp = res;
+
+        ListNode i = n1;
+        ListNode j = n2;
+
+        int carry = 0;
+        while(carry != 0 || i != null || j != null) {
+            int ival = i == null ? 0 : i.val;
+            int jval = j == null ? 0 : j.val;
+
+            i = i == null ? null : i.next;
+            j = j == null ? null : j.next;
+
+            int sum = ival + jval + carry;
+            ListNode val = new ListNode(sum % 10);
+            carry = sum / 10;
+            temp.next = val;
+            temp = val;
+        }
+        res = reverseUsingAddFirst(res.next);
+        return res;
+    }
+
     // multiplication
+    public static ListNode multiplyTwoLL(ListNode l1, ListNode l2) {
+        l1 = reverseUsingAddFirst(l1);
+        l2 = reverseUsingAddFirst(l2);
+        ListNode res = null;
+        int zeroCount = 0;
+        ListNode i = l1;
+        while(i != null) {
+            // number which we have to add in res
+            ListNode num = new ListNode(-1);  
+            ListNode k = num;  
+            // add zero in it
+            for(int z = 0; z < zeroCount; z++) {
+                ListNode node = new ListNode(0);
+                k.next = node;
+                k = node;
+            }
+            int ival = i.val;
+            i = i.next;
+            ListNode j = l2;
+            int carry = 0;
+            while(carry != 0 || j != null) {
+                int jval = j == null ? 0 : j.val;
+                j = j == null ? null : j.next;
+                int prod = ival * jval + carry;
+                ListNode val = new ListNode(prod % 10);
+                carry = prod / 10;
+                k.next = val;
+                k = val;
+            }
+            // res = res + num -> modify add two numbers because provided numbers are already reversed
+            res = addTwoNumbers(res, num.next);
+            zeroCount++;
+        }
+        res = reverseUsingAddFirst(res);
+        return res;
+    }
+
+    // leetcode 82. remove all duplicates
+    public static ListNode removeDuplicates(ListNode head) {
+        ListNode head2 = new ListNode(-1);
+
+        ListNode i = head2;
+
+        ListNode curr = head;
+        i.next = curr;
+        while(curr != null) {
+            curr = curr.next;
+            boolean flag = false;
+            while(curr != null && i.next.val == curr.val) {
+                flag = true;
+                curr = curr.next;
+            }
+
+            if(flag == true) {
+                i.next = curr;
+            } else {
+                i = i.next;
+            }
+        }
+        return head2.next;
+    }   
+
+    // leetcode 83. remove duplicates from sorted linkedlist
+    public static ListNode removeDuplicates2(ListNode head) {
+        if(head == null) return null;
+        ListNode i = head;
+        ListNode curr = head.next;
+        while(curr != null) {
+            if(i.val != curr.val) {
+                i.next = curr;
+                i = curr;
+            }
+            curr = curr.next;
+        }
+        i.next = null; // a->b->c->c->c->c to avoid this case
+        return head;
+    }
+
+    // Merge K Sorted LinkedList using divide and conq.
+    public ListNode mergeKLists(ListNode[] lists, int st, int end) {       
+        if(st == end) return lists[st];
+        int mid = (st + end) / 2;
+        ListNode l1 = mergeKLists(lists, st, mid);
+        ListNode l2 = mergeKLists(lists, mid + 1, end);
+        return mergeTwoLists(l1, l2); // merge two linkedlist is previously solved
+    }
+
+    public ListNode mergeKLists2(ListNode[] lists) {
+        return mergeKLists(lists, 0, lists.length - 1);
+    }
 
 
     public static void ques() {
