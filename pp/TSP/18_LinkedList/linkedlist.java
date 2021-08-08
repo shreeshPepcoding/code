@@ -5,7 +5,7 @@ public class linkedlist {
     public static class ListNode {
         int val;
         ListNode next;
-
+        ListNode random;
         ListNode() {
         }
 
@@ -469,6 +469,281 @@ public class linkedlist {
         return mergeKLists(lists, 0, lists.length - 1);
     }
 
+    // Clonned a linkedlist with random pointer
+    // method 1 -> without using extra space
+    public static ListNode copyLinkedList(ListNode head) {
+        ListNode h1 = new ListNode(-1);
+        ListNode temp1 = h1;
+        ListNode temp2 = head;
+
+        while(temp2 != null) {
+            ListNode node = new ListNode(temp2.val);
+            temp1.next = node;
+            temp1 = node;
+            temp2 = temp2.next;
+        }
+        return h1.next;
+    }
+
+    public static ListNode copyRandomList1(ListNode head1) {
+        if(head1 == null) return null;
+        // 1. Make a copy of linkedlist with next pointer only
+        ListNode head2 = copyLinkedList(head1);
+        // 2. Make a zigzag pattern
+        ListNode t1 = head1, t2 = head2;
+        while(t1 != null && t2 != null) {
+            ListNode n1 = t1.next;
+            ListNode n2 = t2.next;
+
+            t1.next = t2;
+            t2.next = n1;
+
+            t1 = n1;
+            t2 = n2;
+        }
+        // 3. Make connection of random pointer
+        t1 = head1;
+        while(t1 != null) {
+            t1.next.random = t1.random == null ? null : t1.random.next;
+            t1 = t1.next.next;
+        }
+        // 4. Regain original list
+        t1 = head1;
+        t2 = head2;
+
+        while(t1 != null && t2 != null) {
+            ListNode n1 = t2.next;
+            ListNode n2 = n1 == null ? null : n1.next;
+
+            t1.next = n1;
+            t2.next = n2;
+            t1 = n1;
+            t2 = n2;
+        }
+        return head2;
+    }
+
+    // method 2 -> clonnig using hashmap
+    public static ListNode copyRandomList(ListNode head1) {
+        if(head1 == null) return null;
+        
+        // 1. Make a copy of linkedlist with next pointer only
+        ListNode head2 = copyLinkedList(head1);
+        
+        // 2. Make a hashmap of node vs node and store original as key and clonned as value
+        HashMap<ListNode, ListNode> map = new HashMap<>();
+        ListNode t1 = head1, t2 = head2;
+        while(t1 != null) {
+            map.put(t1, t2);
+            t1 = t1.next;
+            t2 = t2.next;
+        }
+        
+        // 3. Make connection of random pointer
+        for(ListNode onode : map.keySet()) {
+            // onode -> original node
+            ListNode cnode = map.get(onode); // clonned node
+            ListNode orandom = onode.random; // original random
+            cnode.random = orandom == null ? null : map.get(orandom);
+        }
+        return head2;
+    }
+
+    // segregate odd even
+    public static ListNode segregateEvenOdd(ListNode head) {
+        if(head == null || head.next == null) return head;
+        ListNode ohead = new ListNode(-1); //odd head
+        ListNode ehead = new ListNode(-1); // even head
+
+        ListNode t1 = ohead, t2 = ehead, temp = head;
+
+        while(temp != null) {
+            if(temp.val % 2 == 0) {
+                t2.next = temp;
+                t2 = temp;
+            } else {
+                t1.next = temp;
+                t1 = temp;
+            }
+            temp = temp.next;
+        }
+        t1.next = null;
+        t2.next = null;
+
+        // add lists accordingly, even -> odd
+        t2.next = ohead.next;
+        return ehead.next;
+    }
+
+    // segregate 0 1 -> using change in pointers
+    public static ListNode segregate01(ListNode head) {
+        if(head == null || head.next == null) return head;
+        ListNode ohead = new ListNode(-1); //odd head
+        ListNode ehead = new ListNode(-1); // even head
+
+        ListNode t1 = ohead, t2 = ehead, temp = head;
+
+        while(temp != null) {
+            if(temp.val == 0) {
+                t2.next = temp;
+                t2 = temp;
+            } else {
+                t1.next = temp;
+                t1 = temp;
+            }
+            temp = temp.next;
+        }
+        t1.next = null;
+        t2.next = null;
+
+        // add lists accordingly, even -> odd
+        t2.next = ohead.next;
+        return ehead.next;
+    }
+
+    // segregate 0 1 using swap the data
+    public static ListNode segregate_01(ListNode head) {
+        ListNode i = head; // first unsolved
+        ListNode j = head; // first One
+
+        while(i != null) {
+            if(i.val == 0) {
+                // swap and increment the pointers
+                int temp = i.val;
+                i.val = j.val;
+                j.val = temp;
+
+                i = i.next;
+                j = j.next;
+            } else {
+                // increment segment of one
+                i = i.next;
+            }
+        }
+        return head;
+    }
+
+    // segregate 012 using pointer change
+    public static ListNode segregate012(ListNode head) {
+        ListNode head0 = new ListNode(-1);
+        ListNode head1 = new ListNode(-1);
+        ListNode head2 = new ListNode(-1);
+        ListNode t0 = head0, t1 = head1, t2 = head2, temp = head;
+        while(temp != null) {
+            if(temp.val == 0) {
+                t0.next = temp;
+                t0 = temp;
+            } else if(temp.val == 1) {
+                t1.next = temp;
+                t1 = temp;
+            } else {
+                t2.next = temp;
+                t2 = temp;
+            }
+            temp = temp.next;
+        }
+        t2.next = null;
+        // connect pointer according to dependencies from high to low
+        t1.next = head2.next;
+        t0.next = head1.next;
+        return head0.next;
+    }
+
+    // segregate 012 using data swapping
+    public static void swapNodeData(ListNode n1, ListNode n2) {
+        int temp = n1.val;
+        n1.val = n2.val;
+        n2.val = temp;
+    }
+
+    public static ListNode segregate_012(ListNode head) {
+        ListNode i = head, j = head, k = head;
+        // i -> first unsolved
+        // j -> first 2
+        // k -> first 1
+
+        while(i != null) {
+            if(i.val == 2) {
+                i = i .next;
+            } else if(i.val == 1) {
+                // swap i, j
+                swapNodeData(i, j);
+                i = i.next;
+                j = j.next;
+            } else {
+                // swap i, j
+                swapNodeData(i, j);
+                // swap j, k
+                swapNodeData(j, k);
+                i = i.next;
+                j = j.next;
+                k = k.next;
+            }
+        }
+        return head;
+    }
+
+    // segregate on the basis of last index
+    public static ListNode segregateOnLastIndex(ListNode head) {
+        // 1. find last node
+        ListNode pivot = head;
+        while(pivot.next != null) {
+            pivot = pivot.next;
+        }
+
+        // 2. segregate on the basis of pivot node
+        ListNode smaller = new ListNode(-1);
+        ListNode greater = new ListNode(-1);
+        ListNode t1 = smaller, t2 = greater, temp = head;
+
+        while(temp != null) {
+            if(temp.val <= pivot.val) {
+                // samller part -> first half
+                t1.next = temp;
+                t1 = temp;
+            } else {
+                // larger part -> second half
+                t2.next = temp;
+                t2 = temp;
+            }
+            temp = temp.next;
+        }
+        t2.next = null;
+        t1.next = greater.next;
+        return pivot;
+    }
+
+    // segregate on the basis of pivot index
+    public static ListNode segregate(ListNode head, int pivotIdx) {
+        // 1. find pivot node
+        ListNode pivot = head;
+        for(int i = 0; i < pivotIdx; i++) {
+            pivot = pivot.next;
+        }
+        // 2. segregate on the basis of data and skip pivot node to add it later in middle
+        ListNode smaller = new ListNode(-1);
+        ListNode greater = new ListNode(-1);
+
+        ListNode t1 = smaller, t2 = greater, temp = head;
+
+        while(temp != null) {
+            if(pivot != temp) {
+                if(temp.val <= pivot.val) {
+                    t1.next = temp;
+                    t1 = temp;
+                } else {
+                    t2.next = temp;
+                    t2 = temp;
+                }
+            }
+            temp = temp.next;
+        }
+
+        t2.next = null;
+        pivot.next = greater.next;
+        t1.next = pivot;
+        return smaller.next;
+    }
 
     public static void ques() {
         // lists

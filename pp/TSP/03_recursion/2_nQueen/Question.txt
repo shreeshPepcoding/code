@@ -1,0 +1,17 @@
+Name: 
+N-Queens
+
+Description : 
+1. The n-queens puzzle is the problem of placing n queens on an n x n chessboard such that no two queens attack each other.
+2. Given an integer n, return all distinct solutions to the n-queens puzzle.
+3. Each solution contains a distinct board configuration of the n-queens' placement, where 'Q' and '.' both indicate a queen and an empty space, respectively.
+
+Constraints:
+1 <= n <= 10
+
+input format:
+n = 4
+
+output format:
+[[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]
+Explanation: There exist two distinct solutions to the 4-queens puzzle as shown above

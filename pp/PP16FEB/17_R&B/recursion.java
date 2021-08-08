@@ -1124,6 +1124,165 @@ public class recursion {
 		return false;
 	}
 
+    // friends pairing 2
+    public static void solution(int i, int n, boolean[] used, String asf) {
+        if(i > n) {
+            System.out.println(counter + "." + asf);
+            counter++;
+            return;
+        }
+        
+        if(used[i] == true) {
+            // already engaged in previous level, then it have no choice
+            solution(i + 1, n, used, asf);
+        } else {
+            // single choice
+            used[i] = true;
+            solution(i + 1, n, used, asf + "(" + i + ") ");
+            // no unmark here -> i is also engaged in pairing
+            // pair up choice
+            for(int j = i + 1; j <= n; j++) {
+                if(used[j] == false) {
+                    used[j] = true;
+                    solution(i + 1, n, used, asf + "(" + i + "," + j + ") ");
+                    used[j] = false;
+                }
+            }
+            used[i] = false;
+        }
+    }
+
+    // K-Partition
+    static int count = 1;
+    public static void solution(int i, int n, int k, int ssf, ArrayList<ArrayList<Integer>> ans) {
+        if(i > n) {
+            if(ssf == k) {
+                System.out.print(count + ". ");
+                for(ArrayList<Integer> list : ans) {
+                    System.out.print(list + " ");
+                }
+                System.out.println();
+                count++;
+            }
+            return;
+        }
+        // add in existing set -> ssf help us to find already existed set
+        int li = 0; // list index
+        for(li = 0; li < ssf; li++) {
+            ArrayList<Integer> list = ans.get(li);
+            list.add(i);
+            solution(i + 1, n, k, ssf, ans);
+            list.remove(list.size() - 1);
+        }
+        // self starting
+        if(li < k) {
+            ArrayList<Integer> list = ans.get(li);
+            list.add(i);
+            solution(i + 1, n, k, ssf + 1, ans);
+            list.remove(list.size() - 1);
+        }
+	}
+
+    // print all palindromic permutation
+    public static String reverseString(String asf) {
+        String res = "";
+        for(int i = asf.length() - 1; i >= 0; i--) {
+            res += asf.charAt(i);
+        }
+        return res;
+    }
+
+    public static void generatepw(int cs, int ts, HashMap<Character, Integer> fmap, Character oddc, String asf) {
+        if(cs == ts) {
+            String res = asf + (oddc == null ? "" : oddc) + reverseString(asf);
+            System.out.println(res);
+            return;
+        }
+
+        for(char ch : fmap.keySet()) {
+            int freq = fmap.get(ch);
+            if(freq > 0) {
+                fmap.put(ch, freq - 1);
+                generatepw(cs + 1, ts, fmap, oddc, asf + ch);
+                fmap.put(ch, freq);
+            }
+        }
+	}
+
+    // all palindromic partition
+    public static boolean isPalindromic(String str) {
+        int left = 0;
+        int right = str.length() - 1;
+        while(left < right) {
+            if(str.charAt(left) != str.charAt(right)) return false;
+
+            left++;
+            right--;
+        }
+        return true;
+    }
+
+    public static void solution(String str, String asf) {
+        if(str.length() == 0) {
+            System.out.println(asf);
+            return;
+        }
+
+        for(int i = 1; i <= str.length(); i++) {
+            String substr = str.substring(0, i);
+            String ros = str.substring(i);
+            if(isPalindromic(substr)) {
+                solution(ros, asf + "(" + substr + ") ");
+            }
+        }
+	}
+
+    // K Subset with equal sum
+    public static void solution(int[] arr, int indx, int sum, int k, int[] subsetSum,int ssf,
+        ArrayList<ArrayList<Integer>> ans) {
+        
+        if(indx == arr.length) {
+            if(ssf == k) {
+                boolean flag = true;
+                for(int val : subsetSum) {
+                    if(val != sum / k) {
+                        flag = false;
+                        break;
+                    }
+                }
+                if(flag == true) {
+                    for(ArrayList<Integer> list : ans) {
+                        System.out.print(list + " ");
+                    }
+                    System.out.println();
+                }
+            }
+            return;
+        }
+        int val = arr[indx];
+        // merging with existing subset
+        int li = 0;
+        for(li = 0; li < ssf; li++) {
+            ArrayList<Integer> list = ans.get(li);
+            if(subsetSum[li] + val <= sum / k) {
+                subsetSum[li] += val;
+                list.add(val);
+                solution(arr, indx + 1, sum, k, subsetSum, ssf, ans);
+                list.remove(list.size() - 1);
+                subsetSum[li] -= val;           
+            }
+        }
+        if(li < k) {
+            ArrayList<Integer> list = ans.get(li);
+            subsetSum[li] += val;
+            list.add(val);
+            solution(arr, indx + 1, sum, k, subsetSum, ssf + 1, ans);
+            list.remove(list.size() - 1);
+            subsetSum[li] -= val; 
+        }
+	}
+
+
 
     public static void fun() {
 
