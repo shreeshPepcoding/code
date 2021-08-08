@@ -1282,7 +1282,120 @@ public class recursion {
         }
 	}
 
+    // tug of war
+    static int mindiff = Integer.MAX_VALUE;
+	static String ans = "";
 
+    public static void solve(int[] arr, int indx, ArrayList<Integer> set1, 
+    ArrayList<Integer> set2, int sum1, int sum2) {
+        if(indx == arr.length) {
+            // valid candidate for minimum sum difference
+            int diff = Math.abs(sum1 - sum2);
+            if(diff < mindiff) {
+                mindiff = diff;
+                ans = set1 + " " + set2;
+            }
+            return;
+        }
+
+        int ele = arr[indx];
+        // add in set1
+        if(set1.size() + 1 <= (arr.length + 1) / 2) {
+            set1.add(ele);
+            solve(arr, indx + 1, set1, set2, sum1 + ele, sum2);
+            set1.remove(set1.size() - 1);
+        }
+
+        // add in set2
+        if(indx != 0 && set2.size() + 1 <= (arr.length + 1) / 2) {
+            set2.add(ele);
+            solve(arr, indx + 1, set1, set2, sum1, sum2 + ele);
+            set2.remove(set2.size() - 1);
+        }
+	}
+
+    // pattern matching
+    public static void solution(String str, String pattern, int indx, HashMap<Character,String> map, String asf){
+		if(indx == pattern.length()) {
+            if(str.length() == 0)
+                System.out.println(asf + ".");
+            return;
+        }
+        char ch = pattern.charAt(indx);
+        if(map.containsKey(ch) == true) {
+            // already mapped with some string
+            String mapping = map.get(ch);
+            for(int i = 1; i <= str.length(); i++) {
+                String fhalf = str.substring(0, i);
+                String roq = str.substring(i);
+                if(mapping.equals(fhalf) == true) {
+                    solution(roq, pattern, indx + 1, map, asf);
+                }
+            }
+        } else {
+            // try all possibility
+            for(int i = 1; i <= str.length(); i++) {
+                String fhalf = str.substring(0, i);
+                String roq = str.substring(i);
+
+                map.put(ch, fhalf);
+                solution(roq, pattern, indx + 1, map, asf + ch + " -> " + fhalf + ", ");
+                map.remove(ch);
+            }
+        }
+	}
+
+    // word break
+    public static void wordBreak(String str, String ans, HashSet<String> dict){
+		if(str.length() == 0) {
+            System.out.println(ans);
+            return;
+        }
+
+        for(int i = 1; i <= str.length(); i++) {
+            String half = str.substring(0, i);
+            String roq = str.substring(i);
+            if(dict.contains(half) == true) {
+                wordBreak(roq, ans + half + " ", dict);
+            }
+        }
+	}
+
+    // remove invalid paremnmthesis
+    public static void solution(String str, int minRemoval, HashSet<String> ans) {
+        if(minRemoval == 0) {
+            if(getMin(str) == 0 && ans.contains(str) == false) {
+                ans.add(str);
+                System.out.println(str);
+            }
+            return;
+        }
+
+        for(int i = 0; i < str.length(); i++) {
+            String first = str.substring(0, i);
+            String second = str.substring(i + 1);
+
+            solution(first + second, minRemoval - 1, ans);
+        }
+	}
+
+	public static int getMin(String str){
+		Stack<Character> st = new Stack<>();
+
+        for(int i = 0; i < str.length(); i++) {
+            char ch = str.charAt(i);
+            if(ch == '(') {
+                st.push(ch);
+            } else {
+                if(st.size() > 0 && st.peek() == '(') {
+                    st.pop();
+                } else {
+                    st.push(ch);
+                }
+            }
+        }
+		return st.size();
+	}
 
     public static void fun() {
 
