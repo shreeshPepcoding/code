@@ -28,33 +28,112 @@ class DoublyLinkedList {
     private int size = 0;
 
     // function of add in DLL
-    public void addFirst(int data) {
+    private void handleAddWhenSize0(int data) {
+        Node nn = new Node(data);
+        this.head = this.tail = nn;
+        this.size = 1;
+    }
 
+    public void addFirst(int data) {
+        if(this.size == 0) {
+            handleAddWhenSize0(data);
+        } else {
+            Node nn = new Node(data);
+            nn.next = head;
+            head.prev = nn;
+            head = nn;
+            this.size++;
+        }
     }
 
     public void addLast(int data) {
-
+        if(this.size == 0) {
+            handleAddWhenSize0(data);
+        } else {
+            Node nn = new Node(data);
+            nn.prev = tail;
+            tail.next = nn;
+            tail = nn;
+            this.size++;
+        }
     }
 
+    private Node getNodeAt(int pos) {
+        Node temp = this.head;
+        for(int i = 0; i < pos; i++) {
+            temp = temp.next;
+        }
+        return temp;
+    }
+    
     public void addAt(int data, int pos) {
-
+        if(pos < 0 || pos > this.size) {
+            System.out.println("Invalid index");
+            return;
+        } else if(pos == 0) {
+            addFirst(data);
+        } else if(pos == this.size) {
+            addLast(data);
+        } else {
+            Node nn = new Node(data);
+            Node nm1 = getNodeAt(pos - 1);
+            nn.next = nm1.next;
+            nm1.next.prev = nn;
+            nm1.next = nn;
+            nn.prev = nm1;
+            this.size++;
+        }
     }
 
     private void addAfter(int data, Node node) {
-
+        if(node == this.tail) {
+            addFirst(data);
+            return;
+        }
+        Node nn = new Node(data);
+        nn.next = node.next;
+        node.next.prev = nn;
+        node.next = nn;
+        nn.prev = node;
+        this.size++;
     }
 
     private void addBefore(int data, Node node) {
-
+        if(node == head) {
+            addFirst(data);
+            return;
+        }
+        Node nn = new Node(data);
+        nn.prev = node.prev;
+        node.prev.next = nn;
+        nn.next = node;
+        node.prev = nn;
+        this.size++;
     }
 
     // functions of Display in DLL
     public void displayForward() {
-
+        Node temp = this.head;
+        System.out.print("[");
+        while(temp != this.tail) {
+            System.out.print(temp.data + ", ");
+            temp = temp.next;
+        }
+        if(this.tail != null)
+           System.out.print(this.tail.data);
+        System.out.println("]");
     }
 
     public void displayBackward() {
-
+        Node temp = this.tail;
+        System.out.print("[");
+        while(temp != this.head) {
+            System.out.print(temp.data + ", ");
+            temp = temp.prev;
+        }
+        if(this.head != null)
+           System.out.print(this.head.data);
+        System.out.println("]");
     }
 
     // size function
@@ -63,41 +142,104 @@ class DoublyLinkedList {
     }
 
     // function of remove in DLL
+    private int handleRemoveWhenSize1() {
+        int val = this.head.data;
+        this.head = this.tail = null;
+        this.size = 0;
+        return val;
+    }
+
     public int removeFirst() {
-        return 0;
+        if(this.size == 0) {
+            return -1;
+        } else if(this.size == 1) {
+            return handleRemoveWhenSize1();
+        } else {
+            int val = this.head.data;
+            this.head = this.head.next;
+            this.head.prev = null;
+
+            this.size--;
+            return val;
+        }
     }
 
     public int removeLast() {
-        return 0;
+        if(this.size == 0) {
+            return -1;
+        } else if(this.size == 1) {
+            return handleRemoveWhenSize1();
+        } else {
+            int val = this.tail.data;
+            this.tail = this.tail.prev;
+            this.tail.next = null;
+            this.size--;
+            return val;
+        }
     }
 
     public int removeAt(int pos) {
-        return 0;
+        if(pos < 0 || pos >= this.size) {
+            return -1;
+        } else if(pos == 0) {
+            return removeFirst();
+        } else if(pos == this.size - 1) {
+            return removeLast();
+        } else {
+            Node node = getNodeAt(pos);
+            return removeNode(node);
+        }
     }
 
     private int removeAfter(Node node) {
-        return 0;
+        if(node.next == null) {
+            return -1;
+        }
+        return removeNode(node.next);
     }
 
     private int removeBefore(Node node) {
-        return 0;
+        if(node.prev == null) {
+            return -1;
+        }
+        return removeNode(node.prev);
     }
 
     private int removeNode(Node node) {
-        return 0;
+        if(node == this.head) {
+            return removeFirst();
+        } else if(node == this.tail) {
+            return removeLast();
+        }  
+        int val = node.data;
+        Node nm1 = node.prev;
+        Node np1 = node.next;
+
+        nm1.next = np1;
+        np1.prev = nm1;
+        this.size--;
+        return val;
     }
 
     // get in DLL
     public int getFirst() {
-        return 0;
+        if(this.size == 0) {
+            return -1;
+        }
+        return head.data;
     }
 
     public int getLast() {
-        return 0;
+        if(this.size == 0) return -1;
+
+        return tail.data;
     }
 
     public int getAt(int pos) {
-        return 0;
+        if(pos < 0 || pos >= this.size) {
+            return -1;
+        }
+        return getNodeAt(pos).data;
     }
 }
 

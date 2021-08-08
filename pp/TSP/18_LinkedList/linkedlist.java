@@ -745,6 +745,17 @@ public class linkedlist {
         return smaller.next;
     }
 
+    // reverse in K Group
+    public static ListNode reverseInKGroup(ListNode head, int k) {
+        return null;
+    }
+
+    // reverse in range
+    public static ListNode reverseInRange(ListNode head, int n, int m) {
+        return null;
+    }
+
+
     public static void ques() {
         // lists
     }
