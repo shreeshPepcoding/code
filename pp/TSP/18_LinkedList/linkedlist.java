@@ -745,6 +745,9 @@ public class linkedlist {
         return smaller.next;
     }
 
+    // =========HOME WORK=============== 8th August 2021
+
+    // leetcode 25, https://leetcode.com/problems/reverse-nodes-in-k-group/
     // reverse in K Group
     public static ListNode reverseInKGroup(ListNode head, int k) {
         return null;

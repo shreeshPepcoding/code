@@ -68,7 +68,7 @@ class DoublyLinkedList {
     
     public void addAt(int data, int pos) {
         if(pos < 0 || pos > this.size) {
-            System.out.println("Invalid index");
+            System.out.println("IndexIsInValid: -1");
             return;
         } else if(pos == 0) {
             addFirst(data);
@@ -151,6 +151,7 @@ class DoublyLinkedList {
 
     public int removeFirst() {
         if(this.size == 0) {
+            System.out.print("ListIsEmpty: ");
             return -1;
         } else if(this.size == 1) {
             return handleRemoveWhenSize1();
@@ -166,6 +167,7 @@ class DoublyLinkedList {
 
     public int removeLast() {
         if(this.size == 0) {
+            System.out.print("ListIsEmpty: ");
             return -1;
         } else if(this.size == 1) {
             return handleRemoveWhenSize1();
@@ -180,6 +182,7 @@ class DoublyLinkedList {
 
     public int removeAt(int pos) {
         if(pos < 0 || pos >= this.size) {
+            System.out.print("IndexIsInValid: ");
             return -1;
         } else if(pos == 0) {
             return removeFirst();
@@ -193,6 +196,7 @@ class DoublyLinkedList {
 
     private int removeAfter(Node node) {
         if(node.next == null) {
+            System.out.print("LocationIsInvalid: ");
             return -1;
         }
         return removeNode(node.next);
@@ -200,6 +204,7 @@ class DoublyLinkedList {
 
     private int removeBefore(Node node) {
         if(node.prev == null) {
+            System.out.print("LocationIsInvalid: ");
             return -1;
         }
         return removeNode(node.prev);
@@ -241,6 +246,11 @@ class DoublyLinkedList {
         }
         return getNodeAt(pos).data;
     }
+
+    public boolean isEmpty() {
+        return this.size == 0;
+    }
+
 }
 
 
