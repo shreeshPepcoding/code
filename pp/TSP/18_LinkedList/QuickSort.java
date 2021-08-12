@@ -15,10 +15,14 @@ public class QuickSort {
         // PPair -> partiton pair 
         ListNode pnm1 = null; // partition node - 1
         ListNode pn; // partition node
+        ListNode head2;
+        ListNode tail2;
 
-        public PPair(ListNode pnm1, ListNode pn) {
+        public PPair(ListNode pnm1, ListNode pn, ListNode head2, ListNode tail2) {
             this.pnm1 = pnm1;
             this.pn = pn;
+            this.head2 = head2;
+            this.tail2 = tail2;
         }
     }
 
@@ -51,7 +55,7 @@ public class QuickSort {
         }
         t2.next = null;
         t1.next = greater.next;
-        return new PPair(pnm1 == smaller ? null : pnm1, pivot);
+        return new PPair(pnm1 == smaller ? null : pnm1, pivot, smaller.next, t2);
     }
 
     public static QPair quickSort(ListNode head, ListNode tail) {
@@ -64,13 +68,17 @@ public class QuickSort {
             // only right call
             ListNode head2 = pivot.next;
             pivot.next = null;
-            QPair right = quickSort(head2, tail);
+
+            QPair right = quickSort(head2, part.tail2);
+            
             pivot.next = right.nhead;
             return new QPair(pivot, right.ntail);
         } else if(pivot.next == null) {
             // only left call
             part.pnm1.next = null;
-            QPair left = quickSort(head, part.pnm1);
+            
+            QPair left = quickSort(part.head2, part.pnm1);
+            
             left.ntail.next = pivot;
             return new QPair(left.nhead, pivot);
         } else {
@@ -79,8 +87,8 @@ public class QuickSort {
             ListNode head2 = pivot.next;
             pivot.next = null;
 
-            QPair left = quickSort(head, part.pnm1);
-            QPair right = quickSort(head2, tail);
+            QPair left = quickSort(part.head2, part.pnm1);
+            QPair right = quickSort(head2, part.tail2);
 
             left.ntail.next = pivot;
             pivot.next = right.nhead;
