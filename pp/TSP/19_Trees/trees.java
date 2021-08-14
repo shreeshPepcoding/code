@@ -15,6 +15,15 @@ public class trees {
         }
     }
 
+    public static class Node {
+        Node left, right;
+        int data;
+
+        public Node(int data) {
+            this.data = data;
+            this.left = this.right = null;
+        }
+    }
 
     // leetcode 105 https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
     private TreeNode constructPreIn(int[] pre, int[] in, int preSt, int preEnd, int inSt, int inEnd) {
@@ -55,7 +64,7 @@ public class trees {
         return root;
     }
 
-    public TreeNode buildTree(int[] inorder, int[] postorder) {
+    public TreeNode buildTree_2(int[] inorder, int[] postorder) {
         if(inorder.length == 0) return null;
 
         return constructPostIn(postorder, inorder, 0, postorder.length - 1, 0, inorder.length - 1);
@@ -85,6 +94,96 @@ public class trees {
     public TreeNode constructFromPrePost(int[] pre, int[] post) {
         if(pre.length == 0) return null;
         return constructPrePost(pre, post, 0, pre.length - 1, 0, post.length - 1);
+    }
+
+    // https://practice.geeksforgeeks.org/problems/construct-tree-from-inorder-and-levelorder/1
+    public Node constructInLevel(int[] in, ArrayList<Integer> level, int inSt, int inEnd) {
+        if(level.size() == 0) return null;
+
+        Node root = new Node(level.get(0));
+        int indx = inSt;
+        HashSet<Integer> set = new HashSet<>();
+        while(in[indx] != level.get(0)) {
+            set.add(in[indx]);
+            indx++;
+        }
+
+        ArrayList<Integer> llvl = new ArrayList<>(); // left level order
+        ArrayList<Integer> rlvl = new ArrayList<>(); // right level order
+
+        for(int i = 1; i < level.size(); i++) {
+            int val = level.get(i);
+            if(set.contains(val)) {
+                llvl.add(val);
+            } else {
+                rlvl.add(val);
+            }
+        }
+
+        root.left = constructInLevel(in, llvl, inSt, indx - 1);
+        root.right = constructInLevel(in, rlvl, indx + 1, inEnd);
+
+        return root;
+    }
+
+    Node buildTree(int inord[], int lvl[]) {
+        ArrayList<Integer> level = new ArrayList<>();
+        for(int val : lvl)
+            level.add(val);
+        return constructInLevel(inord, level, 0, inord.length - 1);
+    }
+
+    // leetcode 108. Construct BST using inorder
+    // https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/
+    public TreeNode constructBST_using_In(int[] in, int lo, int hi) {
+        if(lo > hi) return null;
+
+        int mid = lo + (hi - lo) / 2;
+        TreeNode root = new TreeNode(in[mid]);
+
+        root.left = constructBST_using_In(in, lo, mid - 1);
+        root.right = constructBST_using_In(in, mid + 1, hi);
+        return root;
+    }
+
+    public TreeNode sortedArrayToBST(int[] nums) {
+        return constructBST_using_In(nums, 0, nums.length - 1);
+    }
+
+    // leetcode 1008 https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/
+    static int indx = 0;
+    public TreeNode bstFromPreorder(int[] pre, int leftRange, int rightRange) {
+        if(indx >= pre.length || pre[indx] < leftRange || rightRange < pre[indx]) {
+            return null;
+        }
+        int val = pre[indx++];
+        TreeNode root = new TreeNode(val);
+
+        root.left = bstFromPreorder(pre, leftRange, val);
+        root.right = bstFromPreorder(pre, val, rightRange);
+        return root;
+    }
+
+    public TreeNode bstFromPreorder(int[] pre) {
+        indx = 0;
+        return bstFromPreorder(pre, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    }
+
+    // construct bst from preorder https://practice.geeksforgeeks.org/problems/construct-bst-from-post-order/1
+    public static Node bstFromPostorder(int[] post, int leftRange, int rightRange) {
+        if(indx < 0 || post[indx] < leftRange || rightRange < post[indx]) {
+            return null;
+        }
+        int val = post[indx--];
+        Node root = new Node(val);
+
+        root.right = bstFromPostorder(post, val, rightRange);
+        root.left = bstFromPostorder(post, leftRange, val);
+        return root;
+    }
+    public static Node constructTree(int post[],int n) {
+        indx = n - 1;
+        return bstFromPostorder(post, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
     public static void main(String[] args) {
