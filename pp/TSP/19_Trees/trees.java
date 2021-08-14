@@ -1,5 +1,7 @@
 import java.util.*;
 
+import javax.swing.rStarterer;
+
 public class trees {
 
     public class TreeNode {
@@ -188,22 +190,104 @@ public class trees {
     }
 
     // leetcode 968. https://leetcode.com/problems/binary-tree-cameras/
+    static int camera = 0;
+    // state 0 -> Camera present
+    // state 1 -> i'm cover
+    // state 2 -> i'm unsafe
+    public int minCamera(TreeNode root) {
+        if(root == null) return 1;
+        int lstate = minCamera(root.left);
+        int rstate = minCamera(root.right);
+        if(lstate == 1 && rstate == 1) {
+            return 2;
+        } else if(lstate == 2 || rstate == 2) {
+            camera++;
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+
     public int minCameraCover(TreeNode root) {
-        
+        camera = 0;
+        int state = minCamera(root);
+        if(state == 2) camera++;
+
+        return camera;
     }
 
     // leetcode 337. https://leetcode.com/problems/house-robber-iii/
+    public class RPair {
+        int withRob;
+        int withoutRob;
+
+        public RPair(int withRob, int withoutRob) {
+            this.withRob = withRob;
+            this.withoutRob = withoutRob;
+        }
+    }
+
+    public RPair robberyInHouse(TreeNode node) {
+        if(node == null) {
+            return new RPair(0, 0);
+        }
+
+        RPair left = robberyInHouse(node.left);
+        RPair right = robberyInHouse(node.right);
+
+        int a = left.withRob;
+        int a_ = right.withRob;
+        int b = left.withoutRob;
+        int b_ = right.withoutRob;
+        int c = node.val;
+        // robbery (Done) b + b' + c
+        // without robbery -> (a + a') vs. (a + b') vs. (a' + b) vs (b + b')
+        int withRob = b + b_ + c;
+        // int withoutRob = Math.max(Math.max(a + a_, a + b_), Math.max(a_ + b, b + b_));
+        // OR
+        int withoutRob = Math.max(a,b) + Math.max(a_, b_);
+
+        return new RPair(withRob, withoutRob);
+    }
+
     public int rob(TreeNode root) {
-        
+        RPair res = robberyInHouse(root);
+        return Math.max(res.withRob, res.withoutRob);
     }
 
     // leetcode 1372. https://leetcode.com/problems/longest-zigzag-path-in-a-binary-tree/
+    public class ZHelper { // zigzag helper
+        int lStart; // if end  at left
+        int rStart; // if end at right
+        int omax; // 
+
+        public ZHelper(int lStart, int rStart, int omax) {
+            this.lStart = lStart;
+            this.rStart = rStart;
+            this.omax = omax;
+        }
+    }
+
+    public ZHelper longest_ZigZag(TreeNode node) {
+        if(node == null) return new ZHelper(-1, -1, 0);
+
+        ZHelper left = longest_ZigZag(node.left);
+        ZHelper right = longest_ZigZag(node.right);
+
+        int startAtL = left.rStart + 1;
+        int startAtR = right.lStart + 1;
+        int omax = Math.max(Math.max(left.omax, right.omax), Math.max(startAtL, startAtR));
+
+        return new ZHelper(startAtL, startAtR, omax);
+    }
+
     public int longestZigZag(TreeNode root) {
-        
+        ZHelper res = longest_ZigZag(root);
+        return res.omax;
     }
 
     // leetcode 98. https://leetcode.com/problems/validate-binary-search-tree/
-    
+
 
     public static void main(String[] args) {
         // trees level 2    
