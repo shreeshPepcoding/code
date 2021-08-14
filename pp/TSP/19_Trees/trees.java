@@ -181,10 +181,29 @@ public class trees {
         root.left = bstFromPostorder(post, leftRange, val);
         return root;
     }
+    
     public static Node constructTree(int post[],int n) {
         indx = n - 1;
         return bstFromPostorder(post, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
+
+    // leetcode 968. https://leetcode.com/problems/binary-tree-cameras/
+    public int minCameraCover(TreeNode root) {
+        
+    }
+
+    // leetcode 337. https://leetcode.com/problems/house-robber-iii/
+    public int rob(TreeNode root) {
+        
+    }
+
+    // leetcode 1372. https://leetcode.com/problems/longest-zigzag-path-in-a-binary-tree/
+    public int longestZigZag(TreeNode root) {
+        
+    }
+
+    // leetcode 98. https://leetcode.com/problems/validate-binary-search-tree/
+    
 
     public static void main(String[] args) {
         // trees level 2    
