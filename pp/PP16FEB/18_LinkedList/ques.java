@@ -22,12 +22,12 @@ public class ques {
             prev = curr;
             curr = next;
         }
-        return prev;
+        return  prev;
     }
 
     // leetcode 876. https://leetcode.com/problems/middle-of-the-linked-list/
     public ListNode middleNode(ListNode head) {
-           
+
     }
 
     public static void main(String[] args) {
