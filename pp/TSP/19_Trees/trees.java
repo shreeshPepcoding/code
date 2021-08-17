@@ -2,6 +2,8 @@ import java.util.*;
 
 import javax.swing.rStarterer;
 
+import jdk.tools.jlink.resources.plugins;
+
 public class trees {
 
     public class TreeNode {
@@ -20,10 +22,11 @@ public class trees {
     public static class Node {
         Node left, right;
         int data;
-
+        public ArrayList<Node> children;
         public Node(int data) {
             this.data = data;
             this.left = this.right = null;
+            this.children = new ArrayList<>();
         }
     }
 
@@ -288,6 +291,188 @@ public class trees {
 
     // leetcode 98. https://leetcode.com/problems/validate-binary-search-tree/
 
+
+    // leetcode 99. https://leetcode.com/problems/recover-binary-search-tree/
+    // pointers[0] -> prev
+    // pointers[1] -> curr
+    // pointers[2] -> a
+    // pointers[3] -> b
+    public void recover_Tree(TreeNode root, TreeNode[] pointers) {
+        if(root == null) return;
+
+        recover_Tree(root.left, pointers);
+        if(pointers[0] == null) {
+            // prev == null
+            pointers[0] = root;
+        } else {
+            pointers[1] = root;
+            if(pointers[0].val > pointers[1].val) {
+                // prev > curr
+                if(pointers[3] == null) {
+                    // first encounter
+                    pointers[2] = pointers[0];
+                    pointers[3] = pointers[1];
+                } else {
+                    // second encounter
+                    pointers[3] = root;
+                }
+            }
+            // move prev and curr
+            pointers[0] = root;
+        }
+        recover_Tree(root.right, pointers);
+    }
+
+    public void recoverTree(TreeNode root) {
+        TreeNode[] pointers = new TreeNode[4];
+        recover_Tree(root, pointers);
+        // swap value for a and b, i.e. pointers[2], pointers[3]
+        int temp = pointers[2].val;
+        pointers[2].val = pointers[3].val;
+        pointers[3].val = temp;
+    }
+
+    // construct bst from level order -> https://practice.geeksforgeeks.org/problems/convert-level-order-traversal-to-bst/1
+    public class LHelper {
+        Node parent;
+        int leftRange;
+        int rightRange;
+        
+        public LHelper(Node parent, int leftRange, int rightRange) {
+            this.parent = parent;
+            this.leftRange = leftRange;
+            this.rightRange = rightRange;
+        }
+    }
+
+    public Node constructBST(int[] arr) {
+        Queue<LHelper> qu = new LinkedList<>();
+        qu.add(new LHelper(null, Integer.MIN_VALUE, Integer.MAX_VALUE));
+        Node root = null;
+        for(int i = 0; i < arr.length; i++) {
+            Node nn = new Node(arr[i]);
+            while(qu.peek().leftRange >= nn.data || qu.peek().rightRange <= nn.data) {
+                qu.remove();
+            }
+            LHelper rem = qu.remove();
+            qu.add(new LHelper(nn, rem.leftRange, nn.data));
+            qu.add(new LHelper(nn, nn.data, rem.rightRange));
+
+            if(rem.parent == null) {
+                root = nn;
+            } else if(rem.parent.data > nn.data) {
+                rem.parent.left = nn;
+            } else {
+                rem.parent.right = nn;
+            }
+        }
+        return root;
+    }
+
+    // leetcode 297.  https://leetcode.com/problems/serialize-and-deserialize-binary-tree/
+    // Encodes a tree to a single string.
+    public void serialize_(TreeNode root, StringBuilder sb) {
+        if(root == null) {
+            sb.append("null#");
+            return;
+        }
+
+        sb.append(root.val + "#");
+        serialize_(root.left, sb);
+        serialize_(root.right, sb);
+    }
+
+    public String serialize(TreeNode root) {
+        StringBuilder sb = new StringBuilder();
+        serialize_(root, sb);
+        return sb.toString();
+    }
+
+    // Decodes your encoded data to tree.
+    public class SPair {
+        TreeNode node;
+        int state;
+        
+        public SPair(TreeNode node, int state) {
+            this.node = node;
+            this.state = state;
+        }
+    }
+    public TreeNode deserialize(String str) {
+        if(str.equals("null#")) return null;
+        String[] data = str.split("#");
+        int indx = 1;
+        TreeNode root = new TreeNode(Integer.parseInt(data[0]));
+
+        Stack<SPair> st = new Stack<>();
+        st.push(new SPair(root, 0));
+
+        while(indx < data.length) {
+            if(st.peek().state == 0) {
+                if(data[indx].equals("null") == true) {
+                    st.peek().state++;
+                    indx++;
+                } else {
+                    TreeNode nn = new TreeNode(Integer.parseInt(data[indx]));
+                    indx++;
+                    st.peek().state++;
+                    st.peek().node.left = nn;
+                    st.push(new SPair(nn, 0));
+                }
+            } else if(st.peek().state == 1) {
+                if(data[indx].equals("null") == true) {
+                    st.peek().state++;
+                    indx++;
+                } else {
+                    TreeNode nn = new TreeNode(Integer.parseInt(data[indx]));
+                    indx++;
+                    st.peek().state++;
+                    st.peek().node.right = nn;
+                    st.push(new SPair(nn, 0));
+                }
+            } else {
+                st.pop();
+            }
+        }
+        return root;
+    }
+
+    // Encodes a tree to a single string.
+    public static void serialize_1(Node node, StringBuilder sb) {
+        sb.append(node.data + "#");
+        for(Node child : node.children) {
+            serialize_1(child, sb);
+        }
+        sb.append("null#");
+    }
+
+    public static String serialize(Node root) {
+        if(root == null) return "null#";
+        StringBuilder sb = new StringBuilder();
+        serialize_1(root, sb);
+        return sb.toString();
+    }
+
+    // Decodes your encoded data to tree.
+    public static Node deserialize(String str) {
+        if(str.equals("null#")) return null;
+
+        String[] data = str.split("#");
+        Node root = new Node(Integer.parseInt(data[0]));
+
+        Stack<Node> st = new Stack<>();
+        st.push(root);
+        for(int i = 1; i < data.length; i++) {
+            if(data[i].equals("null")) {
+                st.pop();
+            } else {
+                Node nn = new Node(Integer.parseInt(data[i]));
+                st.peek().children.add(nn);
+                st.push(nn);
+            }
+        }
+        return root;
+    }
 
     public static void main(String[] args) {
         // trees level 2    
