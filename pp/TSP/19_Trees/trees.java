@@ -1,9 +1,5 @@
 import java.util.*;
 
-import javax.swing.rStarterer;
-
-import jdk.tools.jlink.resources.plugins;
-
 public class trees {
 
     public class TreeNode {
@@ -454,7 +450,7 @@ public class trees {
     }
 
     // Decodes your encoded data to tree.
-    public static Node deserialize(String str) {
+    public static Node deserialize_(String str) {
         if(str.equals("null#")) return null;
 
         String[] data = str.split("#");
@@ -474,6 +470,181 @@ public class trees {
         return root;
     }
 
+    // Width of shadow of binary tree
+    static int lh = 0; // find min in left horizontal
+    static int rh = 0; // find max in right horizontal
+
+    private static void width(TreeNode root, int count) {
+        if(root == null) return;
+
+        if(count < lh) {
+            lh = count;
+        } else if(count > rh) {
+            rh = count;
+        }
+
+        width(root.left, count - 1);
+        width(root.right, count + 1);
+    }
+
+    public static int width(TreeNode root) {
+        if(root == null) return 0;
+        lh = 0;
+        rh = 0;
+        width(root, 0);
+        return rh - lh + 1;
+    }
+
+
+    // vertical order traversal - I
+    // https://practice.geeksforgeeks.org/problems/print-a-binary-tree-in-vertical-order/1
+    static class Pair {
+        Node node;
+        int count;
+
+        public Pair(Node node, int count) {
+            this.node = node;
+            this.count = count;
+        }
+    }
+
+    static ArrayList<Integer> verticalOrder(Node root) {
+        Queue<Pair> qu = new LinkedList<>();
+        qu.add(new Pair(root, 0));
+        HashMap<Integer, ArrayList<Integer>> map = new HashMap<>();
+
+        int lh = 0; // left horizontal
+        int rh = 0; // right horizontal 
+        while(qu.size() > 0) {
+            // 1. get + remove
+            Pair rem = qu.remove();
+            // 2. work
+            if(map.containsKey(rem.count)) {
+                map.get(rem.count).add(rem.node.data);
+            } else {
+                ArrayList<Integer> list = new ArrayList<>();
+                list.add(rem.node.data);
+                map.put(rem.count, list);
+            }
+            if(rem.count < lh) {
+                lh = rem.count;
+            } else if(rh < rem.count) {
+                rh = rem.count;
+            }
+            // 3. add children
+            if(rem.node.left != null) {
+                qu.add(new Pair(rem.node.left, rem.count - 1));
+            }
+            if(rem.node.right != null) {
+                qu.add(new Pair(rem.node.right, rem.count + 1));
+            }
+        }
+        ArrayList<Integer> res = new ArrayList<>();
+        for(int i = lh; i <= rh; i++) {
+            for(int val : map.get(i)) {
+                res.add(val);
+            }
+        }
+        return res;
+    }
+
+    // method 2 without hashmap
+    public static ArrayList<ArrayList<Integer>> verticalOrder2(TreeNode root) {
+        lh = 0;
+        rh = 0;
+        int wd = width(root);
+        ArrayList<ArrayList<Integer>> res = new ArrayList<>();
+        for(int i = 0; i < wd; i++)
+            res.add(new ArrayList<>());
+
+        Queue<Pair> qu = new LinkedList<>();
+        qu.add(new Pair(root, Math.abs(lh)));
+
+        while(qu.size() > 0) {
+            // 1. get + remove
+            Pair rem = qu.remove();
+            // 2. work
+            res.get(rem.count).add(rem.node.val);
+            // 3. add children
+            if(rem.node.left != null) {
+                qu.add(new Pair(rem.node.left, rem.count - 1));
+            }
+            if(rem.node.right != null) {
+                qu.add(new Pair(rem.node.right, rem.count + 1));
+            }
+        }
+        return res;
+    }
+
+
+    // vertical order traversal - II
+    // leetcode 987 https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/
+    public List<List<Integer>> verticalTraversal(TreeNode root) {
+        
+    }
+
+    // top view
+    // link : https://practice.geeksforgeeks.org/problems/top-view-of-binary-tree/1
+    static ArrayList<Integer> topView(Node root) {
+        lh = 0;
+        rh = 0;
+        int wd = width(root);
+
+        ArrayList<Integer> res = new ArrayList<>();
+        for(int i = 0; i < wd; i++)
+            res.add(null);
+
+        Queue<Pair> qu = new LinkedList<>();
+        qu.add(new Pair(root, Math.abs(lh)));
+
+        while(qu.size() > 0) {
+            // 1. get + remove
+            Pair rem = qu.remove();
+            // 2. work
+            if(res.get(rem.count) == null)
+                res.set(rem.count, rem.node.data);
+            // 3. add children
+            if(rem.node.left != null) {
+                qu.add(new Pair(rem.node.left, rem.count - 1));
+            }
+            if(rem.node.right != null) {
+                qu.add(new Pair(rem.node.right, rem.count + 1));
+            }
+        }
+        return res;
+    }
+
+    // bottom view
+    // link : https://practice.geeksforgeeks.org/problems/bottom-view-of-binary-tree/1
+    public ArrayList <Integer> bottomView(Node root) {
+        if(root == null) return new ArrayList<>();
+        lh = 0;
+        rh = 0;
+        int wd = width(root);
+
+        ArrayList<Integer> res = new ArrayList<>();
+        for(int i = 0; i < wd; i++)
+            res.add(null);
+
+        Queue<Pair> qu = new LinkedList<>();
+        qu.add(new Pair(root, Math.abs(lh)));
+
+        while(qu.size() > 0) {
+            // 1. get + remove
+            Pair rem = qu.remove();
+            // 2. work
+            // if(res.get(rem.count) == null)
+                res.set(rem.count, rem.node.data);
+            // 3. add children
+            if(rem.node.left != null) {
+                qu.add(new Pair(rem.node.left, rem.count - 1));
+            }
+            if(rem.node.right != null) {
+                qu.add(new Pair(rem.node.right, rem.count + 1));
+            }
+        }
+        return res;
+    }
     public static void main(String[] args) {
         // trees level 2    
     }
