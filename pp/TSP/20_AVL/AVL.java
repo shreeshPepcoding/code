@@ -47,7 +47,7 @@ public class AVL {
     public static Node getRotation(Node node) {
         updateHeightAndBalance(node);
         if(node.balance == 2) {
-            if(node.left.balance == 1) {
+            if(node.left.balance == 1 || node.left.balance == 0) {
                 // LL Structure -> call for rightRotation
                 return rightRotation(node);
             } else if(node.left.balance == -1) {
@@ -62,7 +62,7 @@ public class AVL {
                 // RL Structure
                 node.right = rightRotation(node.right);
                 return leftRotation(node);
-            } else if(node.right.balance == -1) {
+            } else if(node.right.balance == -1 || node.right.balance == 0) {
                 // RR Struture
                 return leftRotation(node);
             }
@@ -71,15 +71,53 @@ public class AVL {
     }
 
     public static Node add(Node node, int data) {
+        if(node == null) {
+            return new Node(data);
+        }
+        if(data < node.data) {
+            node.left = add(node.left, data);
+        } else {
+            node.right = add(node.right, data);
+        }
+        node = getRotation(node);
+        return node;
+    }
 
+    public static int max(Node node) {
+        if(node.right == null) return node.data;
+        return max(node.right);
     }
 
     public static Node remove(Node node, int data) {
-
+        if(node == null) return null;
+        if(data < node.data) {
+            node.left = remove(node.left, data);
+        } else if(node.data < data) {
+            node.right = remove(node.right, data);
+        } else {
+            // leaf child + have only left child + have only right child + both child
+            if(node.left == null || node.right == null) {
+                // leaf child + have only left child + have only right child
+                return node.left == null ? node.right : node.left;
+            }
+            int lmax = max(node.left);
+            node.data = lmax;
+            node.left = remove(node.left, lmax);
+        }
+        node = getRotation(node);
+        return node;
     }
 
     public static void display(Node node) {
+        if(node == null) return;
+        String str = "";
+        str += node.left != null ? node.left.data + " <- ": ". <- ";
+        str += node.data;
+        str += node.right != null ? " -> " + node.right.data : " -> .";
 
+        System.out.println(str);
+        display(node.left);
+        display(node.right);
     }
 
     public static void fun() {
@@ -87,15 +125,18 @@ public class AVL {
 
         Node node = null;
         for(int i = 0; i < arr.length; i++) {
-            add(node, arr[i]);
+            node = add(node, arr[i]);
+            // display(node);
+            // System.out.println("=====================================");
         }
 
+        int[] arr2 = {50, 70};
         display(node);
-        System.out.println("-----------------------------------------");
-        for(int val : arr) {
-            remove(node, val);
+        System.out.println("---------------------");
+        for(int val : arr2) {
+            node = remove(node, val);
             display(node);
-            System.out.println("=====================================");
+            System.out.println("====================");
         }
     }
 
