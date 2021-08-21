@@ -71,7 +71,7 @@ public class AVL {
     }
 
     public static Node add(Node node, int data) {
-        
+
     }
 
     public static Node remove(Node node, int data) {
@@ -83,7 +83,20 @@ public class AVL {
     }
 
     public static void fun() {
+        int[] arr = {10, 20, 30, 40, 50, 60, 70, 80, 90};
 
+        Node node = null;
+        for(int i = 0; i < arr.length; i++) {
+            add(node, arr[i]);
+        }
+
+        display(node);
+        System.out.println("-----------------------------------------");
+        for(int val : arr) {
+            remove(node, val);
+            display(node);
+            System.out.println("=====================================");
+        }
     }
 
     public static void main(String[] args) {
