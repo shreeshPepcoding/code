@@ -498,13 +498,17 @@ public class trees {
 
     // vertical order traversal - I
     // https://practice.geeksforgeeks.org/problems/print-a-binary-tree-in-vertical-order/1
-    static class Pair {
-        Node node;
+    static class Pair implements Comparable<Pair>{
+        TreeNode node;
         int count;
 
-        public Pair(Node node, int count) {
+        public Pair(TreeNode node, int count) {
             this.node = node;
             this.count = count;
+        } 
+
+        public int compareTo(Pair o) {
+            return this.node.val - o.node.val;
         }
     }
 
@@ -580,8 +584,37 @@ public class trees {
     // vertical order traversal - II
     // leetcode 987 https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/
     public List<List<Integer>> verticalTraversal(TreeNode root) {
-        
-    }
+        lh = 0;
+        rh = 0;
+        int wd = width(root);
+        List<List<Integer>> res = new ArrayList<>();
+        for(int i = 0; i < wd; i++)
+            res.add(new ArrayList<>());
+
+        PriorityQueue<Pair> mainQ = new PriorityQueue<>();
+            PriorityQueue<Pair> childQ = new PriorityQueue<>();
+            
+            mainQ.add(new Pair(root, Math.abs(lh)));
+
+            while(mainQ.size() > 0) {
+                while(mainQ.size() > 0) {
+                    Pair rem = mainQ.remove();
+                    res.get(rem.count).add(rem.node.val);
+
+                    if(rem.node.left != null) {
+                        childQ.add(new Pair(rem.node.left, rem.count - 1));
+                    }
+                    if(rem.node.right != null) {
+                        childQ.add(new Pair(rem.node.right, rem.count + 1));
+                    }
+                }
+                // swap the queues
+                PriorityQueue<Pair> temp = mainQ;
+                mainQ = childQ;
+                childQ = temp;
+            }
+            return res;
+        }
 
     // top view
     // link : https://practice.geeksforgeeks.org/problems/top-view-of-binary-tree/1
@@ -645,6 +678,133 @@ public class trees {
         }
         return res;
     }
+   
+    public static ArrayList<ArrayList<Integer>> diagonalOrder(TreeNode root) {
+        Queue<TreeNode> qu = new LinkedList<>();
+        qu.add(root);
+        ArrayList<ArrayList<Integer>> res = new ArrayList<>();
+        if(root == null) return res;
+        while(qu.size() > 0) {
+            int factorSize = qu.size();
+            ArrayList<Integer> list = new ArrayList<>();
+            while(factorSize-- > 0) {
+                TreeNode factor = qu.remove();
+                while(factor != null) {
+                    list.add(factor.val);
+                    if(factor.left != null)
+                        qu.add(factor.left);
+
+                    factor = factor.right;
+                }
+            }
+            res.add(list);
+        }
+        return res;
+    }  
+
+    // diagonal anticlock-wise
+    public static ArrayList<ArrayList<Integer>> diagonalOrderAntiClockWise(TreeNode root) {
+        Queue<TreeNode> qu = new LinkedList<>();
+        qu.add(root);
+        ArrayList<ArrayList<Integer>> res = new ArrayList<>();
+        if(root == null) return res;
+        while(qu.size() > 0) {
+            int factorSize = qu.size();
+            ArrayList<Integer> list = new ArrayList<>();
+            while(factorSize-- > 0) {
+                TreeNode factor = qu.remove();
+                while(factor != null) {
+                    list.add(factor.val);
+                    if(factor.right != null)
+                        qu.add(factor.right);
+
+                    factor = factor.left;
+                }
+            }
+            res.add(list);
+        }
+        return res;
+    }
+
+
+    // diagonal order sum
+    public static ArrayList<Integer> diagonalOrderSum(TreeNode root) {
+        Queue<TreeNode> qu = new LinkedList<>();
+        qu.add(root);
+        ArrayList<Integer> res = new ArrayList<>();
+        if(root == null) return res;
+        while(qu.size() > 0) {
+            int factorSize = qu.size();
+            int sum = 0;
+            while(factorSize-- > 0) {
+                TreeNode factor = qu.remove();
+                while(factor != null) {
+                    sum += factor.val;
+                    if(factor.left != null)
+                        qu.add(factor.left);
+
+                    factor = factor.right;
+                }
+            }
+            res.add(sum);
+        }
+        return res;
+    }
+    
+    // vertical order sum
+    public static ArrayList<Integer> verticalOrderSum(TreeNode root) {
+        if(root == null) return new ArrayList<>();
+        lh = 0;
+        rh = 0;
+        int wd = width(root);
+
+        ArrayList<Integer> res = new ArrayList<>();
+        for(int i = 0; i < wd; i++)
+            res.add(0);
+
+        Queue<Pair> qu = new LinkedList<>();
+        qu.add(new Pair(root, Math.abs(lh)));
+
+        while(qu.size() > 0) {
+            // 1. get + remove
+            Pair rem = qu.remove();
+            // 2. work
+            // if(res.get(rem.count) == null)
+                res.set(rem.count, res.get(rem.count) + rem.node.val);
+            // 3. add children
+            if(rem.node.left != null) {
+                qu.add(new Pair(rem.node.left, rem.count - 1));
+            }
+            if(rem.node.right != null) {
+                qu.add(new Pair(rem.node.right, rem.count + 1));
+            }
+        }
+        return res;
+    }
+
+    // node to root path
+    public static ArrayList<TreeNode> nodeToRootPath(TreeNode node, int data) {
+        if(node == null) {
+            return new ArrayList<>();
+        }
+        ArrayList<TreeNode> res = new ArrayList<>();
+        if(node.val == data) {
+            res.add(node);
+            return res;
+        }
+        ArrayList<TreeNode> lres = nodeToRootPath(node.left, data);
+        if(lres.size() > 0) {
+            lres.add(node);
+            return lres;
+        }
+        ArrayList<TreeNode> rres = nodeToRootPath(node.right, data);
+        if(rres.size() > 0) {
+            rres.add(node);
+            return rres;
+        }
+        return res;
+    }
+
     public static void main(String[] args) {
         // trees level 2    
     }
