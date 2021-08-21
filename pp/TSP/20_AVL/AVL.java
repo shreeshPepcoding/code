@@ -70,8 +70,17 @@ public class AVL {
         return node;
     }
 
-    
+    public static Node add(Node node, int data) {
+        
+    }
 
+    public static Node remove(Node node, int data) {
+
+    }
+
+    public static void display(Node node) {
+
+    }
 
     public static void fun() {
 
