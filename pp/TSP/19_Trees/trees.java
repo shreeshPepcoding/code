@@ -805,6 +805,176 @@ public class trees {
         return res;
     }
 
+    // leetcode 173 https://leetcode.com/problems/binary-search-tree-iterator/
+    class BSTIterator {
+
+        class Pair {
+            TreeNode node;
+            int state;
+            
+            public Pair(TreeNode node, int state) {
+                this.node = node;
+                this.state = state;
+            }
+        }
+        
+        private int itr_val = -1;
+        
+        private Stack<Pair> st;
+        
+        public BSTIterator(TreeNode root) {
+            st = new Stack<>();
+            st.push(new Pair(root, 0));
+            next();
+        }
+        
+        public int next() {
+            int val2 = itr_val;
+            itr_val = -1;
+            while(st.size() > 0) {
+                Pair top = st.peek();
+                if(top.state == 0) {
+                    if(top.node.left != null) {
+                        st.push(new Pair(top.node.left, 0));
+                    }
+                    top.state++;
+                } else if(top.state == 1) {
+                    if(top.node.right != null) {
+                        st.push(new Pair(top.node.right, 0));
+                    }
+                    top.state++;
+                    itr_val = top.node.val;
+                    break;
+                } else {
+                    st.pop();
+                }
+            }
+            return val2;
+        }
+        
+        public boolean hasNext() {
+            if(itr_val == -1) return false;
+            else return true;
+        }
+    }
+
+    // method 2
+    class BSTIterator2 {
+        private Stack<TreeNode> st;
+
+        private void addAllLeft(TreeNode node) {
+            while(node != null) {
+                st.push(node);
+                node = node.left;
+            }
+        }
+
+        public BSTIterator2(TreeNode root) {
+            st = new Stack<>();
+            addAllLeft(root);
+        }
+        
+        public int next() {
+            TreeNode rem = st.pop();
+            if(rem.right != null) {
+                addAllLeft(rem.right);
+            }
+            return rem.val;
+        }
+        
+        public boolean hasNext() {
+            return st.size() != 0;
+        }
+    }
+
+    // root to all leaf
+    private static void rootToAllLeafPath(TreeNode node, ArrayList<Integer> subres, 
+    ArrayList<ArrayList<Integer>> res) {
+        if(node == null) return;
+
+        if(node.left == null && node.right == null) {
+            // leaf
+            ArrayList<Integer> duplicate = new ArrayList<>();
+            for(int val : subres) {
+                duplicate.add(val);
+            }
+            duplicate.add(node.val);
+            res.add(duplicate);
+            return;
+        }
+
+        subres.add(node.val);
+        rootToAllLeafPath(node.left, subres, res);
+        rootToAllLeafPath(node.right, subres, res);
+        subres.remove(subres.size() - 1);
+    }
+
+    public static ArrayList<ArrayList<Integer>> rootToAllLeafPath(TreeNode root) {
+        ArrayList<ArrayList<Integer>> res = new ArrayList<>();
+        ArrayList<Integer> subres = new ArrayList<>();
+        rootToAllLeafPath(root, subres, res);
+        return res;
+    }
+
+    // single child parent
+    private static void exactlyOneChild(TreeNode root, ArrayList<Integer> ans) {
+        if(root == null || (root.left == null && root.right == null)) {
+            // is root null and leaf -> skip
+            return;
+        }
+
+        if(root.left == null || root.right == null) {
+            ans.add(root.val);
+        }
+
+        exactlyOneChild(root.left, ans);
+        exactlyOneChild(root.right, ans);
+    }
+
+    public static ArrayList<Integer> exactlyOneChild(TreeNode root) {
+        ArrayList<Integer> ans = new ArrayList<>();
+        exactlyOneChild(root, ans);
+        return ans;
+    }
+
+    // count of single child parent
+    static int count = 0;
+
+    public static void countExactlyOneChild_(TreeNode root) {
+        if(root == null || (root.left == null && root.right == null)) {
+            // is root null and leaf -> skip
+            return;
+        }
+
+        if(root.left == null || root.right == null) {
+            count++;
+        }
+        countExactlyOneChild_(root.left);
+        countExactlyOneChild_(root.right);
+    }
+
+    public static int countExactlyOneChild1(TreeNode node) {
+        count = 0;
+        countExactlyOneChild_(node);
+        return count;
+    }
+
+    // method 2 -> with int return type i.e. without static variable;
+    public static int countExactlyOneChild(TreeNode root) {
+        if(root == null || (root.left == null && root.right == null)) {
+            // is root null and leaf -> skip
+            return 0;
+        }
+
+        int ans = 0;
+        if(root.left == null || root.right == null) {
+            ans = 1;
+        }
+        ans += countExactlyOneChild(root.left);
+        ans += countExactlyOneChild(root.right);
+        return ans;
+    }
+
     public static void main(String[] args) {
         // trees level 2    
     }
