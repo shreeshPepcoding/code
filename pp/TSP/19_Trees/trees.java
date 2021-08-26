@@ -975,6 +975,163 @@ public class trees {
         return ans;
     }
 
+    // morris inorder traversal
+    public static TreeNode getRightMostNode(TreeNode temp, TreeNode curr) {
+        while(temp.right != null && temp.right != curr) {
+            temp = temp.right;
+        }
+        return temp;
+    }
+
+    public static ArrayList<Integer> morrisInTraversal(TreeNode node) {
+        ArrayList<Integer> ans = new ArrayList<>();
+        TreeNode curr = node;
+        while(curr != null) {
+            TreeNode leftNode = curr.left;
+            if(leftNode != null) {
+                TreeNode rightMostNode = getRightMostNode(leftNode, curr);
+                if(rightMostNode.right != curr) {
+                    // create a thread and move toward left tree
+                    rightMostNode.right = curr; // thread creation
+                    curr = curr.left;
+                } else {
+                    // if rightmostnode.right == curr that means left subtree is completely processed
+                    // 1. print the value
+                    ans.add(curr.val);
+                    // 2. break thread
+                    rightMostNode.right = null;
+                    // 3. move toward right
+                    curr = curr.right;
+                }
+            } else {
+                // 1. print value
+                ans.add(curr.val);
+                // 2. move toward right
+                curr = curr.right;
+            }
+        }
+        return ans;
+    }
+
+    // morris preorder traversal
+    public static ArrayList<Integer> morrisPreTraversal(TreeNode node) {
+        ArrayList<Integer> res = new ArrayList<>();
+        TreeNode curr = node;
+
+        while(curr != null) {
+            TreeNode leftNode = curr.left;
+            if(leftNode != null) {
+                TreeNode rightMostNode = getRightMostNode(leftNode, curr);
+                if(rightMostNode.right != curr) {
+                    res.add(curr.val);
+                    rightMostNode.right = curr;
+                    curr = curr.left;
+                } else {
+                    rightMostNode.right = null;
+                    curr = curr.right;
+                }
+            } else {
+                res.add(curr.val);
+                curr = curr.right;
+            }
+        }
+        return res;
+    }
+
+    // morris post order
+    public static TreeNode getLeftMostNode(TreeNode temp, TreeNode curr) {
+        while(temp.left != null && temp.left != curr) {
+            temp = temp.left;
+        }
+        return temp;
+    }
+
+    public static ArrayList<Integer> morrisPostTraversal(TreeNode node) {
+        ArrayList<Integer> res = new ArrayList<>();
+        TreeNode curr = node;
+
+        while(curr != null) {
+            TreeNode rightNode = curr.right;
+            if(rightNode != null) {
+                TreeNode leftMostNode = getLeftMostNode(rightNode, curr);
+                if(leftMostNode.left != curr) {
+                    res.add(curr.val);
+                    leftMostNode.left = curr;
+                    curr = curr.right;
+                } else {
+                    leftMostNode.left = null;
+                    curr = curr.left;
+                }
+            } else {
+                res.add(curr.val);
+                curr = curr.left;
+            }
+        }
+        // reverse of res
+        int left = 0;
+        int right = res.size() - 1;
+
+        while(left < right) {
+            int val1 = res.get(left);
+            int val2 = res.get(right);
+            res.set(right, val1);
+            res.set(left, val2);
+        }
+        return res;
+    }
+
+    // bst iterator using morris traversal
+    class BSTIterator_3 {
+        private TreeNode res = null;
+        private TreeNode curr = null;
+        public TreeNode getRightMostNode(TreeNode temp, TreeNode curr) {
+            while(temp.right != null && temp.right != curr) {
+                temp = temp.right;
+            }
+            return temp;
+        }
+        
+        public void morrisInTraversal(TreeNode node) {
+            this.curr = node;
+            while(curr != null) {
+                TreeNode leftNode = curr.left;
+                if(leftNode != null) {
+                    TreeNode rightMostNode = getRightMostNode(leftNode, curr);
+                    if(rightMostNode.right != curr) {
+                        rightMostNode.right = curr;
+                        curr = curr.left;
+                    } else {
+                        this.res = curr;
+                        rightMostNode.right = null;
+                        curr = curr.right;
+                        break;
+                    }
+                } else {
+                    this.res = curr;
+                    curr = curr.right;
+                    break;
+                }
+            }
+        }
+        
+        public BSTIterator_3(TreeNode root) {
+            this.curr = root;
+        }
+        
+        public int next() {
+            morrisInTraversal(this.curr);
+            int val = res.val;
+            return val;
+        }
+        
+        public boolean hasNext() {
+            return this.curr != null;
+        }
+    }
+
+
+
+
     public static void main(String[] args) {
         // trees level 2    
     }
