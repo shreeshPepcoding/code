@@ -495,7 +495,6 @@ public class trees {
         return rh - lh + 1;
     }
 
-
     // vertical order traversal - I
     // https://practice.geeksforgeeks.org/problems/print-a-binary-tree-in-vertical-order/1
     static class Pair implements Comparable<Pair>{
@@ -725,7 +724,6 @@ public class trees {
         }
         return res;
     }
-
 
     // diagonal order sum
     public static ArrayList<Integer> diagonalOrderSum(TreeNode root) {
@@ -1129,8 +1127,206 @@ public class trees {
         }
     }
 
+    // leetcode 113, https://leetcode.com/problems/path-sum-ii/
+    private void pathSum(TreeNode root, int targetSum, int ssf, List<Integer> psf, List<List<Integer>> res) {
+        if(root == null) return;
+
+        if(root.left == null && root.right == null) {
+            if(ssf + root.val == targetSum) {
+                // create a duplicate
+                List<Integer> duplicate = new ArrayList<>();
+                for(int val : psf)
+                    duplicate.add(val);
+                // insert root.val in duplicate
+                duplicate.add(root.val);
+                // add duplicate in res
+                res.add(duplicate);
+            }
+            return;
+        }
+
+        psf.add(root.val);
+        pathSum(root.left, targetSum, ssf + root.val, psf, res);
+        pathSum(root.right, targetSum, ssf + root.val, psf, res);
+        psf.remove(psf.size() - 1);
+    }
+
+    public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
+        List<List<Integer>> res = new ArrayList<>();
+        List<Integer> subres = new ArrayList<>();
+        pathSum(root, targetSum, 0, subres, res);
+        return res;
+    }
+
+    // diameter of binary tree
+    // leetcode 543 https://leetcode.com/problems/diameter-of-binary-tree/
+    // method 1 -> with height call
+    private int height(TreeNode node) {
+        if(node == null) return -1;
+
+        int lh = height(node.left);
+        int rh = height(node.right);
+
+        return Math.max(lh, rh) + 1;
+    } 
+
+    private int diameter1(TreeNode node) {
+        if(node == null) return 0;
+
+        int ld = diameter1(node.left);
+        int rd = diameter1(node.right);
+
+        int lh = height(node.left);
+        int rh = height(node.right);
+        int rootDia = lh + rh + 2;
+        
+        // return max of all three possibility
+        return Math.max(rootDia, Math.max(ld, rd));
+    }
+
+    // method 2 -> with return height amd static diameter variable, travel and change stretagy
+    static int diameter = 0;
+    private int diamater2(TreeNode node) {
+        if(node == null) return -1;
+
+        int lh = diamater2(node.left);
+        int rh = diamater2(node.right);
+
+        diameter = Math.max(diameter, lh + rh + 2);
+
+        return Math.max(lh, rh) + 1;
+    } 
+
+    // method 3 -> with wrapper class having diameter and height
+    private class DiaPair {
+        int height;
+        int diamter;
+
+        DiaPair(int height, int diameter) {
+            this.height = height;
+            this.diamter = diameter;
+        }
+
+        DiaPair() {
+            this.height = -1;
+            this.diamter = 0;
+        }
+    }
+
+    private DiaPair diameter3(TreeNode node) {
+        if(node == null) return new DiaPair();
+
+        DiaPair lpair = diameter3(node.left);
+        DiaPair rpair = diameter3(node.right);
+
+        DiaPair mpair = new DiaPair();
+        mpair.height = Math.max(lpair.height, rpair.height) + 1;
+        mpair.diamter = Math.max(lpair.height + rpair.height + 2, 
+                        Math.max(lpair.diamter, rpair.diamter));
+
+        return mpair;
+    }
+
+    public int diameterOfBinaryTree(TreeNode root) {
+        // int dia = diameter1(root);
+
+        diameter = 0;
+        diamater2(root);
+        int dia = diameter;
+
+        // int dia = diameter3(root).diamter;
+        return dia;
+    }
 
 
+    // max path sum between two leaf https://practice.geeksforgeeks.org/problems/maximum-path-sum/1#
+    static int maxPathSum = Integer.MIN_VALUE;
+
+    private int maxPathSum1(Node node) {
+        int sum = 0;
+        if(node.left != null && node.right != null) {
+            int lsum = maxPathSum1(node.left);
+            int rsum = maxPathSum1(node.right);
+            maxPathSum = Math.max(maxPathSum, lsum + rsum + node.data);
+            sum = Math.max(lsum, rsum) + node.data;
+        } else if(node.left != null) {
+            int lsum = maxPathSum1(node.left);
+            sum = lsum + node.data;
+        } else if(node.right != null) {
+            int rsum = maxPathSum1(node.right);
+            sum = rsum + node.data;
+        } else {
+            sum = node.data;            
+        }
+        return sum;
+    }
+
+    int maxPathSum(Node node) { 
+        if(node == null) return 0;
+        maxPathSum = Integer.MIN_VALUE;
+        if(node.left != null && node.right != null) {
+            int lsum = maxPathSum1(node.left);
+            int rsum = maxPathSum1(node.right);
+            maxPathSum = Math.max(maxPathSum, lsum + rsum + node.data);
+        } else if(node.left != null) {
+            int lsum = maxPathSum1(node.left);
+            maxPathSum = Math.max(maxPathSum, lsum + node.data);
+        } else if(node.right != null) {
+            int rsum = maxPathSum1(node.right);
+            maxPathSum = Math.max(maxPathSum, rsum + node.data);
+        } else {
+            // maxPathSum = node.data;
+        }
+        return maxPathSum;
+    } 
+
+    // all nodes in k distance 
+    private static ArrayList<TreeNode> nodeToRootPathNodeType(TreeNode node, int data) {
+        ArrayList<TreeNode> mres = new ArrayList<>();
+        if(node == null) return mres;
+
+        if(node.val == data) {
+            mres.add(node);
+            return mres;
+        }
+
+        ArrayList<TreeNode> lres = nodeToRootPathNodeType(node.left, data);
+        if(lres.size() > 0) {
+            lres.add(node);
+            return lres;
+        }
+        ArrayList<TreeNode> rres = nodeToRootPathNodeType(node.right, data);
+        if(rres.size() > 0) {
+            rres.add(node);
+            return rres;
+        }
+        return mres;
+    }
+
+    private static void kdown(TreeNode node, TreeNode blockage, int k, ArrayList<Integer> res) {
+        if(node == null || node == blockage) return;
+
+        if(k == 0) {
+            res.add(node.val);
+            return;
+        }
+
+        kdown(node.left, blockage, k - 1, res);
+        kdown(node.right, blockage, k - 1, res);
+    }
+
+    public static ArrayList<Integer> distanceK(TreeNode root, int target, int k) {
+        ArrayList<TreeNode> n2rpath = nodeToRootPathNodeType(root, target);
+
+        ArrayList<Integer> res = new ArrayList<>();
+        TreeNode blockage = null;
+        for(int i = 0; i < n2rpath.size() && k - i >= 0; i++) {
+            TreeNode node = n2rpath.get(i);
+            kdown(node, blockage, k - i, res);
+            blockage = node;
+        }
+        return res;
+    }
 
     public static void main(String[] args) {
         // trees level 2    
