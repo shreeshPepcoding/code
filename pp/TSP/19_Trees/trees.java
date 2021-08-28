@@ -1328,6 +1328,124 @@ public class trees {
         return res;
     }
 
+    // burning tree
+    static int maxTime = 0;
+    private static void burningTree_(TreeNode node, TreeNode blockage, int time) {
+        if(node == null || node == blockage) return;
+
+        maxTime = Math.max(maxTime, time);
+
+        burningTree_(node.left, blockage, time + 1);
+        burningTree_(node.right, blockage, time + 1);
+    }
+
+    public static int burning_Tree(TreeNode root, int fireNode) {
+        ArrayList<TreeNode> n2rpath = nodeToRootPathNodeType(root, fireNode);
+        maxTime = 0;
+        TreeNode blockage = null;
+        for(int t = 0; t < n2rpath.size(); t++) {
+            TreeNode node = n2rpath.get(t);
+            burningTree_(node, blockage, t);
+            blockage = node;
+        }
+        return maxTime;
+    }
+
+    // burning tree 2
+    private static void burningTree_1(TreeNode node, TreeNode blockage, 
+                            int time, ArrayList<ArrayList<Integer>> res) {
+        if(node == null || node == blockage) return;
+
+        if(time < res.size()) {
+            res.get(time).add(node.val);
+        } else {
+            // time == res.size()
+            ArrayList<Integer> subres = new ArrayList<>();
+            subres.add(node.val);
+            res.add(subres);
+        }
+
+        burningTree_1(node.left, blockage, time + 1, res);
+        burningTree_1(node.right, blockage, time + 1, res);
+    }
+    public static ArrayList<ArrayList<Integer>> burningTree(TreeNode root, int data) {
+        ArrayList<TreeNode> n2rpath = nodeToRootPathNodeType(root, data);
+        TreeNode blockage = null;
+        ArrayList<ArrayList<Integer>> res = new ArrayList<>();
+ 
+        for(int t = 0; t < n2rpath.size(); t++) {
+            TreeNode node = n2rpath.get(t);
+            burningTree_1(node, blockage, t, res);
+            blockage = node;
+        }
+        return res;
+    }
+
+    // leetcode 662. https://leetcode.com/problems/maximum-width-of-binary-tree/
+    private class WPair {
+        TreeNode node;
+        int indx;
+
+        public WPair(TreeNode node, int indx) {
+            this.node = node;
+            this.indx = indx;
+        }
+    }
+
+    public int widthOfBinaryTree(TreeNode root) {
+        Queue<WPair> qu = new LinkedList<>();
+        qu.add(new WPair(root, 0));
+        int maxWidth = 0;
+        while(qu.size() > 0) {
+            int size = qu.size();
+            int lm = qu.peek().indx; // left most index
+            int rm = qu.peek().indx; // right most index
+            while(size-- > 0) {
+                // 1. get + remove
+                WPair rem = qu.remove();
+                // 2. work  
+                rm = rem.indx;
+                // 3. add children with index
+                if(rem.node.left != null) {
+                    qu.add(new WPair(rem.node.left, 2 * rem.indx + 1));
+                }
+                if(rem.node.right != null) {
+                    qu.add(new WPair(rem.node.right, 2 * rem.indx + 2));
+                }
+            }
+            // width of current level
+            int width = rm - lm + 1;
+            // maximise overall width
+            maxWidth = Math.max(maxWidth, width);
+        }
+        return maxWidth;
+    }
+
+    // convert binary serach tree sorted doubly linked list
+    static Node prev = null;
+    
+    private static void bToDLL_(Node node) {
+        if(node == null) return;
+        
+        bToDLL_(node.left);
+        // in area
+        prev.right = node;
+        node.left = prev;
+        prev = node;
+        bToDLL_(node.right);
+    }
+
+    public static Node bToDLL(Node root) {
+        Node dummy = new Node(-1);
+        prev = dummy;
+        bToDLL_(root);
+        
+        Node head = dummy.right;
+        head.left = prev;
+        prev.right = head;
+        
+        return head;
+    }
     public static void main(String[] args) {
         // trees level 2    
     }
