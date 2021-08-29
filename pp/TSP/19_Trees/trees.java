@@ -1446,6 +1446,97 @@ public class trees {
         
         return head;
     }
+
+    // convert sorted DLL to BST
+    private static Node getMid1(Node head) {
+        Node slow = head;
+        Node fast = head.right;
+
+        while(fast != null && fast.right != null) {
+            slow = slow.right;
+            fast = fast.right.right;
+        }
+        return slow;
+    }
+
+    private static Node creationBST(Node head) {
+        if(head == null) return null;
+        Node mid = getMid1(head);
+        if(mid.left != null) {
+            mid.left.right = null;
+            mid.left = null;
+        }
+        Node head2 = mid.right;
+        if(mid.right != null) {
+            mid.right.left = null;
+            mid.right = null;
+        }
+        if(mid != head) 
+            mid.left = creationBST(head);
+        mid.right = creationBST(head2);
+        return mid;
+    }
+
+    public static Node SortedDLLToBST(Node head) {
+        Node root = creationBST(head);
+        return root;
+    }
+
+    // leetcode 112 https://leetcode.com/problems/path-sum/
+    private boolean hasPathSum_(TreeNode node, int target, int ssf) {
+        if(node == null) return false;
+        if(node.left == null && node.right == null) {
+            return ssf + node.val == target;
+        }
+        return hasPathSum_(node.left, target, ssf + node.val) || hasPathSum_(node.right, target, ssf + node.val);
+    }
+
+    public boolean hasPathSum(TreeNode root, int targetSum) {
+        return hasPathSum_(root, targetSum, 0);
+    }
+
+    // LCA without node to root path
+    static TreeNode lca = null;
+
+    private static boolean solveLCA(TreeNode node, int data1, int data2) {
+        if(node == null) return false;
+        boolean self = node.val == data1 || node.val == data2;
+        boolean left = false, right = false;
+        left = solveLCA(node.left, data1, data2);
+        if(lca == null)
+            right = solveLCA(node.right, data1, data2);
+        if((self && left) || (self && right) || (left && right)) {
+            lca = node;
+        }
+        return self || left || right;
+    }
+
+    public static TreeNode lowestCommonAncestor(TreeNode node, int p, int q) {
+        lca = null;
+        solveLCA(node, p, q);
+        return lca;
+    }
+
+    // leetcode 124 https://leetcode.com/problems/binary-tree-maximum-path-sum/
+    static int maxPath = 0;
+    
+    private int maxPathSum_(TreeNode root) {
+        if(root == null) return (int)-1e9;
+
+        int lsum = maxPathSum_(root.left);
+        int rsum = maxPathSum_(root.right);
+
+        int val = Math.max(root.val, Math.max(lsum + root.val, rsum + root.val));
+        maxPath = Math.max(maxPath, Math.max(val, lsum + root.val + rsum));
+
+        return val;
+    }
+
+    public int maxPathSum(TreeNode root) {
+        maxPath = Integer.MIN_VALUE;   
+        maxPathSum_(root);
+        return maxPath;
+    }
     public static void main(String[] args) {
         // trees level 2    
     }
