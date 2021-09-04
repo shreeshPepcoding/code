@@ -249,6 +249,102 @@ public class arrays {
         return max1 >= 2 * max2 ? indx : -1;
     }
 
+    // leetcode 769. https://leetcode.com/problems/max-chunks-to-make-sorted/
+    public int maxChunksToSorted1(int[] arr) {
+        int chunks = 0;
+        int max = 0;
+        for(int i = 0; i < arr.length; i++) {
+            max = Math.max(max, arr[i]);
+            if(max == i)
+                chunks++;
+        }
+        return chunks;
+    }
+
+    // leetcode 768 https://leetcode.com/problems/max-chunks-to-make-sorted-ii/
+    public int maxChunksToSorted2(int[] arr) {
+        int n = arr.length;
+        int[] rightMin = new int[n + 1];
+        rightMin[n] = Integer.MAX_VALUE;
+        int chunks = 0;
+        // prepare right min
+        for(int i = n - 1; i >= 0; i--) {
+            rightMin[i] = Math.min(rightMin[i + 1], arr[i]);
+        }
+        // solve count of using using a leftmax variable
+        int leftmax = Integer.MIN_VALUE;
+        for(int i = 0; i < n; i++) {
+            leftmax = Math.max(leftmax, arr[i]);
+
+            if(leftmax <= rightMin[i + 1])
+                chunks++;
+        }
+        return chunks;
+    }
+
+    // leetcode 345 https://leetcode.com/problems/reverse-vowels-of-a-string/
+    private boolean isVowel(char ch) {
+        String vowels = "aeiouAEIOU";
+        return vowels.contains(ch + "");
+    }
+    public String reverseVowels(String s) {
+        char[] arr = s.toCharArray();
+
+        int left = 0;
+        int right = arr.length - 1;
+
+        while(left < right) {
+            // make left pointer at vowel
+            while(left < right && isVowel(arr[left]) == false) {
+                left++;
+            }
+
+            // make right pointer at vowel
+            while(left < right && isVowel(arr[right]) == false) {
+                right--;
+            }
+
+            char temp = arr[left];
+            arr[left] = arr[right];
+            arr[right] = temp;
+
+            left++;
+            right--;
+        }
+
+        return String.valueOf(arr);
+    }
+
+    // leetcode 238 https://leetcode.com/problems/product-of-array-except-self/
+    public int[] productExceptSelf(int[] nums) {
+        int n = nums.length;
+
+        int[] leftProd = new int[n];
+        int[] rightProd = new int[n];
+
+        // left
+        leftProd[0] = nums[0];
+        for(int i = 1; i < n; i++) {
+            leftProd[i] = leftProd[i - 1] * nums[i];
+        }
+
+        // right
+        rightProd[n - 1] = nums[n - 1];
+        for(int i = n - 2; i >= 0; i--) {
+            rightProd[i] = rightProd[i + 1] * nums[i];
+        }
+
+        // res
+        int[] res = new int[n];
+        res[0] = rightProd[1];
+        res[n - 1] = leftProd[n - 2];
+
+        for(int i = 1; i < n - 1; i++) {
+            res[i] = leftProd[i - 1] * rightProd[i + 1];
+        }
+        return res;
+    }
+
     public static void main(String[] args) {
 
     }
