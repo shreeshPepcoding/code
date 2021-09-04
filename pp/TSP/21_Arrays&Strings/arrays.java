@@ -345,6 +345,112 @@ public class arrays {
         return res;
     }
 
+    // wiggle sort 1
+    private static void swap(int[] arr, int i, int j) {
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+
+    public static void wiggleSort(int[] arr) {
+        for(int i = 0; i < arr.length - 1; i++) {
+            if(i % 2 == 0) {
+                // even index
+                if(arr[i] > arr[i + 1]) {
+                    swap(arr, i, i + 1);
+                }
+            } else {
+                // odd index
+                if(arr[i] < arr[i + 1]) {
+                    swap(arr, i, i + 1);
+                }
+            }
+        } 
+    }
+
+    // leetcode 324. https://leetcode.com/problems/wiggle-sort-ii/
+    public void wiggleSort2(int[] nums) {
+        int n = nums.length;
+        int[] arr = new int[n]; // dupliicate array
+
+        for(int i = 0; i < n; i++)
+            arr[i] = nums[i];
+
+        Arrays.sort(arr);
+
+        int j = n - 1;
+        int i = 1;
+
+        // fill odd index
+        while(i < n) {
+            nums[i] = arr[j];
+            j--;
+            i += 2;
+        }
+
+        // fill even index
+        i = 0;
+        while(i < n) {
+            nums[i] = arr[j];
+            j--;
+            i += 2;
+        }
+    }
+    
+    // leetcode 795 https://leetcode.com/problems/number-of-subarrays-with-bounded-maximum/
+    public int numSubarrayBoundedMax(int[] nums, int left, int right) {
+        int prev_count = 0;
+        int overall_count = 0;
+
+        int i = 0;
+        int j = 0;
+
+        while(j < nums.length) {
+            if(left <= nums[j] && nums[j] <= right) {
+                prev_count = j - i + 1;
+                overall_count += prev_count;
+            } else if(nums[j] < left) {
+                overall_count += prev_count;
+            } else {
+                prev_count = 0;
+                i = j + 1;
+            }
+            j++;
+        }
+        return overall_count;
+    }
+
+    // leetcode 849 https://leetcode.com/problems/maximize-distance-to-closest-person/
+    public int maxDistToClosest(int[] seats) {
+        int dist = 0;
+        int zeros = 0;
+        int indx = 0;
+        // left sub part
+        while(seats[indx] != 1) {
+            indx++;
+            zeros++;
+        }
+        indx++;
+        dist = zeros;
+        zeros = 0;
+        // segements calculations
+        while(indx < seats.length) {
+            while(indx < seats.length && seats[indx] != 1) {
+                zeros++;
+                indx++;
+            }
+            if(indx == seats.length)
+                break;
+
+            indx++;
+            dist = Math.max(dist, (zeros + 1) / 2);
+            zeros = 0;
+        }
+
+        // right sub part
+        return Math.max(zeros, dist);
+    }
+
     public static void main(String[] args) {
 
     }
