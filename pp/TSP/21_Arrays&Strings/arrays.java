@@ -451,6 +451,117 @@ public class arrays {
         return Math.max(zeros, dist);
     }
 
+    // leetcode 41. https://leetcode.com/problems/first-missing-positive/
+    public int firstMissingPositive(int[] nums) {
+        int n = nums.length;
+        // step 1. find occurence of one and mark out of range element
+        boolean one = false;
+        for(int i = 0; i < n; i++) {
+            if(nums[i] == 1) one = true;
+
+            if(nums[i] < 1 || n < nums[i]) {
+                nums[i] = 1;
+            }
+        }
+        if(one == false) return 1;
+        // step 2. mark element in array
+        for(int i = 0; i < n; i++) {
+            int val = Math.abs(nums[i]);
+            int indx = val - 1;
+            nums[indx] = -Math.abs(nums[indx]);
+        }
+
+        // step 3. check first missing positive
+        for(int i = 0; i < n; i++) {
+            if(nums[i] > 0) {
+                return i + 1;
+            }
+        }
+        return n + 1;
+    }
+
+    // leetcode 905. https://leetcode.com/problems/sort-array-by-parity/
+    public int[] sortArrayByParity(int[] nums) {
+        int i = 0; // first unsolved
+        int j = 0; // first odd
+
+        while(i < nums.length) {
+            if(nums[i] % 2 == 0) {
+                // even
+                int temp = nums[i];
+                nums[i] = nums[j];
+                nums[j] = temp;
+
+                i++;
+                j++;
+            } else {
+                // odd
+                i++;
+            }
+        }
+        return nums;
+    }
+
+    // lintcode 903. https://www.lintcode.com/problem/903/
+    public int[] getModifiedArray(int length, int[][] updates) {
+        int[] res = new int[length];
+
+        // make impact of query on res
+        for(int i = 0; i < updates.length; i++) {
+            int st = updates[i][0];
+            int end = updates[i][1];
+            int inc = updates[i][2];
+
+            res[st] += inc;
+
+            if(end + 1 < length) {
+                res[end + 1] -= inc;
+            }
+        }
+
+        // apply impact on res using prefix sum
+        int sum = 0;
+        for(int i = 0; i < length; i++) {
+            sum += res[i];
+            res[i] = sum;
+        }
+        return res;
+    }
+
+    // lintcode 912 https://www.lintcode.com/problem/912/
+    public int minTotalDistance(int[][] grid) {
+        ArrayList<Integer> xcord = new ArrayList<>();
+        // fill xcordinate in sorted manner -> row wise traversal
+        for(int r = 0; r < grid.length; r++) {
+            for(int c = 0; c < grid[0].length; c++) {
+                if(grid[r][c] == 1)
+                    xcord.add(r);
+            }
+        }
+        ArrayList<Integer> ycord = new ArrayList<>();
+        // fill ycordinate in sorted manner -> column wise traversal
+        for(int c = 0; c < grid[0].length; c++) {
+            for(int r = 0; r < grid.length; r++) {
+                if(grid[r][c] == 1)
+                    ycord.add(c);
+            }
+        }
+        // find meeting point
+        int x = xcord.get(xcord.size() / 2);
+        int y = ycord.get(ycord.size() / 2);
+        int dist = 0;
+        for(int r = 0; r < grid.length; r++) {
+            for(int c = 0; c < grid[0].length; c++) {
+                if(grid[r][c] == 1) {
+                    dist += Math.abs(x - r) + Math.abs(y - c);
+                }  
+            }
+        }
+        return dist;
+    }
+
+
+
     public static void main(String[] args) {
 
     }
