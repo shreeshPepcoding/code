@@ -560,6 +560,139 @@ public class arrays {
         return dist;
     }
 
+    // leetcode 670. https://leetcode.com/problems/maximum-swap/
+    public int maximumSwap(int n) {
+        String num = n + "";
+        // convert number into string
+        char[] arr = num.toCharArray();
+
+        int[] lastIndxOfDigit = new int[10];
+        // travel and fill last index of digits
+        for(int i = 0; i < arr.length; i++) {
+            lastIndxOfDigit[arr[i] - '0'] = i;
+        }
+
+        // travel and find swapping point
+        for(int i = 0; i < arr.length; i++) {
+            int digit = arr[i] - '0';
+            int indx = i;
+            for(int j = 9; j > digit; j--) {
+                // greater digit have max index then set it in indx and break
+                if(lastIndxOfDigit[j] > i) {
+                    indx = lastIndxOfDigit[j];
+                    break;
+                }
+            }
+            if(indx != i) {
+                swap(arr, i, indx);
+                break;
+            }
+        }
+        String res = String.valueOf(arr);
+        // convert string into number
+        return Integer.parseInt(res);
+    }
+
+    // leetcode 119 https://leetcode.com/problems/pascals-triangle-ii/
+    public List<Integer> getRow(int n) {
+        List<Integer> res = new ArrayList<>();
+        long val = 1;
+        for(int r = 0; r <= n; r++) {
+            res.add((int)val);
+            val = val * (n - r) / (r + 1); 
+        }
+        return res;
+    }
+
+    // leetcode 537. https://leetcode.com/problems/complex-number-multiplication/
+    public String complexNumberMultiply(String num1, String num2) {
+        int a1 = Integer.parseInt(num1.substring(0, num1.indexOf("+")));
+        int b1 = Integer.parseInt(num1.substring(num1.indexOf("+") + 1, num1.length() - 1));
+
+        int a2 = Integer.parseInt(num2.substring(0, num2.indexOf("+")));
+        int b2 = Integer.parseInt(num2.substring(num2.indexOf("+") + 1, num2.length() - 1));
+
+        int a = a1 * a2 - b1 * b2;
+        int b = a1 * b2 + a2 * b1;
+        return a + "+" + b + "i";
+    }
+
+    // 2 Sum - target Sum Unique Pair
+    public static List<List<Integer>> twoSum_(int[] arr, int target) {
+        Arrays.sort(arr);
+        List<List<Integer>> res = new ArrayList<>();
+        int left = 0;
+        int right = arr.length - 1;
+
+        while(left < right) {
+            if(left != 0 && arr[left] == arr[left - 1]) {
+                left++;
+                continue;
+            }
+            int sum = arr[left] + arr[right];
+            if(sum == target) {
+                List<Integer> subres = new ArrayList<>();
+                subres.add(arr[left]);
+                subres.add(arr[right]);
+                res.add(subres);
+
+                left++;
+                right--;
+            } else if(sum > target) {
+                right--;
+            } else {
+                left++;
+            }
+        }
+        return res;
+    }
+
+    private static List<List<Integer>> twoSum(int[] arr, int st, int end, int target) {
+        int left = st;
+        int right = end;
+        List<List<Integer>> res = new ArrayList<>();
+        while(left < right) {
+            if(left != st && arr[left] == arr[left - 1]) {
+                left++;
+                continue;
+            }
+            int sum = arr[left] + arr[right];
+            if(sum == target) {
+                List<Integer> subres = new ArrayList<>();
+                subres.add(arr[left]);
+                subres.add(arr[right]);
+                res.add(subres);
+
+                left++;
+                right--;
+            } else if(sum > target) {
+                right--;
+            } else {
+                left++;
+            }
+        }
+        return res;
+    }
+
+    public static List<List<Integer>> threeSum(int[] nums, int target) {
+        Arrays.sort(nums);
+        List<List<Integer>> res = new ArrayList<>();
+
+        for(int i = 0; i < nums.length - 2; i++) {
+            if(i != 0 && nums[i] == nums[i - 1])
+                continue;
+
+            int val1 = nums[i];
+            int smallTarget = target - val1;
+
+            List<List<Integer>> subres = twoSum(nums, i + 1, nums.length - 1, smallTarget);
+            for(List<Integer> list : subres) {
+                list.add(val1);
+                res.add(list);
+            }
+        }
+        return res;
+    }
 
 
     public static void main(String[] args) {
