@@ -674,12 +674,12 @@ public class arrays {
         return res;
     }
 
-    public static List<List<Integer>> threeSum(int[] nums, int target) {
-        Arrays.sort(nums);
+    public static List<List<Integer>> threeSum(int[] nums, int target, int si) {
+        // Arrays.sort(nums);
         List<List<Integer>> res = new ArrayList<>();
 
-        for(int i = 0; i < nums.length - 2; i++) {
-            if(i != 0 && nums[i] == nums[i - 1])
+        for(int i = si; i < nums.length - 2; i++) {
+            if(i != si && nums[i] == nums[i - 1])
                 continue;
 
             int val1 = nums[i];
@@ -694,6 +694,156 @@ public class arrays {
         return res;
     }
 
+    public static List<List<Integer>> fourSum(int[] nums, int target) {
+        int n = nums.length;
+        Arrays.sort(nums);
+        List<List<Integer>> res = new ArrayList<>();
+        for(int i = 0; i < n - 3; i++) {
+            if(i != 0 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+
+            int val1 = nums[i];
+            List<List<Integer>> subres = threeSum(nums, target - val1, i + 1);
+            for(List<Integer> list : subres) {
+                list.add(val1);
+                res.add(list);
+            }
+        }
+        return res;
+    }
+
+    private static List<List<Integer>> kSum_(int[] arr, int target, int si, int k) {
+        if(k == 2) {
+            // base case
+            return twoSum(arr, si, arr.length - 1, target);
+        }
+
+        int n = arr.length;
+        List<List<Integer>> res = new ArrayList<>();
+
+        for(int i = si; i < n - (k - 1); i++) {
+            if(i != si && arr[i] == arr[i - 1]) 
+                continue;
+
+            int val1 = arr[i];
+            int targ = target - val1;
+            List<List<Integer>> subres = kSum_(arr, targ, i + 1, k - 1);
+
+            for(List<Integer> list : subres) {
+                list.add(val1);
+                res.add(list);
+            }
+        }
+        return res;
+    }
+
+    public static List<List<Integer>> kSum(int[] arr, int target, int k) {
+        // main function -> main function will call to recursive function
+        Arrays.sort(arr);
+        List<List<Integer>> res = kSum_(arr, target, 0, k);
+        return res;
+    }
+
+    // sieve of eratosthenes
+    public static void printPrimeUsingSieve(int n) {
+        boolean[] isprime = new boolean[n + 1];
+
+        Arrays.fill(isprime, true); 
+        /* this is depend on logic building, 
+        i.e. is we consider arr[i] = false, 
+        then i is prime so no need to fill is as true
+        */
+
+        for(int i = 2; i * i <= n; i++) {
+            if(isprime[i] == false) {
+                // then 'i' is not prime, and its factors are already solved
+                continue;
+            }
+
+            for(int j = i + i; j <= n; j += i) {
+                isprime[j] = false;
+            }
+        }
+
+        for(int i = 2; i <= n; i++) {
+            if(isprime[i] == true) {
+                System.out.print(i + " ");
+            }
+        }
+    }
+
+    private static ArrayList<Integer> sieve(int n) {
+        boolean[] isprime = new boolean[n + 1];
+
+        for(int i = 2; i * i <= n; i++) {
+            if(isprime[i] == true) 
+                continue;
+            
+            for(int j = i + i; j <= n; j += i) 
+                isprime[j] = true;
+        }
+
+        ArrayList<Integer> ans = new ArrayList<>();
+        for(int i = 2; i <= n; i++) {
+            if(isprime[i] == false) {
+                ans.add(i);
+            }
+        }
+        return ans;
+    }
+
+
+    // segmented sieve
+    public static void segmentedSieveAlgo(int a, int b) {
+        int rootb = (int)Math.sqrt(b);
+        ArrayList<Integer> primes = sieve(rootb);
+        // prime[i] = false, i is prime
+
+        boolean[] isprime = new boolean[b - a + 1];
+        // isprime[i] == false -> i is prime number
+        
+        for(int prime : primes) {
+            int multiple = (int)Math.ceil((a * 1.0) / prime);
+
+            if(multiple == 1) multiple++;
+
+            int si = multiple * prime - a;
+            for(int j = si; j < isprime.length; j += prime) {
+                isprime[j] = true; // j is not prime
+            }
+        }
+
+        for(int i = 0; i < isprime.length; i++) {
+            if(isprime[i] == false && i + a != 1) {
+                // value = index + base value
+                int val = i + a;
+                System.out.println(val);
+            }
+        }
+    }
+
+    // difference pair with k, 
+    // https://practice.geeksforgeeks.org/problems/find-pair-given-difference1559/1
+    public boolean findPair(int arr[], int size, int n) {
+        if(arr.length == 1) return false;
+        //code here.
+        Arrays.sort(arr);
+        int i = 0;
+        int j = 1;
+            
+        while(j < arr.length) {
+            int diff = arr[j] - arr[i];
+            if(diff == n) {
+                return true;
+            } else if(diff > n) {
+                i++;
+            } else {
+                j++;
+            }
+        }
+        return false;
+    }
 
     public static void main(String[] args) {
 
