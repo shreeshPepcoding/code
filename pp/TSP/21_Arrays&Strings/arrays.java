@@ -793,7 +793,6 @@ public class arrays {
         return ans;
     }
 
-
     // segmented sieve
     public static void segmentedSieveAlgo(int a, int b) {
         int rootb = (int)Math.sqrt(b);
@@ -843,6 +842,100 @@ public class arrays {
             }
         }
         return false;
+    }
+
+    // leetcode 838. https://leetcode.com/problems/push-dominoes/
+    private void solveConfig(char[] arr, int i, int j) {
+        if(arr[i] == 'L' && arr[j] == 'L') {
+            for(int k = i + 1; k < j; k++)
+                arr[k] = 'L';
+
+        } else if(arr[i] == 'R' && arr[j] == 'R') {
+            for(int k = i + 1; k < j; k++)
+                arr[k] = 'R';
+                
+        } else if(arr[i] == 'L' && arr[j] == 'R') {
+            // nothing to do
+        } else {
+            // arr[i] == 'R' && arr[j] == 'L'
+            while(i < j) {
+                arr[i] = 'R';
+                arr[j] = 'L';
+                i++;
+                j--;
+            }
+        }
+    }
+
+    public String pushDominoes(String dominoes) {
+        int l = dominoes.length();
+        char[] arr = new char[l + 2];
+        arr[0] = 'L';
+        arr[l + 1] = 'R';
+        for(int i = 1; i <= l; i++) {
+            arr[i] = dominoes.charAt(i - 1);
+        }
+
+        int i = 0;
+        int j = 1;
+        while(j < arr.length) {
+            while(arr[j] == '.')
+                j++;
+
+            if(j - i > 1) {
+                solveConfig(arr, i, j);
+            }
+            i = j;
+            j++;
+        }
+
+        String res = "";
+        for(int k = 1; k <= l; k++) {
+            res += arr[k];
+        }
+        return res;
+    }
+
+    // leetcode 829 https://leetcode.com/problems/consecutive-numbers-sum/
+    public int consecutiveNumbersSum(int n) {
+        int count = 0;
+        for(int k = 1; k * (k - 1) < 2 * n; k++) {
+            int numerator = n - (k* (k - 1) / 2);
+            if(numerator % k == 0) {
+                count++;
+                // System.out.println(numerator / k + " " + k);
+            }
+                
+        }       
+        return count;
+    }
+
+    // leetcode 680. https://leetcode.com/problems/valid-palindrome-ii/
+    private boolean isPalindrome(String s, int i, int j) {
+        while(i < j) {
+            if(s.charAt(i) == s.charAt(j)) {
+                i++;
+                j--;
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean validPalindrome(String s) {
+        int i = 0;
+        int j = s.length() - 1;
+        
+        while(i < j) {
+            if(s.charAt(i) == s.charAt(j)) {
+                i++;
+                j--;
+            } else {
+                return isPalindrome(s, i + 1, j) || isPalindrome(s, i, j - 1);
+            }
+        }
+        return true;
     }
 
     public static void main(String[] args) {

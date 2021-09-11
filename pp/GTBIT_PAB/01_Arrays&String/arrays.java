@@ -148,6 +148,88 @@ public class arrays {
         return res;
     }
 
+    // leetcode 556. https://leetcode.com/problems/next-greater-element-iii/
+    public int nextGreaterElement(int n) {
+        if(n < 10) return -1;
+        String nextNum = nextGreaterElement_("" + n);
+        long num = Long.parseLong(nextNum);
+        if(num <= Integer.MAX_VALUE) {
+            return (int)num;
+        } else {
+            return -1;
+        }
+    }
+
+    // next greater for portal
+    private static int dipIndex(char[] arr) {
+        int indx = -1;
+        for(int i = arr.length - 1; i > 0; i--) {
+            if(arr[i - 1] < arr[i]) {
+                indx = i - 1;
+                break;
+            }
+        }
+        return indx;
+    }
+
+    private static int ceilIndex(char[] arr, int indx) {
+        // indx -> dip indx
+        int dipVal = arr[indx];
+        int i = arr.length - 1;
+        while(dipVal >= arr[i]) {
+            i--;
+        }
+        return i;
+    }
+
+    private static void swap(char[] arr, int i, int j) {
+        char temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+
+    private static void reverse(char[] arr, int left, int right) {
+        while(left < right) {
+            swap(arr, left, right);
+            left++;
+            right--;
+        }
+    }
+
+    public static String nextGreaterElement_(String str) {
+        char[] arr = str.toCharArray();
+        int dipIndx = dipIndex(arr);
+        if(dipIndx == -1) {
+            return "-1";
+        }
+        int ceilIndx = ceilIndex(arr, dipIndx);
+        swap(arr, dipIndx, ceilIndx);
+        reverse(arr, dipIndx + 1, arr.length - 1);
+        return String.valueOf(arr);
+    }
+
+    // leetcode 905. https://leetcode.com/problems/sort-array-by-parity/
+    public int[] sortArrayByParity(int[] nums) {
+        int i = 0; // first unsolved
+        int j = 0; // first odd
+
+        while(i < nums.length) {
+            if(nums[i] % 2 != 0) {
+                // odd
+                i++;
+            } else {
+                // even
+                int temp = nums[i];
+                nums[i] = nums[j];
+                nums[j] = temp;
+
+                i++;
+                j++;
+            }
+        }
+        return nums;
+    }
+
     public static void main(String[] args) {
         
     }
