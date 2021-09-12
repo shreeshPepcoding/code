@@ -938,6 +938,102 @@ public class arrays {
         return true;
     }
 
+    // leetcode 754. https://leetcode.com/problems/reach-a-number/
+    public int reachNumber(int target) {
+        target = Math.abs(target);
+
+        int jump = 0;
+        int s = 0;
+
+        while(s < target) {
+            jump++;
+            s += jump;
+        }
+
+        if(s == target) {
+            return jump;
+        } else if((s - target) % 2 == 0) {
+            return jump;
+        } else if((s + jump + 1 - target) % 2 == 0) {
+            return jump + 1;
+        } else {
+            return jump + 2;
+        }
+    }
+
+    // tarnspose matrix of N*N, inplace
+    public void transpose1(int[][] matrix) {
+        for(int i = 0; i < matrix.length; i++) {
+            for(int j = 0; j < i; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = temp;
+            } 
+        }
+    }
+
+    // leetcode 867. https://leetcode.com/problems/transpose-matrix/
+    public int[][] transpose(int[][] matrix) {
+        int row = matrix.length;
+        int col = matrix[0].length;
+
+        int[][] res = new int[col][row];
+        
+        for(int r = 0; r < row; r++) {
+            for(int c = 0; c < col; c++) {
+                res[c][r] = matrix[r][c];
+            }
+        }
+        return res;
+    }
+
+    // leetcode 48 https://leetcode.com/problems/rotate-image/
+    private void reverseRow(int[][] arr) {
+        for(int r = 0; r < arr.length; r++) {
+            int left = 0;
+            int right = arr[r].length - 1;
+
+            while(left < right) {
+                int temp = arr[r][left];
+                arr[r][left] = arr[r][right];
+                arr[r][right] = temp;
+
+                left++;
+                right--;
+            }
+        }
+    }
+    public void rotate(int[][] matrix) {
+        transpose1(matrix);
+        reverseRow(matrix);
+    }
+
+    // leetcode 763. https://leetcode.com/problems/partition-labels/
+    public List<Integer> partitionLabels(String s) {
+        // 1. Make hashmap of last occurence
+        HashMap<Character, Integer> map = new HashMap<>();
+        for(int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            map.put(ch, i);
+        }
+
+        // 2. solve using chaining technique
+        List<Integer> res = new ArrayList<>();
+
+        int prev = 0;
+        int max = 0;
+        for(int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+
+            max = Math.max(max, map.get(ch));
+            if(max == i) {
+                res.add(i - prev + 1);
+                prev = i + 1;
+            }
+        }
+        return res;
+    }
+
     public static void main(String[] args) {
 
     }
