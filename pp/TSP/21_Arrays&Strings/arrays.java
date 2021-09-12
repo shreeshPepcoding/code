@@ -1034,6 +1034,79 @@ public class arrays {
         return res;
     }
 
+    // leetcode 881. https://leetcode.com/problems/boats-to-save-people/
+    public int numRescueBoats(int[] people, int limit) {
+        int boats = 0;
+        Arrays.sort(people);
+        int left = 0;
+        int right = people.length - 1;
+        while(left <= right) {
+            int sum = people[left] + people[right];
+            if(sum <= limit) {
+                left++;
+                right--;
+            } else {
+                right--;
+            }
+            boats++;
+        }
+        return boats;
+    }
+
+    // min platforms
+    static int findPlatform(int arr[], int dep[], int n) {
+        Arrays.sort(arr);
+        Arrays.sort(dep);
+        int i = 0;
+        int j = 0;
+        int cmax = 0, omax = 0;
+        while(i < n) {
+            if(arr[i] <= dep[j]) {
+                cmax++;
+                i++;
+            } else {
+                cmax--;
+                j++;
+            }
+            omax = Math.max(omax, cmax);
+        }
+        return omax;
+    } 
+
+    // leetcode 53. https://leetcode.com/problems/maximum-subarray/
+    public int maxSubArray(int[] nums) {
+        int csum = 0;
+        int osum = Integer.MIN_VALUE;
+        
+        int cstart = 0;
+        int cend = 0;
+        int ostart = 0;
+        int oend = 0;
+        
+        for(int i = 0; i < nums.length; i++) {
+            if(csum < 0) {
+                csum = nums[i];
+                cstart = i;
+            } else {
+                csum += nums[i];
+                cend = i;
+            }
+            if(csum > osum) {
+                osum = csum;
+                ostart = cstart;
+                oend = cend;
+            }
+        }
+        
+        for(int i = ostart; i <= oend; i++) {
+            System.out.print(nums[i] + " ");
+        }
+        
+        return osum;
+    }
+
+    
+
     public static void main(String[] args) {
 
     }
