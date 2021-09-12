@@ -230,6 +230,119 @@ public class arrays {
         return nums;
     }
 
+    // leetcode 628. https://leetcode.com/problems/maximum-product-of-three-numbers/
+    public int maximumProduct(int[] nums) {
+        int max1 = Integer.MIN_VALUE;
+        int max2 = Integer.MIN_VALUE;
+        int max3 = Integer.MIN_VALUE;
+
+        int min1 = Integer.MAX_VALUE;
+        int min2 = Integer.MAX_VALUE;
+
+        for(int val : nums) {
+            if(val > max1) {
+                max3 = max2;
+                max2 = max1;
+                max1 = val;
+            } else if(val > max2) {
+                max3 = max2;
+                max2 = val;
+            } else if(val > max3) {
+                max3 = val;
+            }
+
+            if(val < min1) {
+                min2 = min1;
+                min1 = val;
+            } else if(val < min2) {
+                min2 = val;
+            }
+        }
+        return Math.max(max1 * max2 * max3, max1 * min1 * min2);
+    }
+
+    // leetcode 769. https://leetcode.com/problems/max-chunks-to-make-sorted/
+    public int maxChunksToSorted1(int[] arr) {
+        int chunks = 0;
+        int max = 0;
+        for(int i = 0; i < arr.length; i++) {
+            max = Math.max(max, arr[i]);
+            if(max == i) {
+                chunks++;
+            }
+        }
+        return chunks;
+    }
+
+    // leetcode 768. https://leetcode.com/problems/max-chunks-to-make-sorted-ii/
+    public int maxChunksToSorted2(int[] arr) {
+        int n = arr.length;
+        // prepare right min and manage left max while running with loop
+        int[] rightMin = new int[n];
+        rightMin[n - 1] = arr[n - 1];
+        for(int i = n - 2; i >= 0; i--) {
+            rightMin[i] = Math.min(rightMin[i + 1], arr[i]);
+        }
+        // count chunks 
+        int count = 1;
+        int leftmax = Integer.MIN_VALUE;
+        for(int i = 0; i < n - 1; i++) {
+            leftmax = Math.max(leftmax, arr[i]);
+            if(leftmax <= rightMin[i + 1]) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    // leetcode 747. https://leetcode.com/problems/largest-number-at-least-twice-of-others/
+    public int dominantIndex(int[] nums) {
+        if(nums.length == 1) return 0;
+        int indx = 0;
+        int max1 = Integer.MIN_VALUE;
+        int max2 = Integer.MIN_VALUE;
+        for(int i = 0; i < nums.length; i++) {
+            if(nums[i] > max1) {
+                max2 = max1;
+                max1 = nums[i];
+                indx = i;
+            } else if(nums[i] > max2) {
+                max2 = nums[i];
+            }
+        }
+        return max1 >= 2 * max2 ? indx : -1;
+    }
+
+    // leetcode 345. https://leetcode.com/problems/reverse-vowels-of-a-string/
+    private boolean isVowel(char ch) {
+        String str = "AEIOUaeiou";
+        return str.contains(ch + "");
+    } 
+
+    public String reverseVowels(String s) {
+        char[] arr = s.toCharArray();
+
+        int left = 0;
+        int right = s.length() - 1;
+
+        while(left < right) {
+            while(left < right && isVowel(arr[left]) == false) {
+                left++;
+            } 
+
+            while(left < right && isVowel(arr[right]) == false) {
+                right--;
+            }
+
+            swap(arr, left, right);
+            left++;
+            right--;
+        }
+        return String.valueOf(arr);
+    }
+
+
+
     public static void main(String[] args) {
         
     }
