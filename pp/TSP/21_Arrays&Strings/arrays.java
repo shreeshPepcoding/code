@@ -1053,7 +1053,7 @@ public class arrays {
         return boats;
     }
 
-    // min platforms
+    // min platforms -> gfg
     static int findPlatform(int arr[], int dep[], int n) {
         Arrays.sort(arr);
         Arrays.sort(dep);
@@ -1105,7 +1105,134 @@ public class arrays {
         return osum;
     }
 
-    
+    // leetcode 915. https://leetcode.com/problems/partition-array-into-disjoint-intervals/
+    // method 1, O(n) space
+    public int partitionDisjoint1(int[] nums) {
+        int n = nums.length;
+
+        // 1. right min creation
+        int[] rightmin = new int[n];
+        rightmin[n - 1] = nums[n - 1];
+        for(int i = n - 2; i >= 0; i--) {
+            rightmin[i] = Math.min(nums[i], rightmin[i + 1]);
+        }
+
+        // 2. travel and solve, also maintaion left max simultaneously
+        int leftmax = Integer.MIN_VALUE;
+        int ans = 0;
+        for(int i = 0; i < n -  1; i++) {
+            leftmax = Math.max(leftmax, nums[i]);
+            if(leftmax <= rightmin[i + 1]) {
+                ans = i;
+                break;
+            }
+        }
+        return ans + 1;
+    }
+
+    // method 2 -> with O(1) space
+    public int partitionDisjoint2(int[] nums) {
+        int leftmax = nums[0];
+        int maxInRun = nums[0];
+        int ans = 0;
+        for(int i = 1; i < nums.length; i++) {
+            if(nums[i] > maxInRun) {
+                maxInRun = nums[i];
+            } else if(nums[i] < leftmax) {
+                ans = i;
+                leftmax = maxInRun;
+            }
+        }
+        return ans + 1;
+    }
+
+    // leetcode 56. https://leetcode.com/problems/merge-intervals/
+    public int[][] merge(int[][] intervals) {
+        Arrays.sort(intervals, (val1, val2) -> Integer.compare(val1[0], val2[0]));
+        ArrayList<int[]> list = new ArrayList<>();
+        int lsp = intervals[0][0]; // last interval starting point
+        int lep = intervals[0][1]; // last interval ending point
+
+        for(int i = 1; i < intervals.length; i++) {
+            int sp = intervals[i][0];
+            int ep = intervals[i][1];
+            
+            if(lep < sp) {
+                // new interval is found
+                int[] sublist = {lsp, lep};
+                list.add(sublist);
+                lsp = sp;
+                lep = ep;
+            } else if(lep < ep){
+                // partially overlapping
+                lep = ep;
+            } else {
+                // fully overlapping -> nothing to do
+            }
+        }
+        int[] sublist = {lsp, lep};
+        list.add(sublist);
+        return list.toArray(new int[list.size()][]);
+    }
+
+    // lintcode 920. https://www.lintcode.com/problem/920/
+    public class Interval {
+        int start;
+        int end;
+        Interval(int start, int end) {
+            this.start = start;
+            this.end = end;
+        }
+    }
+    public boolean canAttendMeetings(List<Interval> intervals) {
+        if(intervals.size() == 0) return true;
+        Collections.sort(intervals, (a, b) -> Integer.compare(a.start, b.start));
+        int lsp = intervals.get(0).start;
+        int lep = intervals.get(0).end;
+
+        for(int i = 1; i < intervals.size(); i++) {
+            int sp = intervals.get(i).start;
+            int ep = intervals.get(i).end;
+
+            if(lep <= sp) {
+                lsp = sp;
+                lep = ep;
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // lintcode 919. https://www.lintcode.com/problem/919/
+    public int minMeetingRooms(List<Interval> intervals) {
+        int n = intervals.size();
+        int[] start = new int[n];
+        int[] end = new int[n];
+
+        for(int i = 0; i < n; i++) {
+            start[i] = intervals.get(i).start;
+            end[i] = intervals.get(i).end;
+        }
+
+        Arrays.sort(start);
+        Arrays.sort(end);
+
+        int i = 0;
+        int j = 0;
+        int cmax = 0, omax = 0;
+        while(i < n) {
+            if(start[i] < end[j]) {
+                cmax++;
+                i++;
+            } else {
+                cmax--;
+                j++;
+            }
+            omax = Math.max(omax, cmax);
+        }
+        return omax;
+    }
 
     public static void main(String[] args) {
 
