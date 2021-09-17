@@ -341,7 +341,127 @@ public class arrays {
         return String.valueOf(arr);
     }
 
+    // leetcode 795. https://leetcode.com/problems/number-of-subarrays-with-bounded-maximum/
+    public int numSubarrayBoundedMax(int[] nums, int left, int right) {
+        int i = 0;
+        int j = 0;
+        int prev_count = 0;
+        int count = 0;
 
+        while(i < nums.length) {
+            if(left <= nums[i] && nums[i] <= right) {
+                count += i - j + 1;
+                prev_count = i - j + 1;
+            } else if(nums[i] < left) {
+                count += prev_count;
+            } else {
+                prev_count = 0;
+                j = i + 1;
+            }
+            i++;
+        }
+        return count;
+    }
+
+    // wiggle sort -> https://practice.geeksforgeeks.org/problems/wave-array-1587115621/1
+    private static void swap(int[] arr, int i, int j) {
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+
+    public static void wiggleSort1(int[] arr) {
+        for(int i = 0; i < arr.length - 1; i++) {
+            if(i % 2 == 0) {
+                // even
+                if(arr[i] > arr[i + 1]) {
+                    swap(arr, i, i + 1);
+                }
+            } else {
+                // odd
+                if(arr[i] < arr[i + 1]) {
+                    swap(arr, i, i + 1);
+                }
+            }
+        }
+    }
+
+    // leetcode 324. https://leetcode.com/problems/wiggle-sort-ii/
+    public void wiggleSort2(int[] nums) {
+        int n = nums.length;
+        int[] arr = new int[n];
+
+        for(int i = 0; i < n; i++) {
+            arr[i] = nums[i];
+        }
+
+        Arrays.sort(arr);
+        
+        int i = 1;
+        int j = n - 1;
+        while(i < n) {
+            nums[i] = arr[j];
+            j--;
+            i += 2;
+        }
+
+        i = 0;
+        while(i < n) {
+            nums[i] = arr[j];
+            i += 2;
+            j--;
+        }
+    }
+
+    // lintcode 903, https://www.lintcode.com/problem/range-addition/description
+    public int[] getModifiedArray(int n, int[][] query) {
+        int[] arr = new int[n];
+
+        // travel on query and mark impact
+        for(int i = 0; i < query.length; i++) {
+            int st = query[i][0];
+            int end = query[i][1];
+            int val = query[i][2];
+
+            arr[st] += val;
+            if(end != n - 1) {
+                arr[end + 1] -= val;
+            }
+        }
+
+        // travel on array and make impact visible using prefix sum
+        for(int i = 1; i < n; i++) {
+            arr[i] += arr[i - 1];
+        }
+
+        return arr;
+    }
+
+    // leetcode 238. https://leetcode.com/problems/product-of-array-except-self/
+    public int[] productExceptSelf(int[] nums) {
+        int n = nums.length;
+        int[] rightProduct = new int[n + 1];
+        int[] res = new int[n];
+
+        // make right product array
+        rightProduct[n] = 1;
+        for(int i = n - 1; i >= 0; i--) {
+            rightProduct[i] = nums[i] * rightProduct[i + 1];
+        }
+
+        // maintain left product in running time and solve 
+        int leftprod = 1;
+        for(int i = 0; i < n; i++) {
+            res[i] = leftprod * rightProduct[i + 1];
+            leftprod *= nums[i];
+        }
+        return res;
+    }
+
+    // leetcode 119. https://leetcode.com/problems/pascals-triangle-ii/
+    public List<Integer> getRow(int rowIndex) {
+        
+    }
 
     public static void main(String[] args) {
         
