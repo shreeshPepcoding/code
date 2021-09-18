@@ -1234,6 +1234,118 @@ public class arrays {
         return omax;
     }
 
+    // leetcode 239. https://leetcode.com/problems/sliding-window-maximum/
+    private int[] nextGreaterRight(int[] arr) {
+        int[] ngr = new int[arr.length];
+
+        Stack<Integer> st = new Stack<>();
+        for(int i = 0; i < arr.length; i++) {
+            // pop from stack until value is avialbale and smaller
+            while(st.size() > 0 && arr[st.peek()] < arr[i]) {
+                int indx = st.pop();
+                ngr[indx] = i;
+            }
+            st.push(i);
+        }
+
+        while(st.size() > 0) {
+            ngr[st.pop()] = arr.length;
+        }
+        return ngr;
+    }
+
+    public int[] maxSlidingWindow(int[] arr, int k) {
+        int[] ngr = nextGreaterRight(arr);
+        int j = 0;
+        int[] res = new int[arr.length - (k - 1)];
+        for(int i = 0; i < res.length; i++) {
+            if(j < i) {
+                j = i;
+            }
+
+            while(ngr[j] < i + k) {
+                j = ngr[j];
+            }
+            res[i] = arr[j];
+        }
+        return res;
+    }
+
+    // digit multiplier, https://practice.geeksforgeeks.org/problems/digit-multiplier3000/1
+    static String getSmallest(Long num) {
+        if(num == 1) return "1";
+        String res = "";
+        for(int i = 9; i >= 2; i--) {
+            while(num % i == 0) {
+                res = i + res;
+                num /= i;
+            }
+        }
+        return num != 1 ? "-1" : res;
+    }
+
+    // first -ve in k size window, https://practice.geeksforgeeks.org/problems/first-negative-integer-in-every-window-of-size-k3345/1
+    public long[] printFirstNegativeInteger(long A[], int N, int K) {
+        int indx = N;
+        long[] res = new long[N - (K - 1)];
+        // mark -ve in last k size window
+        for(int i = N - 1; i >= N - K; i--) {
+            if(A[i] < 0) 
+                indx = i;
+        }
+        // travel from N - K to 0 and set in result
+        for(int i = N - K; i >= 0; i--) {
+            if(A[i] < 0) 
+                indx = i;
+
+            if(indx < i + K) {
+                res[i] = A[indx];
+            } else {
+                res[i] = 0;
+            }
+        }
+        return res;
+    }
+
+    // leetcode 853. https://leetcode.com/problems/car-fleet/
+    private class Pair implements Comparable<Pair> {
+        int pos;
+        int speed;
+
+        public Pair(int pos, int speed) {
+            this.pos = pos;
+            this.speed = speed;
+        }
+
+        public int compareTo(Pair o) {
+            return this.pos - o.pos;
+        }
+    }
+
+    public int carFleet(int target, int[] position, int[] speed) {
+        PriorityQueue<Pair> pq = new PriorityQueue<>(Collections.reverseOrder());
+        for(int i = 0; i < position.length; i++) {
+            pq.add(new Pair(position[i], speed[i]));
+        }
+        double maxT = 0;
+        int fleets = 0;
+        while(pq.size() > 0) {
+            Pair rem = pq.remove();
+            double time = (target - rem.pos) / (rem.speed * 1.0);
+            if(time > maxT) {
+                fleets++;
+                maxT = time;
+            }
+        }
+        return fleets;
+    }
+
+    // leetcode 1191. https://leetcode.com/problems/k-concatenation-maximum-sum/
+    public int kConcatenationMaxSum(int[] arr, int k) {
+        
+    }
+
+
     public static void main(String[] args) {
 
     }
