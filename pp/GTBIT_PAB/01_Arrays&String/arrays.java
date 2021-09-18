@@ -463,6 +463,127 @@ public class arrays {
         
     }
 
+    // leetcode 849. https://leetcode.com/problems/maximize-distance-to-closest-person/
+    // O(1) space
+    public int maxDistToClosest(int[] seats) {
+        // step 1. travel on arr and make left person distance and empty seats, and -1 at occupied seat
+        int indx = Integer.MAX_VALUE;
+        for(int i = 0; i < seats.length; i++) {
+            if(seats[i] == 1) {
+                indx = i;
+                seats[i] = -1;
+            } else {
+                seats[i] = Math.abs(indx - i);
+            }
+        }
+
+        /* step 2. travel from right to left and make arr as closest person 
+            distance and manage max of closest person distnace*/
+        int max = 0;
+        indx = Integer.MAX_VALUE;
+        for(int i = seats.length - 1; i >= 0; i--) {
+            if(seats[i] == -1) {
+                indx = i;
+            } else {
+                // min distance between closest left and right
+                seats[i] = Math.min(seats[i], indx - i);
+                // maximise closest distance
+                max = Math.max(max, seats[i]);
+            }
+        }
+        return max;
+    }
+
+    // leetcode 41. https://leetcode.com/problems/first-missing-positive/
+    public int firstMissingPositive(int[] nums) {
+        int n = nums.length;
+        // step 1. mark number out of range and check presence of one
+        boolean one = false;
+        for(int i = 0; i < nums.length; i++) {
+            if(nums[i] == 1) 
+                one = true;
+            
+            if(nums[i] < 1 || n < nums[i]) {
+                nums[i] = 1;
+            } 
+        }
+        if(one == false) return 1;
+        // step 2. travel and mark present index in array
+        for(int i = 0; i < n; i++) {
+            int indx = Math.abs(nums[i]) - 1; 
+            nums[indx] = -Math.abs(nums[indx]);
+        }
+        // step 3. travel and check unmarked index, if found return indx + 1, otherwise n + 1
+        for(int i = 0; i < n; i++) {
+            if(nums[i] > 0) {
+                return i + 1;
+            }
+        }
+        return n + 1;
+    }
+
+    // lintcode 912. https://www.lintcode.com/problem/912/
+    public int minTotalDistance(int[][] grid) {
+        ArrayList<Integer> xcord = new ArrayList<>();
+        // for sorted x, travel row wise
+        for(int r = 0; r < grid.length; r++) {
+            for(int c = 0; c < grid[0].length; c++) {
+                if(grid[r][c] == 1) {
+                    xcord.add(r);
+                }
+            }
+        }
+
+        ArrayList<Integer> ycord = new ArrayList<>();
+        // for sorted y, travel column wise
+        for(int c = 0; c < grid[0].length; c++) {
+            for(int r = 0; r < grid.length; r++) {
+                if(grid[r][c] == 1) {
+                    ycord.add(c);
+                }
+            }
+        }
+
+        // find meeting point from median
+        int x = xcord.get(xcord.size() / 2);
+        int y = ycord.get(ycord.size() / 2);
+
+        int dist = 0;
+        for(int i = 0; i < xcord.size(); i++) {
+            // distance between xcord
+            dist += Math.abs(x - xcord.get(i));
+            // distance between ycord
+            dist += Math.abs(y - ycord.get(i));
+        }
+
+        return dist;
+    }
+
+    // leetcode 670. https://leetcode.com/problems/maximum-swap/
+    // portl function
+    public static String maximumSwap(String num) {
+        char[] arr = num.toCharArray();
+        int[] lastIndex = new int[10];
+        for(int i = 0; i < arr.length; i++) {
+            lastIndex[arr[i] - '0'] = i;
+        }
+        for(int i = 0; i < arr.length; i++) {
+            int digit = arr[i] - '0';
+            boolean flag = true;
+            for(int j = 9; j > digit; j--) {
+                if(lastIndex[j] > i) {
+                    swap(arr, i, lastIndex[j]);
+                    flag = false;
+                    break;
+                }
+            }
+            if(flag == false) {
+                break;
+            }
+        }
+        return String.valueOf(arr);
+    }
+
     public static void main(String[] args) {
         
     }

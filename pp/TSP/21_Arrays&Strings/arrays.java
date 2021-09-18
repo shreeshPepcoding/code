@@ -1340,10 +1340,169 @@ public class arrays {
         return fleets;
     }
 
-    // leetcode 1191. https://leetcode.com/problems/k-concatenation-maximum-sum/
-    public int kConcatenationMaxSum(int[] arr, int k) {
+    // k concatenation, codechef
+    public static long maxSubArray1(int[] nums) {
+        long csum = 0;
+        long osum = Integer.MIN_VALUE;
+        for(int i = 0; i < nums.length; i++) {
+            if(csum < 0) {
+                csum = nums[i];
+            } else {
+                csum += nums[i];
+            }
+            if(csum > osum) {
+                osum = csum;
+            }
+        }
+        return osum;
+    }
+ 
+    private static long kadanes1_2(int[] arr) {
+        int n = arr.length;
+        int[] narr = new int[2 * n];
+
+        for(int i = 0; i < n; i++) {
+            narr[i] = arr[i];
+            narr[n + i] = arr[i];
+        }
+        return maxSubArray1(narr);
+    }
+
+    public static long solution(int[] arr, int k, long sum) {
+        if(k == 1) {
+            return maxSubArray1(arr);
+        }
+        long kadane12 = kadanes1_2(arr);
+        if(sum < 0) {
+            return kadane12;
+        } else {
+            return kadane12 + (sum * (k - 2));
+        }
+    }
+
+    // max sumn in subarray, https://practice.geeksforgeeks.org/problems/max-sum-in-sub-arrays0824/1
+    public static long pairWithMaxSum(long arr[], long N) {
+        long max = Integer.MIN_VALUE;
+        for(int i = 0; i < arr.length - 1; i++) {
+            max = Math.max(max, arr[i] + arr[i + 1]);
+        }
+        return max;
+    }
+
+    // leetcode 986. https://leetcode.com/problems/interval-list-intersections/
+    public int[][] intervalIntersection(int[][] firstList, int[][] secondList) {
+        ArrayList<int[]> list = new ArrayList<>();
+        int i = 0;
+        int j = 0;
+        while(i < firstList.length && j < secondList.length) {
+            int st = Math.max(firstList[i][0], secondList[j][0]);
+            int end = Math.min(firstList[i][1], secondList[j][1]);
+            if(st <= end) {
+                // it is valid interval
+                int[] sublist = {st, end};
+                list.add(sublist);
+            }
+            if(firstList[i][1] < secondList[j][1]) {
+                i++;
+            } else {
+                j++;
+            }
+        }
+        return list.toArray(new int[list.size()][]);
+    }
+
+    // leetcode 57. https://leetcode.com/problems/insert-interval/
+    public int[][] insert(int[][] intervals, int[] newInterval) {
+        if(intervals.length == 0) {
+            int[][] res = {
+                newInterval
+            };
+            return res; 
+        }
+        boolean isUsed = false;
+        int lsp = 0;
+        int lep = 0;
+
+        ArrayList<int[]> list = new ArrayList<>();
+
+
+        if(intervals[0][0] < newInterval[0]) {
+            lsp = intervals[0][0];
+            lep = intervals[0][1];
+        } else {
+            isUsed = true;
+            lsp = newInterval[0];
+            lep = newInterval[1];
+        }
+        int i = isUsed == true ? 0 : 1;
+        while(i < intervals.length) {
+            int sp = intervals[i][0];
+            int ep = intervals[i][1];
+            if(isUsed == false && sp > newInterval[0]) {
+                isUsed = true;
+                sp = newInterval[0];
+                ep = newInterval[1];
+            } else {
+                i++;
+            }
+
+            if(lep < sp) {
+                // new interval is found
+                int[] sublist = {lsp, lep};
+                list.add(sublist);
+                lsp = sp;
+                lep = ep;
+            } else if(lep < ep){
+                // partially overlapping
+                lep = ep;
+            } else {
+                // fully overlapping -> nothing to do
+            }
+        }
+        if(isUsed == false) {
+            if(lep < newInterval[0]) {
+                int[] sublist = {lsp, lep};
+                int[] sublist2 = {newInterval[0], newInterval[1]};
+                list.add(sublist);
+                list.add(sublist2);
+            } else {
+                lep = Math.max(lep, newInterval[1]);
+                int[] sublist = {lsp, lep};
+                list.add(sublist);
+            }
+        } else {
+            int[] sublist = {lsp, lep};
+            list.add(sublist);
+        }
+        return list.toArray(new int[list.size()][]);
+
+    }
+
+    public int[][] insert(int[][] intervals, int[] newInterval) {
+        ArrayList<int[]> result=new ArrayList<>();
+        for(int []in : intervals) {         
+            if(in[1]<newInterval[0]) {     
+                result.add(in);
+            } else if(newInterval[1]<in[0]) {
+                result.add(newInterval);
+                // smart move
+                newInterval=in;
+            } else {
+                newInterval[0]=Math.min(in[0],newInterval[0]);
+                newInterval[1]=Math.max(in[1],newInterval[1]);
+            } 
+        } 
+        result.add(newInterval);
+        return result.toArray(new int[result.size()][2]);
+    }
+
+
+
+    // leetcode 1007. https://leetcode.com/problems/minimum-domino-rotations-for-equal-row/
+    public int minDominoRotations(int[] tops, int[] bottoms) {
         
     }
+
 
 
     public static void main(String[] args) {
