@@ -1560,16 +1560,51 @@ public class arrays {
         long sum = 0;
         // make power
         int n = nums.length;
-        int[] power = new int[n];
+        long[] power = new long[n];
         power[0] = 1;
         for(int i = 1; i < n; i++) {
-            power[i] = (power[i - 1] % mod) * 2;
+            power[i] = (power[i - 1] * 2) % mod;
         }
         // now calculate sum
         for(int i = 0; i < n; i++) {
-            sum += nums[i] * (power[i] - power[n - i - 1]);
+            sum = (sum + nums[i] * (power[i] - power[n - i - 1])) % mod;
         }
-        return (int)(sum % mod);
+        return (int)sum;
+    }
+
+    // leetcode 632. https://leetcode.com/problems/smallest-range-covering-elements-from-k-lists/
+    public int[] smallestRange(List<List<Integer>> nums) {
+        
+    }
+
+    // leetcode 1094. https://leetcode.com/problems/car-pooling/
+    public boolean carPooling(int[][] trips, int capacity) {
+        
+    }
+
+    // leetcode 152. https://leetcode.com/problems/maximum-product-subarray/
+    public int maxProduct(int[] nums) {
+        
+    }
+
+    // leetcode 209. https://leetcode.com/problems/minimum-size-subarray-sum/
+    public int minSubArrayLen(int target, int[] nums) {
+        
+    }
+
+    // leetcode 643. https://leetcode.com/problems/maximum-average-subarray-i/
+    public double findMaxAverage(int[] nums, int k) {
+        
+    }
+
+    // leetcode 1750. https://leetcode.com/problems/minimum-length-of-string-after-deleting-similar-ends/
+    public int minimumLength(String s) {
+        
+    }
+
+    // leetcode 442. https://leetcode.com/problems/find-all-duplicates-in-an-array/
+    public List<Integer> findDuplicates(int[] nums) {
+        
     }
 
 

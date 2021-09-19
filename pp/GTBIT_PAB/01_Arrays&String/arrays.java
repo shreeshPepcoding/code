@@ -560,7 +560,7 @@ public class arrays {
     }
 
     // leetcode 670. https://leetcode.com/problems/maximum-swap/
-    // portl function
+    // portal function
     public static String maximumSwap(String num) {
         char[] arr = num.toCharArray();
         int[] lastIndex = new int[10];
@@ -583,6 +583,194 @@ public class arrays {
         }
         return String.valueOf(arr);
     }
+
+    // two Sum : Target Sum Unique Pair
+    public static List<List<Integer>> twoSum(int[] arr, int target) {
+        Arrays.sort(arr);
+        int left = 0;
+        int right = arr.length - 1;
+        List<List<Integer>> res = new ArrayList<>();
+
+        while(left < right) {
+            // how to prevent repitition
+            if(left != 0 && arr[left] == arr[left - 1]) {
+                left++;
+                continue;
+            }
+
+            int sum = arr[left] + arr[right];
+            if(sum == target) {
+                List<Integer> subres = new ArrayList<>();
+                subres.add(arr[left]);
+                subres.add(arr[right]);
+                res.add(subres);
+                left++;
+                right--;
+            } else if(sum > target) {
+                right--;
+            } else {
+                left++;
+            }
+        }
+        return res;
+    }
+
+    // 3 sum : Unique Triplet with target sum
+    private static List<List<Integer>> twoSum_(int[] arr, int target, int st) {
+        int left = st;
+        int right = arr.length - 1;
+        List<List<Integer>> res = new ArrayList<>();
+
+        while(left < right) {
+            // how to prevent repitition
+            if(left != st && arr[left] == arr[left - 1]) {
+                left++;
+                continue;
+            }
+
+            int sum = arr[left] + arr[right];
+            if(sum == target) {
+                List<Integer> subres = new ArrayList<>();
+                subres.add(arr[left]);
+                subres.add(arr[right]);
+                res.add(subres);
+                left++;
+                right--;
+            } else if(sum > target) {
+                right--;
+            } else {
+                left++;
+            }
+        }
+        return res;
+    }
+
+    public static List<List<Integer>> threeSum(int[] nums, int targ) {
+        Arrays.sort(nums);
+        List<List<Integer>> res = new ArrayList<>();
+        int n = nums.length;
+        for(int i = 0; i <= n - 3; i++) {
+            if(i != 0 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+
+            int val1 = nums[i];
+            List<List<Integer>> subres = twoSum_(nums, targ - val1, i + 1);
+            for(List<Integer> list : subres) {
+                list.add(val1);
+                res.add(list);
+            }
+        }
+        return res;
+    }
+
+    // four sum : Unique Quadruple
+    private static List<List<Integer>> threeSum_(int[] nums, int targ, int st) {
+        // Arrays.sort(nums);
+        List<List<Integer>> res = new ArrayList<>();
+        int n = nums.length;
+        for(int i = st; i <= n - 3; i++) {
+            if(i != st && nums[i] == nums[i - 1]) {
+                continue;
+            }
+
+            int val1 = nums[i];
+            List<List<Integer>> subres = twoSum_(nums, targ - val1, i + 1);
+            for(List<Integer> list : subres) {
+                list.add(val1);
+                res.add(list);
+            }
+        }
+        return res;
+    }
+
+    public static List<List<Integer>> fourSum(int[] nums, int target) {
+        Arrays.sort(nums);
+        int n = nums.length;
+        List<List<Integer>> res = new ArrayList<>();
+        for(int i = 0; i <= n - 4; i++) {
+            if(i != 0 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            int val1 = nums[i];
+            List<List<Integer>> subres = threeSum_(nums, target - val1, i + 1);
+            for(List<Integer> list : subres) {
+                list.add(val1);
+                res.add(list);
+            }
+        }
+        return res;
+    }
+
+    // K Sum, target sum unique Set
+    private static List<List<Integer>> kSum_(int[] nums, int target, int st, int k) {
+        if(k == 2) {
+            return twoSum_(nums, target, st);
+        }
+
+        int n = nums.length;
+        List<List<Integer>> res = new ArrayList<>();
+        for(int i = st; i <= n - k; i++) {
+            if(i != st && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            int val1 = nums[i];
+            List<List<Integer>> subres = kSum_(nums, target - val1, i + 1, k - 1);
+            for(List<Integer> list : subres) {
+                list.add(val1);
+                res.add(list);
+            }
+        }
+        return res;
+    }     
+    
+    public static List<List<Integer>> kSum(int[] arr, int target, int k) {
+        // main recursive function
+        Arrays.sort(arr);
+        return kSum_(arr, target, 0, k);
+    }
+
+    // leetcode 537. https://leetcode.com/problems/complex-number-multiplication/
+    public String complexNumberMultiply(String num1, String num2) {
+        int a1 = Integer.parseInt(num1.substring(0, num1.indexOf("+")));
+        int b1 = Integer.parseInt(num1.substring(num1.indexOf("+") + 1, num1.length() - 1));
+
+        int a2 = Integer.parseInt(num2.substring(0, num2.indexOf("+")));
+        int b2 = Integer.parseInt(num2.substring(num2.indexOf("+") + 1, num2.length() - 1));
+
+        int real = a1 * a2 - b1 * b2;
+        int imaginary = a1 * b2 + a2 * b1;
+
+        return real + "+" + imaginary + "i";
+    }
+
+    // minimum Platform, https://practice.geeksforgeeks.org/problems/minimum-platforms/1
+    static int findPlatform(int arr[], int dep[], int n) {
+        Arrays.sort(arr);
+        Arrays.sort(dep);
+        int omax = 0;
+        int platforms = 0;
+        int i = 0; // for arrival
+        int j = 0; // for departure
+        while(i < arr.length) {
+            if(arr[i] <= dep[j]) {
+                platforms++;
+                i++;
+            } else {
+                platforms--;
+                j++;
+            }
+            omax = Math.max(omax, platforms);
+        }
+        return omax;
+    }
+
+    // pair with given differencem, https://practice.geeksforgeeks.org/problems/find-pair-given-difference1559/1
+    public boolean findPair(int arr[], int size, int n) {
+        //code here.
+    }
+
+
 
     public static void main(String[] args) {
         
