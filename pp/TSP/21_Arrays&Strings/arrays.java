@@ -1412,7 +1412,7 @@ public class arrays {
     }
 
     // leetcode 57. https://leetcode.com/problems/insert-interval/
-    public int[][] insert(int[][] intervals, int[] newInterval) {
+    public int[][] insert1(int[][] intervals, int[] newInterval) {
         if(intervals.length == 0) {
             int[][] res = {
                 newInterval
@@ -1496,13 +1496,81 @@ public class arrays {
         return result.toArray(new int[result.size()][2]);
     }
 
-
-
     // leetcode 1007. https://leetcode.com/problems/minimum-domino-rotations-for-equal-row/
+    private int setCount(int[] arr1, int[] arr2, int val, int count, int indx) {
+        if(count != Integer.MAX_VALUE) {
+            if(arr1[indx] == val) {
+                // nothing to do
+            } else if(arr2[indx] == val) {
+                // rotation required
+                count++;
+            } else {
+                count = Integer.MAX_VALUE;
+            }
+        }
+        return count;
+    }
     public int minDominoRotations(int[] tops, int[] bottoms) {
-        
+        int val1 = tops[0];
+        int val2 = bottoms[0];
+
+        int count1 = 0; // Rotations for Top as val1
+        int count2 = 0; // Rotations for Top as val2
+        int count3 = 0; // Rotations for Bottom as val1
+        int count4 = 0; // Rotations for Bottom as val2
+
+        for(int i = 0; i < tops.length; i++) {
+            count1 = setCount(tops, bottoms, val1, count1, i);
+            count2 = setCount(tops, bottoms, val2, count2, i);
+            count3 = setCount(bottoms, tops, val1, count3, i);
+            count4 = setCount(bottoms, tops, val2, count4, i);
+        }
+        int res = Math.min(Math.min(count1, count2), Math.min(count3, count4));
+        return res == Integer.MAX_VALUE ? -1 : res;
     }
 
+    // leetcode 134. https://leetcode.com/problems/gas-station/
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+        int gasSum = 0;
+        int costSum = 0;
+        for(int i = 0; i < gas.length; i++) {
+            gasSum += gas[i];
+            costSum += cost[i];
+        }
+        if(gasSum - costSum < 0) {
+            return -1;
+        }
+        int indx = 0;
+        int prefixSum = 0;
+        int min = Integer.MAX_VALUE;
+        for(int i = 0; i < gas.length; i++) {
+            prefixSum += gas[i] - cost[i];
+            if(prefixSum < min) {
+                min = prefixSum;
+                indx = i;
+            }
+        }
+        return (indx + 1) % gas.length;
+    }
+
+    // leetcode 891. https://leetcode.com/problems/sum-of-subsequence-widths/
+    public int sumSubseqWidths(int[] nums) {
+        Arrays.sort(nums);
+        int mod = (int)1e9 + 7;
+        long sum = 0;
+        // make power
+        int n = nums.length;
+        int[] power = new int[n];
+        power[0] = 1;
+        for(int i = 1; i < n; i++) {
+            power[i] = (power[i - 1] % mod) * 2;
+        }
+        // now calculate sum
+        for(int i = 0; i < n; i++) {
+            sum += nums[i] * (power[i] - power[n - i - 1]);
+        }
+        return (int)(sum % mod);
+    }
 
 
     public static void main(String[] args) {
