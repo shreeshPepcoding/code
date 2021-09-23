@@ -1692,24 +1692,89 @@ public class arrays {
 
     // leetcode 209. https://leetcode.com/problems/minimum-size-subarray-sum/
     public int minSubArrayLen(int target, int[] nums) {
-        
+        int left = 0;
+        int sum = 0;
+        int res = Integer.MAX_VALUE;
+
+        for(int i = 0; i < nums.length; i++) {
+            if(nums[i] >= target) {
+                return 1;
+            }
+
+            sum += nums[i];
+
+            while(sum >= target) {
+                res = Math.min(res, i - left + 1);
+                sum -= nums[left];
+                left++;
+            }
+        }
+        return res == Integer.MAX_VALUE ? 0 : res;
     }
 
     // leetcode 643. https://leetcode.com/problems/maximum-average-subarray-i/
     public double findMaxAverage(int[] nums, int k) {
-        
+        // 1. find sum of first k - 1 element
+        int sum = 0;
+        for(int i = 0; i < k - 1; i++) {
+            sum += nums[i];
+        }
+        // 2. calculate average in K Size window
+        double res = Integer.MIN_VALUE * 1.0;
+        for(int i = k - 1; i < nums.length; i++) {
+            sum += nums[i];
+            double avg = sum * 1.0 / k;
+            res = Math.max(res, avg);
+            sum -= nums[i - k + 1];
+        }
+        return res;
     }
 
     // leetcode 1750. https://leetcode.com/problems/minimum-length-of-string-after-deleting-similar-ends/
     public int minimumLength(String s) {
-        
+        int left = 0;
+        int right = s.length() - 1;
+
+        while(left < right && s.charAt(left) == s.charAt(right)) {
+            char ch = s.charAt(left);
+            // move left ahead with same character's present
+            while(left < right && s.charAt(left) == ch) {
+                left++;
+            }
+            // move right in backward with same character's present
+            while(left < right && s.charAt(right) == ch) {
+                right--;
+            }
+        }
+        return right - left + 1;
     }
 
     // leetcode 442. https://leetcode.com/problems/find-all-duplicates-in-an-array/
     public List<Integer> findDuplicates(int[] nums) {
-        
+        List<Integer> res = new ArrayList<>();
+
+        for(int i = 0; i < nums.length; i++) {
+            int indx = Math.abs(nums[i]) - 1;
+            int val = nums[indx];
+
+            if(val < 0) {
+                // indx + 1 is repitited
+                res.add(indx + 1);
+            } else {
+                // mark it
+                nums[indx] *= -1;
+            }
+        }
+        return res;
     }
 
+
+    // your work
+    /* 
+        1. https://leetcode.com/problems/fruit-into-baskets/
+        2. https://practice.geeksforgeeks.org/problems/minimize-the-heights3351/1
+        3. https://practice.geeksforgeeks.org/problems/minimize-the-heights-i/0/
+    */
 
     public static void main(String[] args) {
 
