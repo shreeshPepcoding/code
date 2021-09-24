@@ -770,7 +770,127 @@ public class arrays {
         //code here.
     }
 
+    public static void printPrimeUsingSieve(int n) {
+        // pre calculation
+        boolean[] isprime = new boolean[n + 1];
+        
+        // fill all as prime, i.e. as true -> this is optional step
+        Arrays.fill(isprime, true);
 
+        // begin from 2 to root(n)
+        for(int i = 2; i * i <= n; i++) {
+            if(isprime[i] == false) {
+                continue; // because if it is marked as not prime then its multiple are also marked
+            }
+            for(int j = i + i; j <= n; j += i) {
+                isprime[j] = false;
+            }
+        }
+
+        // run a loop and print if prime
+        for(int i = 2; i <= n; i++) {
+            if(isprime[i] == true) {
+                // i is prime number
+                System.out.print(i + " ");
+            }
+        }
+    }  
+
+    // segmented sieve
+    private static ArrayList<Integer> sieve(int n) {
+        // pre calculation
+        boolean[] isprime = new boolean[n + 1];
+
+        // begin from 2 to root(n)
+        for(int i = 2; i * i <= n; i++) {
+            if(isprime[i] == true) {
+                continue; // because if it is marked as not prime then its multiple are also marked
+            }
+            for(int j = i + i; j <= n; j += i) {
+                isprime[j] = true;
+            }
+        }
+
+        ArrayList<Integer> res = new ArrayList<>();
+        for(int i = 2; i < isprime.length; i++) {
+            if(isprime[i] == false) {
+                res.add(i);
+            }
+        }
+        return res;
+    }
+
+    public static void segmentedSieveAlgo(int a, int b) {
+        int rootb = (int)Math.sqrt(b);
+        ArrayList<Integer> primes = sieve(rootb);
+
+        int n = b - a;
+        boolean[] isprime = new boolean[n + 1];
+        // isprime[i] == true -> associated value is not prime
+        // isprime[i] == false -> associated value is prime
+
+        for(int prime : primes) {
+            int multiple = (int)Math.ceil(a * 1.0 / prime);
+
+            if(multiple == 1) multiple++;
+
+            int si = multiple * prime - a;
+            for(int i = si; i < isprime.length; i += prime) {
+                isprime[i] = true; // mark it as not prime
+            }
+        }
+
+        // travel and print prime
+        for(int i = 0; i < isprime.length; i++) {
+            if(isprime[i] == false && i + a != 1) {
+                System.out.println(i + a);
+            }
+        }
+    }
+
+    // Given Pair Difference, https://practice.geeksforgeeks.org/problems/find-pair-given-difference1559/1
+    public boolean findPair(int arr[], int size, int target) {
+        Arrays.sort(arr);
+        int left = 0;
+        int right = 1;
+
+        while(right < arr.length) {
+            int diff = arr[right] - arr[left];
+            if(diff == target) {
+                return true;
+            } else if(diff > target) {
+                left++;
+            } else {
+                right++;
+            }
+        }
+        return false;
+    }
+
+    // leetcode 881. https://leetcode.com/problems/boats-to-save-people/
+    public int numRescueBoats(int[] wts, int capacity) {
+        Arrays.sort(wts);
+        int boats = 0;
+        int left = 0;
+        int right = wts.length - 1;
+        while(left <= right) {
+            int sum = wts[left] + wts[right];
+
+            if(sum > capacity) {
+                right--;
+            } else {
+                left++;
+                right--;
+            }
+            boats++;
+        }
+        return boats;
+    }
+
+    // leetcode 763. https://leetcode.com/problems/partition-labels/
+    public List<Integer> partitionLabels(String s) {
+        
+    }
 
     public static void main(String[] args) {
         
