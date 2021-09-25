@@ -310,6 +310,90 @@ public class graphs {
         return -1;
     }
 
+    // leetcode 1584. https://leetcode.com/problems/min-cost-to-connect-all-points/
+    private class Pair01 {
+        int x;
+        int y;
+
+        int l;
+
+        public Pair01(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public Pair01(int x, int y, int l) {
+            this.x = x;
+            this.y = y;
+            this.l = l;
+        }
+
+    }
+    public int[][] updateMatrix(int[][] mat) {
+        Queue<Pair01> qu = new LinkedList<>();
+        boolean[][] vis = new boolean[mat.length][mat[0].length];
+        // 1. tarvel and fill queue with initial 0
+        for(int i = 0; i < mat.length; i++) {
+            for(int j = 0; j < mat[0].length; j++) {
+                if(mat[i][j] == 0) {
+                    qu.add(new Pair01(i, j));
+                    vis[i][j] = true;
+                }
+            }
+        }
+        // 2. Run BFS and mark level in given matrix and use a visited matrix
+        int level = -1;
+        while(qu.size() > 0) {
+            level++;
+            int size = qu.size();
+            while(size-- > 0) {
+                Pair01 rem = qu.remove();
+                mat[rem.x][rem.y] = level;
+                for(int d = 0; d < 4; d++) {
+                    int r = rem.x + xdir[d];
+                    int c = rem.y + ydir[d];
+                    if(r >= 0 && r < mat.length && c >= 0 && c < mat[0].length && vis[r][c] == false) {
+                        qu.add(new Pair01(r, c));
+                        vis[r][c] = true;
+                    }
+                }
+            }
+        }
+        return mat;
+    }
+
+    // methos 2 for BFS
+    public int[][] updateMatrix2(int[][] mat) {
+        Queue<Pair01> qu = new LinkedList<>();
+        boolean[][] vis = new boolean[mat.length][mat[0].length];
+        // 1. tarvel and fill queue with initial 0
+        for(int i = 0; i < mat.length; i++) {
+            for(int j = 0; j < mat[0].length; j++) {
+                if(mat[i][j] == 0) {
+                    qu.add(new Pair01(i, j, 0));
+                    vis[i][j] = true;
+                }
+            }
+        }
+        // 2. Run BFS and mark level in given matrix and use a visited matrix
+        while(qu.size() > 0) {
+            // 1. get + remove
+            Pair01 rem = qu.remove();
+            // 2. mark *
+            // 3. work
+            mat[rem.x][rem.y] = rem.l;
+            for(int d = 0; d < 4; d++) {
+                int r = rem.x + xdir[d];
+                int c = rem.y + ydir[d];
+                if(r >= 0 && r < mat.length && c >= 0 && c < mat[0].length && vis[r][c] == false) {
+                    qu.add(new Pair01(r, c, rem.l + 1));
+                    vis[r][c] = true;
+                }
+            }
+        }
+        return mat;
+    }
+
     public static void main(String[] args) {
 
     }
