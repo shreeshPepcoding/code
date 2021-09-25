@@ -887,9 +887,149 @@ public class arrays {
         return boats;
     }
 
+    // leetcode 754. https://leetcode.com/problems/reach-a-number/
+    public int reachNumber(int target) {
+        target = Math.abs(target);
+        int sum = 0;
+        int jump = 0;
+
+        while(sum < target) {
+            jump++;
+            sum += jump;
+        }
+
+        if(sum == target) {
+            // reached at destination
+            return jump;
+        } else if((sum - target) % 2 == 0) {
+            return jump;
+        } else if((sum + jump + 1 - target) % 2 == 0) {
+            return jump + 1;
+        } else {
+            return jump + 2;
+        }
+    }
+
     // leetcode 763. https://leetcode.com/problems/partition-labels/
     public List<Integer> partitionLabels(String s) {
+        HashMap<Character, Integer> map = new HashMap<>();
+        for(int i = 0; i < s.length(); i++)
+            map.put(s.charAt(i), i);
         
+        int max = 0;
+        int prev = 0;
+        List<Integer> res = new ArrayList<>();
+        for(int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            max = Math.max(max, map.get(ch));
+
+            if(max == i) {
+                res.add(i - prev + 1);
+                prev = i + 1;
+            }
+        }
+        return res;
+    }
+
+    // leetcode 867. https://leetcode.com/problems/transpose-matrix/
+    public int[][] transpose1(int[][] matrix) {
+        int row = matrix.length;
+        int col = matrix[0].length;
+
+        int[][] res = new int[col][row];
+
+        for(int r = 0; r < col; r++) {
+            for(int c = 0; c < row; c++) {
+                res[r][c] = matrix[c][r];
+            }
+        }
+        return res;
+    }
+
+    // portal
+    public static void transpose2(int[][] matrix) {
+        for(int i = 0; i < matrix.length; i++) {
+            for(int j = 0; j < i; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = temp;
+            }
+        }
+    }
+
+    // leetcode 48. https://leetcode.com/problems/rotate-image/
+    public void rotate(int[][] matrix) {
+        transpose2(matrix);
+        // reverse col
+        for(int r = 0; r < matrix.length; r++) {
+            int left = 0;
+            int right = matrix[0].length - 1;
+
+            while(left < right) {
+                int temp = matrix[r][left];
+                matrix[r][left] = matrix[r][right];
+                matrix[r][right] = temp;
+                left++;
+                right--;
+            }
+        }
+    }
+    
+    // leetcode 838. https://leetcode.com/problems/push-dominoes/
+    private void solveConfig(char[] arr, int i, int j) {
+        if(arr[i] == 'L' && arr[j] == 'L') {
+            for(int k = i + 1; k < j; k++)
+                arr[k] = 'L';
+        } else if(arr[i] == 'R' && arr[j] == 'R') {
+            for(int k = i + 1; k < j; k++)
+                arr[k] = 'R';
+        } else if(arr[i] == 'L' && arr[j] == 'R') {
+            // nothing to do
+        } else {
+            int left = i + 1;
+            int right = j - 1;
+            while(left < right) {
+                arr[left] = 'R';
+                arr[right] = 'L';
+
+                left++;
+                right--;
+            }
+        }
+    }
+
+    public String pushDominoes(String s) {
+        int n = s.length();
+        char[] arr = new char[n + 2];
+        arr[0] = 'L';
+        arr[n + 1] = 'R';
+        for(int i = 0; i < n; i++)
+            arr[i + 1] = s.charAt(i);
+
+        int i = 0;
+        int j = 1;
+        while(j < arr.length) {
+            while(arr[j] == '.')
+                j++;
+            
+            if(j - i > 1) {
+                solveConfig(arr, i, j);
+            }
+            i = j;
+            j++;
+        }
+
+        // String res = "";
+        // for(int k = 1; k < arr.length - 1; k++) {
+        //     res += arr[k];
+        // }
+        // return res;
+
+        StringBuilder str = new StringBuilder();
+        for(int k = 1; k < arr.length - 1; k++) {
+            str.append(arr[k]);
+        }
+        return str.toString();
     }
 
     public static void main(String[] args) {

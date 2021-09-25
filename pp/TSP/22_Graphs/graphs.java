@@ -124,11 +124,6 @@ public class graphs {
         return islands;
     }
 
-    // lintcode 860. https://www.lintcode.com/problem/860/
-    public int numberofDistinctIslands(int[][] grid) {
-        
-    }
-
     // leetcode 1020. https://leetcode.com/problems/number-of-enclaves/
     private static void numEnclave_dfs(int[][] graph, int x, int y) {
         graph[x][y] = 0;
@@ -230,6 +225,90 @@ public class graphs {
         return orange == 0 ? time : -1;
     } 
 
+    // lintcode 860. https://www.lintcode.com/problem/860/
+    static StringBuilder str;
+
+    static char[] dir = {'t', 'l', 'd', 'r'};
+
+    private void distinctCount(int[][] grid, int x, int y) {
+        grid[x][y] = 0;
+        for(int d = 0; d < 4; d++) {
+            int r = x + xdir[d];
+            int c = y + ydir[d];
+
+            if(r >= 0 && r < grid.length && c >= 0 && c < grid[0].length && grid[r][c] == 1) {
+                str.append("" + dir[d]);
+                distinctCount(grid, r, c);
+            }
+        }
+        str.append("z");
+    }
+
+    public int numberofDistinctIslands(int[][] grid) {
+        HashSet<String> set = new HashSet<>();
+        for(int i = 0; i < grid.length; i++) {
+            for(int j = 0; j < grid[0].length; j++) {
+                if(grid[i][j] == 1) {
+                    str = new StringBuilder("x");
+                    distinctCount(grid, i, j);
+                    set.add(str.toString());
+                }
+            }
+        }
+        return set.size();
+    }
+
+    // leetcode 815. https://leetcode.com/problems/bus-routes/
+    private void makeMapWithStandAndBus(int[][] routes, HashMap<Integer, ArrayList<Integer>> map) {
+        for(int r = 0; r < routes.length; r++) { // r -> bus number
+            for(int c = 0; c < routes[r].length; c++) {
+                int stand = routes[r][c];
+                if(map.containsKey(stand) == true) {
+                    // key is already present, so just add value i.e. bus number with that bus stop
+                    map.get(stand).add(r);
+                } else {
+                    ArrayList<Integer> busNo = new ArrayList<>();
+                    busNo.add(r);
+                    map.put(stand, busNo);
+                }
+            }
+        }
+    }
+
+    public int numBusesToDestination(int[][] routes, int source, int target) {
+        HashMap<Integer, ArrayList<Integer>> map = new HashMap<>();
+        makeMapWithStandAndBus(routes, map);
+
+        HashSet<Integer> visBus = new HashSet<>();
+        HashSet<Integer> visStand = new HashSet<>();
+        Queue<Integer> qu = new LinkedList<>();
+        qu.add(source);
+        int level = -1;
+        while(qu.size() > 0) {
+            int size = qu.size();
+            level++;
+            while(size-- > 0) {
+                int rem = qu.remove();
+                
+                if(rem == target) return level;
+
+                for(int busNum : map.get(rem)) {
+                    if(visBus.contains(busNum) == true) {
+                        continue;
+                    } else {
+                        for(int busStand : routes[busNum]) {
+                            if(visStand.contains(busStand) == false) {
+                                visStand.add(busStand);
+                                qu.add(busStand);
+                            }
+                        }
+                        visBus.add(busNum);
+                    }
+                }
+            }
+        }
+        return -1;
+    }
 
     public static void main(String[] args) {
 
