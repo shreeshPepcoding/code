@@ -394,6 +394,92 @@ public class graphs {
         return mat;
     }
 
+    // leetcode 1162. https://leetcode.com/problems/as-far-from-land-as-possible/
+    private class pairD {
+        int x;
+        int y;
+
+        public pairD(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    public int maxDistance(int[][] grid) {
+        // 1. iterate on grid and add all one's in queue and mark it as well
+        Queue<pairD> qu = new LinkedList<>();
+        for(int i = 0; i < grid.length; i++) {
+            for(int j = 0; j < grid[0].length; j++) {
+                if(grid[i][j] == 1) {
+                    qu.add(new pairD(i, j));
+                    grid[i][j] = -1;
+                }
+            }
+        }
+
+        // run BFS 
+        if(qu.size() == 0 || qu.size() == grid.length * grid[0].length)
+            return -1;
+        
+        int level = -1;
+        while(qu.size() > 0) {
+            level++;
+            int size = qu.size();
+            while(size-- > 0) {
+                pairD rem = qu.remove();
+                for(int d = 0; d < 4; d++) {
+                    int r = rem.x + xdir[d];
+                    int c = rem.y + ydir[d];
+
+                    if(r >= 0 && r < grid.length && c >= 0 && c < grid[0].length && grid[r][c] != -1) {
+                        qu.add(new pairD(r, c));
+                        grid[r][c] = -1;
+                    }
+                }
+            }
+        }
+        return level;
+    }
+
+    // mother vertex -> portal (https://practice.geeksforgeeks.org/problems/mother-vertex/1)
+    private static void dfsForStack(ArrayList<ArrayList<Integer>> graph, 
+        int src, boolean[] vis, Stack<Integer> st) {
+        vis[src] = true;
+        for(int nbr : graph.get(src)) {
+            if(vis[nbr] == false) {
+                dfsForStack(graph, nbr, vis, st);
+            }
+        }
+        st.push(src);
+    }
+
+    private static int count = 0;
+    private static void dfsForCount(ArrayList<ArrayList<Integer>> graph, 
+        int src, boolean[] vis) {
+        vis[src] = true;
+        count++;
+        for(int nbr : graph.get(src)) {
+            if(vis[nbr] == false) {
+                dfsForCount(graph, nbr, vis);
+            }
+        }
+    }
+
+    public static int findMotherVertex(int N, ArrayList<ArrayList<Integer>> graph){
+        boolean[] vis = new boolean[N];
+        Stack<Integer> st = new Stack<>();
+        for(int v = 0; v < N; v++) {
+            if(vis[v] == false) {
+                dfsForStack(graph, v, vis, st);
+            }
+        }
+
+        int top = st.peek();
+        count = 0;
+        vis = new boolean[N];
+        dfsForCount(graph, top, vis);
+        return count == N ? top + 1: -1;
+    }
+
     public static void main(String[] args) {
 
     }
