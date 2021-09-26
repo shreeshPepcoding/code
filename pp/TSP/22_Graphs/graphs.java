@@ -480,6 +480,58 @@ public class graphs {
         return count == N ? top + 1: -1;
     }
 
+    // leetcode 934. https://leetcode.com/problems/shortest-bridge/
+    private void dfsShortestBridge(int[][] grid, int x, int y, Queue<pairD> qu) {
+        grid[x][y] = -1;
+        qu.add(new pairD(x, y));
+        for(int d = 0; d < 4; d++) {
+            int r = x + xdir[d];
+            int c = y + ydir[d];
+
+            if(r >= 0 && r < grid.length && c >= 0 && c < grid[0].length && grid[r][c] == 1) {
+                dfsShortestBridge(grid, r, c, qu);
+            }
+        }
+
+    }
+
+    public int shortestBridge(int[][] grid) {
+        Queue<pairD> qu = new LinkedList<>();
+        // 1. add all one in queue, using DFS from first one encoutered
+        loop1 : for(int i = 0; i < grid.length; i++) {
+            for(int j = 0; j < grid[0].length; j++) {
+                if(grid[i][j] == 1) {
+                    dfsShortestBridge(grid, i, j, qu);
+                    break loop1;
+                }
+            }
+        }
+        // 2. apply BFS on queue and return level when another one is encounter
+        int level = -1;
+
+        while(qu.size() > 0) {
+            int size = qu.size();
+            level++;
+            while(size-- > 0) {
+                pairD rem = qu.remove();
+                for(int d = 0; d < 4; d++) {
+                    int r = rem.x + xdir[d];
+                    int c = rem.y + ydir[d];
+                    if(r >= 0 && r < grid.length && c >= 0 && c < grid[0].length && grid[r][c] != -1) {
+                        if(grid[r][c] == 1) {
+                            return level;
+                        }
+                        grid[r][c] = -1;
+                        qu.add(new pairD(r, c));
+                    }
+                }
+                
+            }
+        }
+
+        return -1;
+    }
+
     public static void main(String[] args) {
 
     }
