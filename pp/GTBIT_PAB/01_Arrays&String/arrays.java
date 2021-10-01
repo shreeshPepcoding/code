@@ -1032,6 +1032,69 @@ public class arrays {
         return str.toString();
     }
 
+    // leetcode 829. https://leetcode.com/problems/consecutive-numbers-sum/
+    public int consecutiveNumbersSum(int n) {
+        int count = 0;
+        for(int k = 1; k * (k - 1) < 2 * n ; k++) {
+            // we have to find if it is possible to make sum with k numbers
+            int numerator = n - ((k - 1) * k / 2);
+            if(numerator % k == 0)
+                count++;
+        }
+        return count;
+    }
+
+    // add strings -> portal
+    public static String addStrings(String num1, String num2) {
+        
+    }
+
+    // multiply strings -> portal
+    public static String multiplication(String num1, String num2) {
+
+    }
+
+    // leetcode 42. https://leetcode.com/problems/trapping-rain-water/
+    public int trap(int[] height) {
+        int flow = 0;
+        int water = 0;
+        int max = height[0];
+        int maxIndx = 0;
+
+        for(int i = 1; i < height.length; i++) {
+            int ht = height[i];
+            if(max <= ht) {
+                water += flow;
+                flow = 0;
+                max = ht;
+                maxIndx = i;
+            } else {
+                flow += (max - ht);
+            }
+        }
+
+        // solve the overflow of flow value
+        flow = 0;
+        max = height[height.length - 1];
+        for(int i = height.length - 2; i >= maxIndx; i--) {
+            int ht = height[i];
+            if(max <= ht) {
+                water += flow;
+                flow = 0;
+                max = ht;
+            } else {
+                flow += (max - ht);
+            }
+        }
+        return water;
+    }
+
+    // leetcode 239. https://leetcode.com/problems/sliding-window-maximum/
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        
+    }
+
+
     public static void main(String[] args) {
         
     }

@@ -20,11 +20,13 @@ public class articulation {
                 parent[nbr] = src;
                 dfsArticulation(graph, nbr, vis, parent, disc, low, arti);
                 low[src] = Math.min(low[src], low[nbr]);
-                count++;
-                if(parent[src] == -1 ) {
+                count++; // increment in count if we are making call to nbr
+                if(parent[src] == -1) {
                     // starting source / root / original source              
-                    if(count > 1)
+                    if(count > 1) {
                         arti[src] = true;
+                        // no break point here, because it is possible that neighbour have articulation point
+                    }
                 } else {
                     if(disc[src] <= low[nbr]) {
                         arti[src] = true;
@@ -43,7 +45,7 @@ public class articulation {
         int[] low = new int[n];
         boolean[] vis = new boolean[n];
         boolean[] arti = new boolean[n];
-        parent[0] = -1; 
+        parent[0] = -1; // parent of starting point is -1
         time = 0;
         dfsArticulation(graph,  0, vis, parent, disc, low, arti); 
         for(int i = 0; i < arti.length; i++) {
