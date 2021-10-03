@@ -45,7 +45,7 @@ public class dsu {
                 // according to choice point anyone, but remember to increment in its rank
                 // // set leader 2 will point to set leader 1
                 setleaders[slofv2] = slofv1;
-                rankArray[slofv2]++;
+                rankArray[slofv1]++;
             }
         }
         // find number of sets
