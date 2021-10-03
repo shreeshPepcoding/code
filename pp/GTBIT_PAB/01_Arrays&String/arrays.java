@@ -1090,10 +1090,155 @@ public class arrays {
     }
 
     // leetcode 239. https://leetcode.com/problems/sliding-window-maximum/
-    public int[] maxSlidingWindow(int[] nums, int k) {
-        
+    private int[] ngri(int[] arr) {
+        // ngri -> next greater on right (index)
+        int n = arr.length;
+        int[] ngr = new int[n];
+        Stack<Integer> st = new Stack<>(); // add index in stack
+        st.push(0);
+        for(int i = 1; i < n; i++) {
+            while(st.size() > 0 && arr[i] > arr[st.peek()]) {
+                ngr[st.pop()] = i;
+            }
+            st.push(i);
+        }
+        while(st.size() > 0) {
+            ngr[st.pop()] = n;
+        }
+        return ngr;
     }
 
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        int n = nums.length;
+        int[] ngr = ngri(nums);
+        int[] res = new int[n - k + 1];
+
+        int j = 0;
+        for(int i = 0; i < res.length; i++) {
+            if(j < i) j = i;
+
+            while(ngr[j] < i + k) {
+                j = ngr[j];
+            }
+            res[i] = nums[j];
+        }
+        return res;
+    }
+
+    public class Interval {
+        int start;
+        int end;
+        public Interval(int start, int end) {
+            this.start = start;
+            this.end = end;
+        }
+    }
+    // meeting rooms lintcode 920. https://www.lintcode.com/problem/920/
+    public boolean canAttendMeetings(List<Interval> intervals) {
+        Collections.sort(intervals, (Interval a, Interval b) -> {
+            return a.start - b.start;
+        });
+
+        int end = intervals.get(0).end;
+        for(int i = 1; i < intervals.size(); i++) {
+            if(end > intervals.get(i).start) {
+                return false;
+            } else {
+                end = intervals.get(i).end;
+            }
+        }
+        return true;
+    }
+
+    // meeting rooms 2 lintcode 919. https://www.lintcode.com/problem/919/
+    public int minMeetingRooms(List<Interval> intervals) {
+        int n = intervals.size();
+        int[] start = new int[n];
+        int[] end = new int[n];
+
+        for(int i = 0; i < n; i++) {
+            start[i] = intervals.get(i).start;
+            end[i] = intervals.get(i).end;
+        } 
+
+        Arrays.sort(start);
+        Arrays.sort(end);
+        
+        int omax = 0;
+        int rooms = 0;
+        int i = 0; // for start
+        int j = 0; // for end
+        while(i < n) {
+            if(start[i] <= end[j]) {
+                rooms++;
+                i++;
+            } else {
+                rooms--;
+                j++;
+            }
+            omax = Math.max(omax, rooms);
+        }
+        return omax;
+    }
+
+    // leetcode 56. https://leetcode.com/problems/merge-intervals/
+    public int[][] merge(int[][] intervals) {
+        Arrays.sort(intervals, (val1, val2) -> Integer.compare(val1[0], val2[0]));
+        ArrayList<int[]> list = new ArrayList<>();
+        int lsp = intervals[0][0];
+        int lep = intervals[0][1];
+
+        for(int i = 1; i < intervals.length; i++) {
+            int sp = intervals[i][0];
+            int ep = intervals[i][1];
+
+            if(sp > lep) {
+                // new interval is here
+                int[] subinterval = {lsp, lep};
+                list.add(subinterval);
+                lsp = sp;
+                lep = ep;
+            } else if(lep < ep) {
+                // partial merging
+                lep = ep;
+            } else {
+                // new interval is already covered in lsp and lep
+            }
+        }
+        int[] subinterval = {lsp, lep};
+        list.add(subinterval);
+        return list.toArray(new int[list.size()][]);
+    }
+
+    // leetcode 986. https://leetcode.com/problems/interval-list-intersections/
+    public int[][] intervalIntersection(int[][] firstList, int[][] secondList) {
+        ArrayList<int[]> res = new ArrayList<>();
+        int i = 0; // pointing to first interval of first list
+        int j = 0; // pointing to first interval of second list
+
+        while(i < firstList.length && j < secondList.length) {
+            int st = Math.max(firstList[i][0], secondList[j][0]);
+            int end = Math.min(firstList[i][1], secondList[j][1]);
+
+            if(st <= end) {
+                int[] subres = {st, end};
+                res.add(subres);
+            }
+
+            // how to increment in pointers
+            if(firstList[i][1] < secondList[j][1]) {
+                i++;
+            } else {
+                j++;
+            }
+        }
+        return res.toArray(new int[res.size()][]);
+    }
+
+    // leetcode 57. https://leetcode.com/problems/insert-interval/
+    public int[][] insert(int[][] intervals, int[] newInterval) {
+        // home work
+    }
 
     public static void main(String[] args) {
         

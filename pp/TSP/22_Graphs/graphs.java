@@ -704,6 +704,137 @@ public class graphs {
         return new int[0];
     }
 
+    // leetcode 685. https://leetcode.com/problems/redundant-connection-ii/
+    private static int[] parent;
+    private static int[] rank;
+
+    private int find(int x) {
+        if(parent[x] == x) {
+            return x;
+        }
+        int temp = find(parent[x]);
+        parent[x] = temp;
+        return temp;
+    }
+
+    private boolean union(int x, int y) {
+        int lx = find(x);
+        int ly = find(y);
+
+        if(lx == ly) {
+            return true;
+        } else {
+            if(rank[lx] > rank[ly]) {
+                parent[ly] = lx;
+            } else if(rank[lx] < rank[ly]) {
+                parent[lx] = ly;
+            } else {
+                parent[ly] = lx;
+                rank[lx]++;
+            }
+        }
+        return false;
+    }
+
+    public int[] findRedundantDirectedConnection(int[][] edges) {
+        int n = edges.length;
+        int[] indegree = new int[n + 1]; // because index in 1 based
+        Arrays.fill(indegree, -1);
+        int blackList1 = -1;
+        int blackList2 = -1;
+
+        for(int i = 0; i < edges.length; i++) {
+            int v = edges[i][1];
+
+            if(indegree[v] == -1) {
+                indegree[v] = i;
+            } else {
+                blackList1 = i;
+                blackList2 = indegree[v];
+                break;
+            }
+        }
+
+        parent = new int[n + 1];
+        rank = new int[n + 1];
+        for(int i = 0; i <= n; i++) {
+            parent[i] = i;
+            rank[i] = 1;
+        }
+
+        // apply DSU and avoid blackList1 edge index, and check if graqph is cyclic or not
+        for(int i = 0; i < edges.length; i++) {
+            if(i == blackList1) {
+                continue;
+            }
+            int u = edges[i][0];
+            int v = edges[i][1];
+
+            boolean isCyclic = union(u, v);
+            if(isCyclic == true) {
+                if(blackList1 == -1) {
+                    return edges[i];
+                } else {
+                    return edges[blackList2];
+                }
+            }
+        }
+        return edges[blackList1];
+    }
+
+    // leetcode 1584. https://leetcode.com/problems/min-cost-to-connect-all-points/
+    public int minCostConnectPoints(int[][] coords) {
+        int size = coords.length * (coords.length - 1) / 2;
+        int[][] points = new int[size][3];
+
+        int indx = 0;
+        for(int i = 0; i < coords.length; i++) {
+            for(int j = i + 1; j < coords.length; j++) {
+                int dist = Math.abs(coords[j][0] - coords[i][0]) + Math.abs(coords[j][1] - coords[i][1]);
+                int[] point = {i, j, dist};
+                points[indx] = point;
+                indx++;
+            }
+        }
+        
+        // kruskal Algo, sort all the edges 
+        Arrays.sort(points, (val1, val2) -> Integer.compare(val1[2], val2[2]));
+
+        int[] parent = new int[coords.length];
+        int[] rank = new int[coords.length];
+
+        for(int i = 0; i < coords.length; i++) {
+            parent[i] = i;
+            rank[i] = 1;
+        }
+        int cost = 0;
+        for(int i = 0; i < size; i++) {
+            int u = points[i][0];
+            int v = points[i][1];
+            int wt = points[i][2];
+
+            int lu = find(parent, u);
+            int lv = find(parent, v);
+
+            if(lu == lv)
+                continue;
+            
+            union(lu, lv, rank, parent);
+            // add edge
+            cost += wt;
+        }
+        return cost;
+    }
+
+    // leetcode 990. https://leetcode.com/problems/satisfiability-of-equality-equations/
+    public boolean equationsPossible(String[] equations) {
+        
+    }
+
+    // lintcode 856. https://www.lintcode.com/problem/856/
+    public boolean isSentenceSimilarity(String[] words1, String[] words2, List<List<String>> pairs) {
+        
+    }
 
     public static void main(String[] args) {
 
