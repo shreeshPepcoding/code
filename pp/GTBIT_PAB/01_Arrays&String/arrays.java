@@ -1240,6 +1240,98 @@ public class arrays {
         // home work
     }
 
+    // leetcode 853. https://leetcode.com/problems/car-fleet/
+    private class fleetHelper implements Comparable<fleetHelper> {
+        int pos;
+        int speed;
+        double time;
+
+        public fleetHelper(int pos, int speed, double time) {
+            this.pos = pos;
+            this.speed = speed;
+            this.time = time;
+        }
+
+        public int compareTo(fleetHelper o) {
+            return this.pos - o.pos;
+        }
+    }
+
+    public int carFleet(int target, int[] position, int[] speed) {
+        int n = speed.length;
+        fleetHelper[] data = new fleetHelper[n];
+        for(int i = 0; i < n; i++) {
+            data[i] = new fleetHelper(position[i], speed[i], (target - position[i]) * 1.0 / speed[i]);
+        }
+        Arrays.sort(data);
+        int count = 1;
+        double maxTime = data[n - 1].time;
+        for(int i = n - 2; i >= 0; i--) {
+            if(data[i].time > maxTime) {
+                count++;
+                maxTime = data[i].time;
+            }
+        }
+        return count;
+    }
+
+    // digit multiplier, https://practice.geeksforgeeks.org/problems/digit-multiplier3000/1
+    static String getSmallest(Long N) {
+        if(N == 1) return "1";
+
+        String res = "";
+        for(int num = 9; num >= 2; num--) {
+            while(N % num == 0) {
+                N = N / num;
+                res = num + res;
+            }
+        }
+        return N == 1 ? res : "-1";
+    }
+
+    // first negative, https://practice.geeksforgeeks.org/problems/first-negative-integer-in-every-window-of-size-k3345/1
+    public long[] printFirstNegativeInteger(long A[], int N, int K) {
+        long[] res = new long[N - K + 1];
+        int lastNeg = N;
+        // find first negative in last k size window;
+        for(int i = N - 1; i >= N - K; i--) {
+            if(A[i] < 0) {
+                lastNeg = i;
+            }
+        }
+
+        // iterate from N - k to 0
+        for(int i = N - K; i >= 0; i--) {
+            if(A[i] < 0) {
+                lastNeg = i;
+            }
+            if(i + K > lastNeg) {
+                // there exist a negative in range
+                res[i] = A[lastNeg];
+            } else {
+                res[i] = 0;
+            }
+        }
+        return res;
+    }
+
+    // leetcode 53. https://leetcode.com/problems/maximum-subarray/
+    public int maxSubArray(int[] nums) {
+        // kadane's Algorithm
+        int csum = 0;
+        int osum = Integer.MIN_VALUE;
+
+        for(int i = 0; i < nums.length; i++) {
+            if(csum < 0) {
+                csum = nums[i];
+            } else {
+                csum += nums[i];
+            }
+            osum = Math.max(osum, csum);
+        }
+        return osum;        
+    }
+
     public static void main(String[] args) {
         
     }
