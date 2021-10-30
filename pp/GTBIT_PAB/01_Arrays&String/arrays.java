@@ -1332,6 +1332,111 @@ public class arrays {
         return osum;        
     }
 
+    // k-concatenation link - https://www.codechef.com/problems/KCON
+    private static long kadanes1(int[] arr) {
+        long csum = 0;
+        long omax = Integer.MIN_VALUE;
+        for(int i = 0; i < arr.length; i++) {
+            if(csum >= 0) {
+                csum += arr[i];
+            } else {
+                csum = arr[i];
+            }
+            omax = Math.max(omax, csum);
+        }
+        return omax;
+    }
+
+    private static long kadanes12(int[] arr) {
+        int n = arr.length;
+        int[] res = new int[2 * n];
+        for(int i = 0; i < 2 * n; i++) {
+            res[i] = arr[i % n];
+        }
+        return kadanes1(res);
+    }
+
+    private static long kConcatenation(int[] arr, int k) {
+        if(k == 1) {
+            return kadanes1(arr);
+        }
+        long tsum = 0;
+        for(int val : arr) {
+            tsum += val;
+        }
+        if(tsum >= 0) {
+            return kadanes12(arr) + (tsum * (k - 2));
+        } else {
+            return kadanes12(arr);
+        }
+    }
+
+
+    // leetcode 134, https://leetcode.com/problems/gas-station/
+    public int maxProduct(int[] nums) {
+        int prod = 1;
+        int res = Integer.MIN_VALUE;
+        int n = nums.length;
+        // left product
+        for(int i = 0; i < n; i++) {
+            if(nums[i] == 0) {
+                res = Math.max(res, nums[i]);
+                prod = 1;
+            } else {
+                prod *= nums[i];
+                res = Math.max(prod, res);
+            }
+        }
+
+        // right product
+        prod = 1;
+        for(int i = n - 1; i >= 0; i--) {
+            if(nums[i] == 0) {
+                res = Math.max(res, nums[i]);
+                prod = 1;
+            } else {
+                prod *= nums[i];
+                res = Math.max(prod, res);
+            }
+        }
+        return res;
+    }
+    // leetcode 152, https://leetcode.com/problems/maximum-product-subarray/
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+        int gasSum = 0;
+        int costSum = 0;
+        
+        for(int i = 0; i < gas.length; i++) {
+            gasSum += gas[i];
+            costSum += cost[i];
+        }
+        if(gasSum - costSum < 0) {
+            return -1;
+        }
+
+        int indx = 0;
+        int prefixSum = 0;
+        int min = Integer.MAX_VALUE;
+        for(int i = 0; i < gas.length; i++) {
+            prefixSum += gas[i] - cost[i];
+
+            if(prefixSum < min) {
+                min = prefixSum;
+                indx = i;
+            }
+        }
+        return (indx + 1) % gas.length;
+    }
+
+    // maximum sum of smallest and second smallest in all subarrays, https://practice.geeksforgeeks.org/problems/max-sum-in-sub-arrays0824/1#
+    public static long pairWithMaxSum(long arr[], long N) {
+        long sum = Integer.MIN_VALUE;
+        for(int i = 0; i < N - 1; i++) {
+            sum = Math.max(sum, arr[i] + arr[i + 1]);
+        }
+        return sum;
+    }
+
     public static void main(String[] args) {
         
     }
