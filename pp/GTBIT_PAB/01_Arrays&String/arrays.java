@@ -1437,6 +1437,174 @@ public class arrays {
         return sum;
     }
 
+    // leetcode 1007. https://leetcode.com/problems/minimum-domino-rotations-for-equal-row/
+    public int minDominoRotations(int[] tops, int[] bottoms) {
+        int val1 = tops[0];
+        int val2 = bottoms[0];
+
+        int count1 = 0; // rotation required to make top as val1
+        int count2 = 0; // rotation required to make top as val2
+        int count3 = 0; // rotation required to make bottom as val1
+        int count4 = 0; // rotation required to make bottom as val2
+
+        for(int i = 0; i < tops.length; i++) {
+            if(count1 != Integer.MAX_VALUE) {
+                if(tops[i] == val1) {
+                    // nothing to do
+                } else if(bottoms[i] == val1) {
+                    count1++;
+                } else {
+                    count1 = Integer.MAX_VALUE;
+                }
+            }
+
+            if(count2 != Integer.MAX_VALUE) {
+                if(tops[i] == val2) {
+                    // nothing to do
+                } else if(bottoms[i] == val2) {
+                    count2++;
+                } else {
+                    count2 = Integer.MAX_VALUE;
+                }
+            }
+
+            if(count3 != Integer.MAX_VALUE) {
+                if(bottoms[i] == val1) {
+                    // nothing to do
+                } else if(tops[i] == val1) {
+                    count3++;
+                } else {
+                    count3 = Integer.MAX_VALUE;
+                }
+            }
+
+            if(count4 != Integer.MAX_VALUE) {
+                if(bottoms[i] == val2) {
+                    // nothing to do
+                } else if(tops[i] == val2) {
+                    count4++;
+                } else {
+                    count4 = Integer.MAX_VALUE;
+                }
+            }
+        }
+        int res = Math.min(Math.min(count1, count2), Math.min(count3, count4));
+        return res == Integer.MAX_VALUE ? -1: res;
+    }
+
+    // leetcode 632. https://leetcode.com/problems/smallest-range-covering-elements-from-k-lists/
+
+    private class RHelper implements Comparable<RHelper>{
+        int val;
+        int r;
+        int c;
+
+        public RHelper(int val, int r, int c) {
+            this.val = val;
+            this.r = r;
+            this.c = c;
+        }
+
+        public int compareTo(RHelper o) {
+            return this.val - o.val;
+        }
+    }
+
+    public int[] smallestRange(List<List<Integer>> nums) {
+        PriorityQueue<RHelper> pq = new PriorityQueue<>();
+        int max = Integer.MIN_VALUE;
+        for(int r = 0; r < nums.size(); r++) {
+            int val = nums.get(r).get(0);
+            pq.add(new RHelper(val, r, 0));
+            max = Math.max(max, val);
+        }
+
+        int sp = 0;
+        int ep = 0;
+        int length = Integer.MAX_VALUE;
+
+        while(true) {
+            RHelper rem = pq.remove();
+            int cmin = rem.val;
+            int cmax = max;
+
+            if(cmax - cmin < length) {
+                length = cmax - cmin;
+                sp = cmin;
+                ep = cmax;
+            }
+
+            if(rem.c + 1 < nums.get(rem.r).size()) {
+                int val = nums.get(rem.r).get(rem.c + 1);
+                pq.add(new RHelper(val, rem.r, rem.c + 1));
+                max = Math.max(max, val);
+            } else {
+                break;
+            }
+        }
+
+        int[] res = {sp, ep};
+        return res;
+    }
+
+    // leetcode 209. https://leetcode.com/problems/minimum-size-subarray-sum/
+    public int minSubArrayLen(int target, int[] nums) {
+        int left = 0;
+        int sum = 0;
+        int len = Integer.MAX_VALUE;
+
+        for(int i = 0; i < nums.length; i++) {
+            if(nums[i] >= target) {
+                return 1;
+            }
+
+            sum += nums[i];
+            while(sum >= target) {
+                len = Math.min(len, i - left + 1);
+                sum -= nums[left];
+                left++;
+            }
+        }
+        return len == Integer.MAX_VALUE ? 0 : len;
+    }
+
+    // leetcode 643. https://leetcode.com/problems/maximum-average-subarray-i/
+    public double findMaxAverage(int[] nums, int k) {
+        // find sum of first k element
+        int sum = 0;
+        for(int i = 0; i < k - 1; i++) {
+            sum += nums[i];
+        }
+
+        // calculate result in k size window
+        double res = Integer.MIN_VALUE * 1.0;
+        for(int i = k - 1; i < nums.length; i++) {
+            sum += nums[i];
+            double avg = sum * 1.0 / k;
+            res = Math.max(res, avg);
+            sum -= nums[i - k + 1];
+        }
+        return res;
+    }
+
+    // leetcode 442. https://leetcode.com/problems/find-all-duplicates-in-an-array/
+    public List<Integer> findDuplicates(int[] nums) {
+        List<Integer> res = new ArrayList<>();
+
+        for(int i = 0; i < nums.length; i++) {
+            int indx = Math.abs(nums[i]) - 1;
+            int val = nums[indx];
+
+            if(val < 0) {
+                res.add(indx + 1);
+            } else {
+                nums[indx] *= -1;
+            }
+        }
+        return res;
+    }
+
+
     public static void main(String[] args) {
         
     }
