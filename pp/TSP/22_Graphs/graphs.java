@@ -1158,8 +1158,144 @@ public class graphs {
         }
     }
 
+    // leetcode 1034. https://leetcode.com/problems/coloring-a-border/
 
+    private void dfs(int[][] grid, int x, int y, boolean[][] vis) {
+        int count = 0;
+        int val = grid[x][y];
+        grid[x][y] *= -1;
+        vis[x][y] = true;
+        for(int d = 0; d < 4; d++) {
+            int r = x + xdir[d];
+            int c = y + ydir[d];
 
+            if(r >= 0 && r < grid.length && c >= 0 && c < grid[0].length) {
+                if(grid[r][c] == val || grid[r][c] == -val) {
+                    count++;
+                }
+
+                if(grid[r][c] == val && vis[r][c] == false) {
+                    dfs(grid, r, c, vis);
+                }
+            }
+        }
+        if(count == 4) {
+            grid[x][y] *= -1;
+        }
+    }
+
+    public int[][] colorBorder(int[][] grid, int row, int col, int color) {
+        int n = grid.length;
+        int m = grid[0].length;
+
+        boolean[][] vis = new boolean[n][m];
+        dfs(grid, row, col, vis);
+        
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < m; j++) {
+                if(grid[i][j] < 0) {
+                    grid[i][j] = color;
+                }
+            }
+        }
+        return grid;
+    }
+
+    // minimum number of swap to make array sorted
+    private static class Pair implements Comparable<Pair> {
+        int val;
+        int idx;
+    
+        Pair(int val, int idx) {
+          this.val = val;
+          this.idx = idx;
+        }
+    
+        @Override
+        public int compareTo(Pair o) {
+          return this.val - o.val;
+        }
+    }
+
+    public static int minSwaps(int[] arr1) {
+        Pair[] arr = new Pair[arr1.length];
+        for(int i = 0; i < arr.length; i++) {
+            arr[i] = new Pair(arr1[i], i);
+        }
+
+        Arrays.sort(arr);
+        int ans = 0;
+        boolean[] vis = new boolean[arr.length];
+        for(int i = 0; i < arr.length; i++) {
+            if(vis[i] == true || arr[i].idx == i) {
+                continue;
+            }
+            int clen = 0;
+            int j = i;
+            while(vis[j] == false) {
+                vis[j] = true;
+                clen++;
+                j = arr[j].idx;
+            }
+            ans += clen - 1;
+        }
+        return ans;
+    }
+
+    // eulerian path and circuit, https://practice.geeksforgeeks.org/problems/euler-circuit-and-path/1#
+    public int isEularCircuitExist(int V, ArrayList<ArrayList<Integer>> adj) {
+        int odd = 0;
+        int even = 0;
+
+        for(int i = 0; i < V; i++) {
+            if(adj.get(i).size() % 2 == 0) {
+                even++;
+            } else {
+                odd++;
+            }
+        }
+
+        if(odd == 0) {
+            return 2;
+        } else if(odd == 2) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    // leetcode 332. https://leetcode.com/problems/reconstruct-itinerary/
+    public HashMap<String, PriorityQueue<String>> graph;
+    public LinkedList<String> ans;
+    public List<String> findItinerary(List<List<String>> tickets) {
+        graph = new HashMap<>();
+        ans = new LinkedList<>();
+
+        for(List<String> edge : tickets) {
+            String u = edge.get(0);
+            String v = edge.get(1);
+
+            if(graph.containsKey(u)) {
+                graph.get(u).add(v);
+            } else {
+                PriorityQueue<String> pq = new PriorityQueue<>();
+                pq.add(v);
+                graph.put(u, pq);
+            }
+        }
+
+        dfs("JFK");
+        return ans;
+    }
+
+    public void dfs(String src) {
+        PriorityQueue<String> nbrs = graph.get(src);
+        while(nbrs != null && nbrs.size() > 0) {
+            String nbr = nbrs.remove();
+            dfs(nbr);
+        }
+        ans.addFirst(src);
+    }
 
     public static void main(String[] args) {
 
