@@ -215,6 +215,352 @@ public class SnS {
         return res;
     }
 
+    // find pair with given difference, portal
+    public static void findPair(int[]arr,int target) {
+        int lo = 0;
+        int hi = 1;
+        Arrays.sort(arr);
+        while(hi < arr.length && lo < hi) {
+            int diff = arr[hi] - arr[lo];
+            if(diff == target) {
+                System.out.println(arr[lo] + " " + arr[hi]);
+                return;
+            } else if(diff > target) {
+                lo++;
+            } else {
+                hi++;
+            }
+        }
+        System.out.println(-1);
+    }
+
+    // roof top, portal
+    public static int findMaxSteps(int[]arr) {
+        int count = 0;
+        int res = 0;
+
+        for(int i = 1; i < arr.length; i++) {
+            if(arr[i - 1] < arr[i]) {
+                count++;
+            } else {
+                res = Math.max(res, count);
+                count = 0;
+            }
+        }
+        res = Math.max(res, count);
+        return res;
+    }
+
+    // maximize sum of arr[i] * i, portal
+    public static int maximise(int[]arr) {
+        long sum = 0;
+        int mod = (int)(1e9) + 7;
+        Arrays.sort(arr);
+        for(long i = 0; i < arr.length; i++) {
+            sum = sum + ((long)(arr[(int)i]) * i);
+        }
+        return (int)(sum % mod);
+    }
+
+    // maximise config. arr[i] * i, portal
+    public static int maximise1(int[]arr) {
+        int sum  = 0;
+        int sIm1 = 0; // s[i - 1]
+        for(int i = 0; i < arr.length; i++) {
+            sIm1 += arr[i] * i;
+            sum += arr[i];
+        }
+        int res = sIm1;
+        for(int i = 1; i < arr.length; i++) {
+            int sI = sIm1 + sum - n * arr[n - i];
+            res = Math.max(sI, res);
+            sIm1 = sI;
+        }
+        return res;
+    }
+
+    // =================Binary Search======================
+    // 1. Normal Binary Search
+    public int binarySearch(int[] arr, int dtf) {
+        int lo = 0;
+        int hi = arr.length - 1;
+        int indx = -1;
+
+        while(lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            if(arr[mid] == dtf) {
+                indx = mid;
+                break;
+            } else if(arr[mid] > dtf) {
+                // discard right side
+                hi = mid - 1;
+            } else {
+                // discard left side
+                lo = mid + 1;
+            }
+        }
+        return indx;
+    }
+
+    // 2. Binary Search First Index
+    public int binarySearchFirstIndex(int[] arr, int dtf) {
+        int lo = 0;
+        int hi = arr.length - 1;
+        int indx = -1;
+
+        while(lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            if(arr[mid] == dtf) {
+                indx = mid;
+                hi = mid - 1;
+            } else if(arr[mid] > dtf) {
+                // discard right side
+                hi = mid - 1;
+            } else {
+                // discard left side
+                lo = mid + 1;
+            }
+        }
+        return indx;
+    }
+
+    // 3. Binary Search Last Index
+    public int binarySearchLastIndex(int[] arr, int dtf) {
+        int lo = 0;
+        int hi = arr.length - 1;
+        int indx = -1;
+
+        while(lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            if(arr[mid] == dtf) {
+                indx = mid;
+                lo = mid + 1;
+            } else if(arr[mid] > dtf) {
+                // discard right side
+                hi = mid - 1;
+            } else {
+                // discard left side
+                lo = mid + 1;
+            }
+        }
+        return indx;
+    }
+
+    // first Transition Point, portal
+    public static int findTransition(int[] arr) {
+        int indx = -1;
+        int lo = 0;
+        int hi = arr.length - 1;
+        while(lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            if(arr[mid] == 1) {
+                indx = mid;
+                hi = mid - 1;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        return indx;
+    }
+    
+    // leetcode 658, https://leetcode.com/problems/find-k-closest-elements/
+    public List<Integer> findClosestElements(int[] arr, int k, int x) {
+        LinkedList<Integer> res = new LinkedList<>();
+        int lo = 0;
+        int hi = arr.length - 1;
+        int indx = 0;
+
+        while(lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            indx = Math.abs(arr[indx] - x) > Math.abs(arr[mid] - x) ? mid: indx;
+            if(arr[mid] == x) {
+                break;
+            } else if(arr[mid] > x) {
+                hi = mid - 1;
+            } else {
+                lo = mid + 1;
+            }
+        }
+
+        lo = indx - 1;
+        hi = indx;
+        while(res.size() < k && lo >= 0 && hi < arr.length) {
+            if(Math.abs(x - arr[lo]) <= Math.abs(arr[hi] - x)) {
+                res.addFirst(arr[lo]);
+                lo--;
+            } else {
+                res.addLast(arr[hi]);
+                hi++;
+            }
+        }
+
+        while(res.size() < k && lo >= 0) {
+            res.addFirst(arr[lo]);
+            lo--;
+        }
+        
+        while(res.size() < k && hi < arr.length) {
+            res.addLast(arr[hi]);
+            hi++;
+        }
+        return res;
+    }
+
+    // leetcode 33, https://leetcode.com/problems/search-in-rotated-sorted-array/
+    public int search(int[] arr, int target) {
+        int lo = 0;
+        int hi = arr.length - 1;
+        int indx = -1;
+        
+        while(lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            if(arr[mid] == target) {
+                // data found
+                indx = mid;
+                break;
+            } else if(arr[mid] < arr[hi]) {
+                // right side is sorted
+                if(arr[mid] < target && target <= arr[hi]) {
+                    lo = mid + 1;
+                } else {
+                    hi = mid - 1;
+                }
+            } else {
+                // left side is sorted
+                if(arr[lo] <= target && target < arr[mid]) {
+                    hi = mid - 1;
+                } else {
+                    lo = mid + 1;
+                }
+            }
+        }
+        
+        return indx;
+    }
+
+    // minimum in sorted rotated array + rotation count
+    public static int findMinimum(int[]arr) {
+        int lo = 0;
+        int hi = arr.length - 1;
+
+        while(lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if(arr[mid] < arr[hi]) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        return arr[hi];
+    }
+
+    static int c_inv = 0;
+
+    private static int[] mergeSortedArray(int[] arr1, int[] arr2) {
+        int n1 = arr1.length;
+        int n2 = arr2.length;
+
+        int[] res = new int[n1 + n2];
+
+        int i = 0;
+        int j = 0;
+        int k = 0;
+
+        while(i < n1 && j < n2) {
+            if(arr1[i] > arr2[j]) {
+                res[k] = arr2[j];
+                j++;
+                c_inv += n1 - i;
+            } else {
+                res[k] = arr1[i];
+                i++;
+            }
+            k++;
+        }
+
+        while(i < n1) {
+            res[k] = arr1[i];
+            i++;
+            k++;
+        }
+
+        while(j < n2) {
+            res[k] = arr2[j];
+            j++;
+            k++;
+        }
+
+        return res;
+    }
+
+    private static int[] mergeSort(int[] arr, int lo, int hi) {
+        if(lo == hi) {
+            int[] bres = {arr[lo]};
+            return bres;
+        }
+
+        int mid = lo + (hi - lo) / 2;
+        int[] lres = mergeSort(arr, lo, mid);
+        int[] rres = mergeSort(arr, mid + 1, hi);
+        int[] res = mergeSortedArray(lres, rres);
+        return res;
+    }
+
+    private static int countInversion(int[] arr) {
+        c_inv = 0;
+        int[] res = mergeSort(arr, 0, arr.length - 1);
+        return c_inv;
+    }
+
+    // median of two sorted arrays
+    public static double find(int[] a, int[] b) {
+        int n1 = a.length;
+        int n2 = b.length;
+
+        if(n1 > n2) {
+            int[] temp = a;
+            a = b;
+            b = temp;
+
+            int temp2 = n1;
+            n1 = n2;
+            n2 = temp2;
+        }
+
+        int lo = 0;
+        int hi = n1;
+        int te = n1 + n2;
+        while(lo <= hi) {
+            int ali = lo + (hi - lo) / 2; // aleft is equivalent to mid, ali-> a left index
+            int bli = (te + 1) / 2 - ali; // why te + 1, because we have to manage odd and even both, bli-> b left index
+
+            int alm1 = ali == 0 ? Integer.MIN_VALUE : a[ali - 1];
+            int al = ali == n1 ? Integer.MAX_VALUE : a[ali];
+            int blm1 = bli == 0 ? Integer.MIN_VALUE : b[bli - 1];
+            int bl = bli == n2 ? Integer.MAX_VALUE : b[bli];
+
+            // make sure that splitting is valid or not
+            if(alm1 <= bl && blm1 <= al) {
+                // after is here in this block
+                double median = 0.0;
+                if(te % 2 == 0) {
+                    // even elements
+                    median = (Math.max(blm1, alm1) + Math.min(al, bl)) / 2.0;
+                } else {
+                    // odd elements
+                    median = Math.max(alm1, blm1);
+                }
+                return median;
+            } else if(blm1 > al) {
+                lo = ali + 1;
+            } else {
+                hi = ali -1;
+            }
+        }
+        return 0.0;
+    }
+
+
     public static void main(String[] args) {
         
     }
