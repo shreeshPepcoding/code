@@ -560,6 +560,83 @@ public class SnS {
         return 0.0;
     }
 
+    // leetcode 875. https://leetcode.com/problems/koko-eating-bananas/
+    private boolean isPossible(int[] piles, int h, int speed) {
+        int time = 0;
+        for(int i = 0; i < piles.length; i++) {
+            time += (int)Math.ceil(piles[i] * 1.0 / speed);
+        }
+        return time <= h;
+    }
+
+    public int minEatingSpeed(int[] piles, int h) {
+        int max = Integer.MIN_VALUE;
+        for(int val : piles) 
+            max = Math.max(max, val);
+            
+        int lo = 1;
+        int hi = max;
+        int k = Integer.MAX_VALUE;
+
+        while(lo <= hi) {
+            int speed = lo + (hi - lo) / 2;
+            if(isPossible(piles, h, speed) == true) {
+                k = speed;
+                hi = speed - 1;
+            } else {
+                lo = speed + 1;
+            }
+        }
+        return k;
+    }
+
+    // leetcode 1283. https://leetcode.com/problems/find-the-smallest-divisor-given-a-threshold/
+    public int smallestDivisor(int[] nums, int threshold) {
+        // same code as above
+    }
+
+    // Allocate minimum number of pages, https://practice.geeksforgeeks.org/problems/allocate-minimum-number-of-pages0937/1
+    private static boolean isBurdenPossible(int[] pages, int burden, int m) {
+        int student = 1;
+        int sum = 0;
+
+        for(int i = 0; i < pages.length; i++) {
+            sum += pages[i];
+            if(sum > burden) {
+                student++;
+                sum = pages[i];
+            }
+        }
+        return student <= m;
+    }
+    
+    public static int findPages(int[] pages, int N, int M) {
+        if(M > N) {
+            return -1;
+        }
+        int sum = 0;
+        int max = Integer.MIN_VALUE;
+        for(int val : pages) {
+            sum += val;
+            max = Math.max(max, val);
+        }
+
+        int lo = max;
+        int hi = sum;
+
+        int burden = Integer.MAX_VALUE;
+        while(lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            if(isBurdenPossible(pages, mid, M) == true) {
+                burden = mid;
+                hi = mid - 1;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        return burden;
+    }
+
 
     public static void main(String[] args) {
         
