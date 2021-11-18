@@ -637,6 +637,89 @@ public class SnS {
         return burden;
     }
 
+    // count zeros in sorted matrix, portal
+    public static int countZeros(int[][] mat) {
+        int count = 0;
+
+        int i = 0;
+        int j = mat[0].length - 1;
+        while(i < mat.length && j >= 0) {
+            if(mat[i][j] == 1) {
+                j--;
+            } else {
+                count += (j + 1);
+                i++;
+            }
+        }
+        return count;
+    }
+
+    // count pairs, portal
+    public static int countPairs(int[] arr) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+
+        for(int val : arr) {
+            int fq = map.containsKey(val) == true ? map.get(val) : 0;
+            map.put(val, fq + 1);
+        }
+
+        int pairs = 0;
+        for(int val : map.keySet()) {
+            int freq = map.get(val);
+            pairs += (freq) * (freq - 1) / 2;
+        }
+        return pairs;
+    }
+
+    // facing the sun, portal
+    public static int countBuildings(int[]ht) {
+        int max = ht[0];
+        int count = 1;
+        
+        for(int i = 1; i < ht.length; i++) {
+            if(ht[i] > max) {
+                count++;
+                max = ht[i];
+            }
+        }
+        return count;
+    }
+
+    // distinct element count
+    public static int count(int[]arr) {
+        int cnt = 0;
+        
+        int left = 0;
+        int right = arr.length - 1;
+        int prev = Integer.MIN_VALUE;
+        int next = Integer.MAX_VALUE;
+
+        while(left <= right) {
+            int lval = Math.abs(arr[left]);
+            int rval = Math.abs(arr[right]);
+
+            if(lval == rval) {
+                if(lval != prev && rval != next) cnt++;
+
+                prev = lval;
+                next = rval;
+                left++;
+                right--;
+            } else if(lval > rval) {
+                if(lval != prev) cnt++;
+
+                prev = lval;
+                left++;
+            } else {
+                // rval > lval 
+                if(rval != next) cnt++;
+
+                next = rval;
+                right--;
+            }
+        }
+        return cnt; 
+    }
 
     public static void main(String[] args) {
         
