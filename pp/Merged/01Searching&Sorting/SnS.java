@@ -751,6 +751,75 @@ public class SnS {
         return nums[indx];
     }
 
+    // largest perimeter triangle
+    public static int largestPerimeter(int[] nums) {
+        Arrays.sort(nums);
+        int a = 0;
+        int b = 0;
+        int c = 0;
+        int indx = nums.length - 3;
+        while(indx >= 0) {
+            a = nums[indx];
+            b = nums[indx + 1];
+            c = nums[indx + 2];
+
+            if(a + b  > c) {
+                return a + b + c;
+            }
+            indx--;
+        }
+        return 0;
+    }
+
+    // largest number, portal
+    public static String largestNumber(int[] arr) {
+        String[] starr = new String[arr.length];
+        for(int i = 0; i < arr.length; i++) {
+            starr[i] = "" + arr[i];
+        }
+
+        Arrays.sort(starr, (a, b) -> {
+            long d1 = Long.parseLong(a + b);
+            long d2 = Long.parseLong(b + a);
+
+            if(d1 > d2) {
+                return -1;
+            } else if(d1 < d2) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+
+        StringBuilder res = new StringBuilder();
+        for(int i = starr.length - 1; i >= 0; i--) {
+            res.append(starr[i]);
+        }
+        String ans = res.toString();
+        return ans.charAt(0) == '0' ? "0" : ans;
+    }
+
+    // topper of the class, https://practice.geeksforgeeks.org/problems/toppers-of-class3826/1
+    
+    public class node {
+        int marks;
+        int index;
+        public void setMarks(int a)
+        {
+            this.marks=a;
+        }
+        public void setIndex(int b)
+        {
+            this.index=b;
+        }
+    }
+
+    public 
+    void kTop(node[] a,int n) {
+        
+    }
+
+
     public static void main(String[] args) {
         
     }
