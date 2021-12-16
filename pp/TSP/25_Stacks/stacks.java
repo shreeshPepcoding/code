@@ -422,6 +422,162 @@ public class stacks {
         return true;
     }
 
+    // leetcode 636, https://leetcode.com/problems/exclusive-time-of-functions/
+    private class EThelper {
+        int id;
+        int stime;
+        int cet; // child execution time
+
+        public EThelper(int id, int stime, int cet) {
+            this.id = id;
+            this.stime = stime;
+            this.cet = cet;
+        }
+    }
+    public int[] exclusiveTime(int n, List<String> logs) {
+        // n-> number of IDs
+        int[] res = new int[n];
+        Stack<EThelper> st = new Stack<>();
+        
+        for(String str : logs) {
+            String[] info = str.split(":");
+            int id = Integer.parseInt(info[0]);
+            String status = info[1];
+            int timeStamp = Integer.parseInt(info[2]);
+
+            if(status.equals("start")) {
+                st.push(new EThelper(id, timeStamp, 0));
+            } else {
+                int fn_diff = timeStamp - st.peek().stime + 1; // function difference time
+                int etime = fn_diff - st.peek().cet;  // child execution time
+
+                res[id] += etime;
+                st.pop();
+                if(st.size() > 0) {
+                    st.peek().cet += fn_diff;
+                }
+            }
+        }
+        return res;
+    }
+
+    // leetcode 456, https://leetcode.com/problems/132-pattern/
+    public boolean find132pattern(int[] nums) {
+        
+    }
+
+    // leetcode 735, https://leetcode.com/problems/asteroid-collision/
+    public int[] asteroidCollision(int[] asteroids) {
+        Stack<Integer> st = new Stack<>();
+        for(int val : asteroids) {
+            if(val > 0) {
+                st.push(val);
+                continue;
+            }
+            // val is -ve
+            // peek is positive but smaller in temrs of size then pop untile this condition will not break
+            while(st.size() > 0 && st.peek() < -val && st.peek() > 0) {
+                st.pop();
+            }
+            if(st.size() > 0 && st.peek() == -val) {
+                st.pop(); // equal in size but opposite in direction
+            } else if(st.size() == 0 || st.peek() < 0) {
+                st.push(val);
+            } else {
+                // nothing to do
+            }
+        }
+        int[] res = new int[st.size()];
+        for(int i = res.length - 1; i >= 0; i--) {
+            res[i] = st.pop();
+        }
+        return res;
+    }
+
+    // leetcode 402, https://leetcode.com/problems/remove-k-digits/
+    public String removeKdigits(String num, int k) {
+    }
+
+    // leetcode 316, https://leetcode.com/problems/remove-duplicate-letters/
+    public String removeDuplicateLetters(String s) {
+    }
+
+    // leetcode 42. trapping rain water, https://leetcode.com/problems/trapping-rain-water/
+    // method 1. using array, left max and rightmax, think about head of building
+
+    // method 2. Using Stack
+    public int trap2(int[] height) {
+        Stack<Integer> st = new Stack<>();
+        int water = 0;
+        for(int i = 0; i < height.length; i++) {
+            int val = height[i];
+            int rmax = val; // right max
+            int rindx = i; // right index
+            while(st.size() > 0 && height[st.peek()] < val) {
+                int cht = height[st.pop()];
+                if(st.size() == 0) break;
+                int lmaxIndx = st.peek();
+                int lmax = height[lmaxIndx];
+                water += (Math.min(lmax, rmax) - cht) * (rindx - lmaxIndx - 1);
+            }
+            st.push(i);
+        }
+        return water;
+    }
+
+    // method 3. Two Pointer Approach
+    public int trap3(int[] height) {
+        int left = 0;
+        int right = height.length - 1;
+
+        int lmax = 0;
+        int rmax = 0;
+
+        int water = 0;
+        while(left < right) {
+            lmax = Math.max(lmax, height[left]);
+            rmax = Math.max(rmax, height[right]);
+
+            if(lmax < rmax) {
+                water += lmax - height[left];
+                left++;
+            } else {
+                water += rmax - height[right];
+                right--;
+            }
+        }
+        return water;
+    }
+
+    // method 4. using dual iteration
+    public int trap4(int[] height) {
+        int owater = 0; // overall water
+        int maxIndx = 0;
+        int rwater = 0; // runnning water
+        for(int i = 0; i < height.length; i++) {
+            if(height[maxIndx] <= height[i]) {
+                owater += rwater;
+                rwater = 0;
+                maxIndx = i;
+            }
+            rwater += height[maxIndx] - height[i];
+        }
+        rwater = 0;
+        int rmaxIndx = height.length - 1;
+        // some amount of water is not safe
+        for(int i = height.length - 1; i >= maxIndx; i--) {
+            if(height[rmaxIndx] <= height[i]) {
+                owater += rwater;
+                rwater = 0;
+                rmaxIndx = i;
+            }
+            rwater += height[rmaxIndx] - height[i];
+        }
+        return owater;
+    }
+
+    // 
+
     public static void main(String[] args) {
         
     }
