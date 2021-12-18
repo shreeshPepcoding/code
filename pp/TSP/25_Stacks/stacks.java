@@ -2,7 +2,9 @@ import java.util.*;
 
 public class stacks {
 
+    // ========================
     // next greater
+    // ========================
     // ngr -> next greater on right
     private static int[] ngr(int[] arr) {
         Stack<Integer> st = new Stack<>();
@@ -36,9 +38,9 @@ public class stacks {
         return res;
     }
 
+    // ========================
     // next smaller
-    
-    
+    //=========================
     // nsr -> next smaller on right
     private static int[] nsr(int[] arr) {
         Stack<Integer> st = new Stack<>();
@@ -92,8 +94,7 @@ public class stacks {
         return res;
     }
 
-    // largest area histogram, leetcode 84
-
+    // largest area histogram, leetcode 8
     private int[] nsrIndex(int[] arr) {
         Stack<Integer> st = new Stack<>();
         // push index in stack
@@ -463,7 +464,30 @@ public class stacks {
 
     // leetcode 456, https://leetcode.com/problems/132-pattern/
     public boolean find132pattern(int[] nums) {
+        // prepare left min
+        int[] lmin = new int[nums.length];
         
+        int min = Integer.MAX_VALUE;
+        for(int i = 0; i < nums.length; i++) {
+            min = Math.min(min, nums[i]);
+            lmin[i] = min;
+        }
+        
+        Stack<Integer> st = new Stack<>();
+        // find pattern
+        for(int i = nums.length - 1; i >= 0; i--) {
+            // pop while we can
+            while(st.size() > 0 && st.peek() <= lmin[i]) {
+                st.pop();
+            }
+            // check for result
+            if(st.size() > 0 && st.peek() < nums[i]) {
+                return true;
+            }
+            // push in stack
+            st.push(nums[i]);
+        }
+        return false;
     }
 
     // leetcode 735, https://leetcode.com/problems/asteroid-collision/
@@ -496,10 +520,68 @@ public class stacks {
 
     // leetcode 402, https://leetcode.com/problems/remove-k-digits/
     public String removeKdigits(String num, int k) {
+        // use linkedlist as stack
+        LinkedList<Character> st = new LinkedList<>();
+        
+        for(int i = 0; i < num.length(); i++) {
+            char ch = num.charAt(i);
+            while(k > 0 && st.size() > 0 && st.getLast() > ch) {
+                k--;
+                st.removeLast();
+            }
+            st.addLast(ch);
+        }
+        
+        // manage remaining K's
+        while(k > 0) {
+            st.removeLast();
+            k--;
+        }
+        
+        // manage leading 0's
+        while(st.size() > 0 && st.getFirst() == '0') {
+            st.removeFirst();
+        }
+        
+        StringBuilder str = new StringBuilder();
+        for(char ch : st) {
+            str.append(ch);
+        }
+        return str.length() == 0 ? "0" : str.toString();
     }
 
     // leetcode 316, https://leetcode.com/problems/remove-duplicate-letters/
     public String removeDuplicateLetters(String s) {
+        HashMap<Character, Integer> fmap = new HashMap<>(); // frequency map
+        for(int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            int of = fmap.getOrDefault(ch, 0);
+            fmap.put(ch, of + 1);
+        }
+        
+        HashMap<Character, Boolean> pmap = new HashMap<>(); // presence map
+        LinkedList<Character> st = new LinkedList<>();
+        
+        for(int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            int fq = fmap.get(ch);
+            fmap.put(ch, fq - 1);
+            
+            if(pmap.containsKey(ch) == true && pmap.get(ch) == true) continue;
+            
+            while(st.size() > 0 && st.getLast() > ch && fmap.get(st.getLast()) > 0) {
+                char rch = st.removeLast(); // rch-> remove character
+                pmap.put(rch, false);
+            }
+            st.addLast(ch);
+            pmap.put(ch, true);
+        }
+        
+        StringBuilder str = new StringBuilder();
+        for(char ch : st) {
+            str.append(ch);
+        }
+        return str.toString();
     }
 
     // leetcode 42. trapping rain water, https://leetcode.com/problems/trapping-rain-water/
@@ -656,7 +738,7 @@ public class stacks {
     }
 
     // basic calculator 224, https://leetcode.com/problems/basic-calculator/
-    public int calculate(String s) {
+    public int calculate1(String s) {
         Stack<Integer> st = new Stack<>();
         int sign = 1;
         int sum = 0;
@@ -783,11 +865,112 @@ public class stacks {
         return vstack.peek();
     }
 
-    public int calculate(String s) {
+    public int calculate2(String s) {
         // Write your code here
         return infixEval(s);
     }
 
+
+    // number of valid subarray, portal
+    public static int validSubarrays(int[] nums) {
+        int count = 0;
+
+        // make a next smaller index in right 
+        // int[] nsr = new int[nums.length];
+        Stack<Integer> st = new Stack<>();
+        for(int i = 0; i < nums.length; i++) {
+            while(st.size() > 0 && nums[st.peek()] > nums[i]) {
+                // nsr[st.pop()] = i;
+                count += i - st.pop();
+            }
+            st.push(i);
+        }
+        while(st.size() > 0) {
+            // nsr[st.pop()] = nums.length;
+            count += nums.length - st.pop();
+        }
+        // take contribution
+        
+        // for(int i = 0; i < nums.length; i++) {
+        //     count += nsr[i] - i;
+        // }
+        return count;
+    }
+
+    // Lexicographically Smallest Subsequence, portal
+    public static int[] smallest(int[] num, int k) {
+        // use linkedlist as stack
+        LinkedList<Integer> st = new LinkedList<>();
+        k = num.length - k;
+        for(int i = 0; i < num.length; i++) {
+            int ch = num[i];
+            while(k > 0 && st.size() > 0 && st.getLast() > ch) {
+                k--;
+                st.removeLast();
+            }
+            st.addLast(ch);
+        }
+        // manage remaining K's
+        while(k > 0) {
+            st.removeLast();
+            k--;
+        }
+        int[] res = new int[st.size()];
+        int i = 0;
+        for(int ch : st) {
+            res[i] = ch;
+            i++;
+        }
+        return res;
+    }
+
+    // leetcode 1381, https://leetcode.com/problems/design-a-stack-with-increment-operation/
+    class CustomStack {
+
+        int[] val;
+        int[] inc;
+        int top;
+        public CustomStack(int maxSize) {
+            val = new int[maxSize];
+            inc = new int[maxSize];
+            top = -1;
+        }
+        
+        public void push(int x) {
+            if(top + 1 == val.length) {
+                return;
+            }
+
+            val[top + 1] = x;
+            top++;
+        }
+        
+        public int pop() {
+            if(top == -1) {
+                return -1;
+            }
+
+            int value = val[top] + inc[top];
+            if(top != 0) {
+                inc[top - 1] += inc[top];
+            }
+            // reset old increment
+            inc[top] = 0;
+            top--;
+            return value;
+        }
+        
+        public void increment(int k, int val) {
+            if(top == -1) return;
+            if(k > top + 1) {
+                inc[top] += val;
+            } else {
+                inc[k - 1] += val;
+            }
+        }
+    }
+
+    // leetcode 641, https://leetcode.com/problems/design-circular-deque/
 
     public static void main(String[] args) {
         

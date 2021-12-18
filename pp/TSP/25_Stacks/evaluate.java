@@ -295,6 +295,116 @@ public class evaluate{
         }
         return vstack.pop();
     }
+
+    // leetcode 641, https://leetcode.com/problems/design-circular-deque/
+    class MyCircularDeque {
+        private class Node {
+            int data;
+            Node next;
+        
+            public Node(int data) {
+                this.data = data;
+                this.next = null;
+            }
+        }
+
+        private Node head = null;
+        private Node tail = null;
+        private int size = 0;
+        private int limit = 0;
+
+        public MyCircularDeque(int k) {
+            this.limit = k;
+        }
+        
+        private void handleAddWhenSize0(int val) {
+            Node nn = new Node(val);
+            head = tail = nn;
+            size = 1;
+        }
+
+        public boolean insertFront(int value) {
+            if(this.size == limit) {
+                return false;
+            } else if(this.size == 0) {
+                handleAddWhenSize0(value);
+            } else {
+                Node nn = new Node(value);
+                nn.next = head;
+                head = nn;
+                this.size++;
+            }
+            return true;
+        }
+        
+        public boolean insertLast(int value) {
+            if(this.size == limit) {
+                return false;
+            } else if(this.size == 0) {
+                handleAddWhenSize0(value);
+            } else {
+                Node nn = new Node(value);
+                tail.next = nn;
+                tail = nn;
+                this.size++;
+            }
+            return true;
+        }
+
+        private void handleRemoveWhenSize1() {
+            head = tail = null;
+            this.size = 0;
+        }
+
+        public boolean deleteFront() {
+            if(this.size == 0) {
+                return false;
+            } else if(this.size == 1) {
+                handleRemoveWhenSize1();
+            } else {
+                this.head = this.head.next;
+                this.size--;
+            }
+            return true;
+        }
+        
+        public boolean deleteLast() {
+            if(this.size == 0) {
+                return false;
+            } else if(this.size == 1) {
+                handleRemoveWhenSize1();
+            } else {
+                Node nn = head;
+                int indx = 0;
+                while(indx < size - 1) {
+                    nn = nn.next;
+                    indx++;
+                }
+                nn.next = null;
+                this.tail = nn;
+                this.size--;
+            }
+            return true;
+        }
+        
+        public int getFront() {
+            if(this.size == 0) return -1;
+            return head.data;
+        }
+        
+        public int getRear() {
+            if(this.size == 0) return -1;
+            return tail.data;
+        }
+        
+        public boolean isEmpty() {
+            return this.size == 0;
+        }
+        
+        public boolean isFull() {
+            return this.size == this.limit;
+        }
+    }
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String exp = br.readLine();
