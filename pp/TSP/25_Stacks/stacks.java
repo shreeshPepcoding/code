@@ -576,7 +576,218 @@ public class stacks {
         return owater;
     }
 
-    // 
+    // leetcode 407, https://leetcode.com/problems/trapping-rain-water-ii/
+    private class trwHelper implements Comparable<trwHelper>{
+        int x;
+        int y;
+        int ht;
+
+        public trwHelper(int x, int y, int ht) {
+            this.x = x;
+            this.y = y;
+            this.ht = ht;
+        }
+
+        public int compareTo(trwHelper o) {
+            return this.ht - o.ht;
+        }
+    }
+
+    private void addBoundaryTRW(PriorityQueue<trwHelper> pq, int[][] hts, boolean[][] vis) {
+        // top wall
+        for(int c = 0; c < hts[0].length; c++) {
+            if(vis[0][c] == false) {
+                pq.add(new trwHelper(0, c, hts[0][c]));
+                vis[0][c] = true;
+            }
+        }
+        // left wall
+        for(int r = 0; r < hts.length; r++) {
+            if(vis[r][0] == false) {
+                pq.add(new trwHelper(r, 0, hts[r][0]));
+                vis[r][0] = true;
+            }
+        }
+        // down wall
+        for(int c = 0; c < hts[0].length; c++) {
+            if(vis[hts.length - 1][c] == false) {
+                pq.add(new trwHelper(hts.length - 1, c, hts[hts.length - 1][c]));
+                vis[hts.length - 1][c] = true;
+            }
+        }
+        // right wall
+        for(int r = 0; r < hts.length; r++) {
+            if(vis[r][hts[0].length - 1] == false) {
+                pq.add(new trwHelper(r, hts[0].length - 1, hts[r][hts[0].length - 1]));
+                vis[r][hts[0].length - 1] = true;
+            }
+        }
+    }
+
+    static int[] xdir = {-1, 0, 1, 0};
+    static int[] ydir = {0, -1, 0, 1};
+
+    public int trapRainWater(int[][] hts) {
+        boolean[][] vis = new boolean[hts.length][hts[0].length];
+        PriorityQueue<trwHelper> pq = new PriorityQueue<>();
+
+        // add bounday in pq
+        addBoundaryTRW(pq, hts, vis);
+        int water = 0;
+        while(pq.size() > 0) {
+            trwHelper rem = pq.remove();
+            for(int d = 0; d < 4; d++) {
+                int r = rem.x + xdir[d];
+                int c = rem.y + ydir[d];
+
+                if(r >= 0 && r < hts.length && c >= 0 && c < hts[0].length && vis[r][c] == false) {
+                    vis[r][c] = true;
+                    if(hts[r][c] < rem.ht) {
+                        water += rem.ht - hts[r][c];
+                        pq.add(new trwHelper(r, c, rem.ht));
+                    } else {
+                        pq.add(new trwHelper(r, c, hts[r][c]));
+                    }
+                }
+            }
+        }
+
+        return water;
+    }
+
+    // basic calculator 224, https://leetcode.com/problems/basic-calculator/
+    public int calculate(String s) {
+        Stack<Integer> st = new Stack<>();
+        int sign = 1;
+        int sum = 0;
+
+        for(int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            if(ch == ' ') {
+                continue;
+            } else if(ch >= '0' && ch <= '9') {
+                // number may have more than one digit
+                long n = 0;
+                while(i < s.length() && s.charAt(i) >= '0' && s.charAt(i) <= '9') {
+                    n *= 10;
+                    n += (int)(s.charAt(i) - '0');
+                    i++;
+                }
+                i--;
+                n *= sign;
+                sum += (int)n;
+                sign = 1;
+            } else if(ch == '(') {
+                st.push(sum);
+                st.push(sign);
+                sign = 1;
+                sum = 0;
+            } else if(ch == ')') {
+                sum *= st.pop(); // multiply sign from sum
+                sum += st.pop(); // add old sum in new one
+            } else if(ch == '-') {
+                sign *= -1;
+            } else {
+                // ch is +ve
+                // nothing to do
+            }
+        }
+        return sum;
+    }
+
+    // basic calculator 3
+    private static int evaluate(int val1, int val2, char op) {
+        if(op == '*') {
+            return val1 * val2;
+        } else if(op == '/') {
+            return val1 / val2;
+        } else if(op == '+') {
+            return val1 + val2;
+        } else if(op == '-') {
+            return val1 - val2;
+        } else {
+            return 0;
+        }
+    }
+
+    private static int priority(char op) {
+        if(op == '/' || op =='*') {
+            return 2; 
+        } else if(op == '+' || op =='-') {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+    
+    
+    // infix evaluation
+    private static int infixEval(String exp) {
+        Stack<Integer> vstack = new Stack<>(); // value stack
+        Stack<Character> ostack = new Stack<>(); // operator stack
+  
+        for(int i = 0; i < exp.length(); i++) {
+            char ch = exp.charAt(i);
+            if(ch == ' ') {
+                continue;
+            } else if(ch >= '0' && ch <= '9') {
+                int j = i;
+                StringBuilder n = new StringBuilder();
+                while(j < exp.length() && exp.charAt(j) >='0' && exp.charAt(j) <= '9') {
+                    n.append(exp.charAt(j));
+                    j++;
+                }
+                i = j - 1;
+                if(n.toString().equals("2147483648") == true) {
+                    vstack.push(-2147483648);
+                } else {
+                    vstack.push(Integer.parseInt(n.toString()));
+                }
+            } else if(ch =='(') {
+                ostack.push(ch);
+            } else if(ch == ')') {
+                while(ostack.peek() != '(') {
+                    char op = ostack.pop();
+                    int v2 = vstack.pop();
+                    int v1 = vstack.pop();
+
+                    // res = val1 operator val2
+                    int res = evaluate(v1, v2, op);
+                    vstack.push(res);
+                }
+                ostack.pop(); // this pop is for opening bracket
+            } else {
+                // ch = operators
+                while(ostack.size() > 0 && ostack.peek() != '(' && priority(ostack.peek()) >= priority(ch)) {
+                    char op = ostack.pop();
+                    int v2 = vstack.pop();
+                    int v1 = vstack.pop();
+
+                    // res = val1 operator val2
+                    int res = evaluate(v1, v2, op);
+                    vstack.push(res);
+                }
+                ostack.push(ch);
+            }
+        }
+
+        while(ostack.size() > 0) {
+            char op = ostack.pop();
+            int v2 = vstack.pop();
+            int v1 = vstack.pop();
+
+            // res = val1 operator val2
+            int res = evaluate(v1, v2, op);
+            vstack.push(res);
+        }
+        return vstack.peek();
+    }
+
+    public int calculate(String s) {
+        // Write your code here
+        return infixEval(s);
+    }
+
 
     public static void main(String[] args) {
         
