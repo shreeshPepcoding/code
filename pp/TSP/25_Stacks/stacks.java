@@ -971,6 +971,255 @@ public class stacks {
     }
 
     // leetcode 641, https://leetcode.com/problems/design-circular-deque/
+    class MyCircularDeque {
+
+        private class Node {
+            int data;
+            Node next;
+    
+            public Node(int data) {
+                this.data = data;
+                this.next = null;
+            }
+        }
+    
+        private Node head = null;
+        private Node tail = null;
+        private int size = 0;
+        private int limit = 0;
+    
+        public MyCircularDeque(int k) {
+            this.limit = k;
+        }
+    
+        private void handleAddWhenSize0(int val) {
+            Node nn = new Node(val);
+            head = tail = nn;
+            size = 1;
+        }
+    
+        public boolean insertFront(int value) {
+            if(this.size == limit) {
+                return false;
+            } else if(this.size == 0) {
+                handleAddWhenSize0(value);
+            } else {
+                Node nn = new Node(value);
+                nn.next = head;
+                head = nn;
+                this.size++;
+            }
+            return true;
+        }
+    
+        public boolean insertLast(int value) {
+            if(this.size == limit) {
+                return false;
+            } else if(this.size == 0) {
+                handleAddWhenSize0(value);
+            } else {
+                Node nn = new Node(value);
+                tail.next = nn;
+                tail = nn;
+                this.size++;
+            }
+            return true;
+        }
+    
+        private void handleRemoveWhenSize1() {
+            head = tail = null;
+            this.size = 0;
+        }
+    
+        public boolean deleteFront() {
+            if(this.size == 0) {
+                return false;
+            } else if(this.size == 1) {
+                handleRemoveWhenSize1();
+            } else {
+                this.head = this.head.next;
+                this.size--;
+            }
+            return true;
+        }
+    
+        public boolean deleteLast() {
+            if(this.size == 0) {
+                return false;
+            } else if(this.size == 1) {
+                handleRemoveWhenSize1();
+            } else {
+                Node nn = head;
+                while(nn.next != tail) {
+                    nn = nn.next;
+                }
+                nn.next = null;
+                this.tail = nn;
+                this.size--;
+            }
+            return true;
+        }
+    
+        public int getFront() {
+            if(this.size == 0) return -1;
+            return head.data;
+        }
+    
+        public int getRear() {
+            if(this.size == 0) return -1;
+            return tail.data;
+        }
+    
+        public boolean isEmpty() {
+            return this.size == 0;
+        }
+    
+        public boolean isFull() {
+            return this.size == this.limit;
+        }
+    }
+
+    // max stack, portal
+    public static class MaxStack {
+        Stack<Integer> vstack; // value stack
+        Stack<Integer> mstack; // max stack
+
+        public MaxStack() {
+            vstack = new Stack<>();
+            mstack = new Stack<>();
+        }
+    
+        public void push(int x) {
+            vstack.push(x);
+            if(mstack.size() == 0) {
+                mstack.push(x);
+            } else {
+                mstack.push(Math.max(mstack.peek(), x));
+            }
+        }
+    
+        public int pop() {
+            mstack.pop();
+            return vstack.pop();
+        }
+    
+        public int top() {
+            return vstack.peek();
+        }
+    
+        public int peekMax() {
+            return mstack.peek();
+        }
+    
+        public int popMax() {
+            int max = mstack.peek();
+            Stack<Integer> helper = new Stack<>();
+            while(vstack.peek() != max) {
+                mstack.pop();
+                helper.push(vstack.pop());
+            }
+            vstack.pop();
+            mstack.pop();
+            while(helper.size() > 0) {
+                push(helper.pop());
+            }
+            return max;
+        }
+    
+    }
+
+    // leetcode 1003, https://leetcode.com/problems/check-if-word-is-valid-after-substitutions/
+    public boolean isValid(String s) {
+        Stack<Character> st = new Stack<>();
+        for(int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            if(ch == 'c') {
+                if(st.size() >= 2 && st.pop() == 'b' && st.pop() == 'a') {
+                    // pair match, continue
+                } else {
+                    return false;
+                }
+            } else {
+                st.push(ch);
+            }
+        }
+        return st.size() == 0;
+    }
+
+    // HW-> leetcode 1209, https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/
+    
+    // design hit counter,
+    static class HitCounter {
+        Queue<Integer> qu;
+        /** Initialize your data structure here. */
+        public HitCounter() {
+            qu = new ArrayDeque<>();
+        }
+    
+        /** Record a hit.
+            @param timestamp - The current timestamp (in seconds granularity). */
+        public void hit(int timestamp) {
+            qu.add(timestamp);
+            int start = timestamp - 300 + 1;
+
+            while(qu.peek() < start) {
+                qu.remove();
+            }
+        }
+    
+        /** Return the number of hits in the past 5 minutes.
+            @param timestamp - The current timestamp (in seconds granularity). */
+        public int getHits(int timestamp) {
+            int start = timestamp - 300 + 1;
+            while(qu.peek() < start) {
+                qu.remove();
+            }
+            return qu.size();
+        }
+    }
+
+    // number of recent calls, leetcode 933, https://leetcode.com/problems/number-of-recent-calls/
+    class RecentCounter {
+
+        Queue<Integer> qu;
+
+        public RecentCounter() {
+            qu = new ArrayDeque<>();
+        }
+        
+        public int ping(int t) {
+            qu.add(t);
+            int start = t - 3000;
+            while(qu.size() > 0 && qu.peek() < start) qu.remove();
+
+            return qu.size();
+        }
+    }
+
+    // moving average from data stream, portal
+    public static class MovingAverage {
+        Queue<Integer> qu;
+        double sum;
+        int k;
+        public MovingAverage(int size) {
+            qu = new ArrayDeque<>();
+            sum = 0;
+            k = size;
+        }
+    
+        public double next(int val) {
+            if(qu.size() < k) {
+                sum += val;
+                qu.add(val);
+                return sum / qu.size();
+            } else{
+                sum -= qu.remove();
+                sum += val;
+                qu.add(val);
+                return sum / k;
+            }
+        }
+    }
 
     public static void main(String[] args) {
         
