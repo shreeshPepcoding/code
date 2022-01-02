@@ -228,7 +228,131 @@ public class hmap {
         return count;
 	}
 	
+    // longest subarray having sum divisible by k
+    public static int longestSumDivisibleByK(int[] arr, int k) {
+        int len = 0;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int sum = 0;
+        map.put(0, -1);
+        for(int i = 0; i < arr.length; i++) {
+            int val = arr[i];
+            sum += val;
+            int rem = sum % k;
+            if(rem < 0) rem += k;
+            if(map.containsKey(rem) == false) {
+                map.put(rem, i);
+            } else {
+                len = Math.max(len, i - map.get(rem));
+            }
+        }
+        return len;
+    }  
 
+    // count of subarray with sum divisible by k
+    public static int CountSumDivisibleByK(int[] arr, int k) {
+        int count = 0;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int sum = 0;
+        map.put(0, 1);
+        for(int i = 0; i < arr.length; i++) {
+            int val = arr[i];
+            sum += val;
+            int rem = sum % k;
+            if(rem < 0) rem += k;
+            if(map.containsKey(rem) == false) {
+                map.put(rem, 1);
+            } else {
+                count += map.get(rem);
+                map.put(rem, map.get(rem) + 1);
+            }
+        }
+        return count;
+    }
+
+    // longest subarray with equal number of 0, 1 and 2
+    public static int longestSubarray012(int[] arr) {
+        int count0 = 0;
+        int count1 = 0;
+        int count2 = 0;
+        int len = 0;
+        HashMap<String, Integer> map = new HashMap<>();
+        map.put("0#0", -1);
+        for(int i = 0; i < arr.length; i++) {
+            if(arr[i] == 0) {
+                count0++;
+            } else if(arr[i] == 1) {
+                count1++;
+            } else {
+                count2++;
+            }
+            String key = (count1 - count0) + "#" + (count2 - count1);
+            if(map.containsKey(key) == false) {
+                map.put(key, i);
+            } else {
+                len = Math.max(len, i - map.get(key));
+            } 
+        }
+        return len;
+    }
+
+    // count of subarrays having equal number of 0, 1 and 2
+    public static int countSubArray012(int[] arr) {
+        int count0 = 0;
+        int count1 = 0;
+        int count2 = 0;
+        int count = 0;
+        HashMap<String, Integer> map = new HashMap<>();
+        map.put("0#0", 1);
+        for(int i = 0; i < arr.length; i++) {
+            if(arr[i] == 0) {
+                count0++;
+            } else if(arr[i] == 1) {
+                count1++;
+            } else {
+                count2++;
+            }
+            String key = (count1 - count0) + "#" + (count2 - count1);
+            if(map.containsKey(key) == false) {
+                map.put(key, 1);
+            } else {
+                count +=map.get(key);
+                map.put(key, map.get(key) + 1);
+            } 
+        }
+        return count;
+    }
+
+    // complete task
+    public static void completeTask(int n, int m, int[] arr) {
+        ArrayList<Integer> s1 = new ArrayList<>();
+        ArrayList<Integer> s2 = new ArrayList<>();
+        boolean flag = true;
+
+        HashSet<Integer> set = new HashSet<>();
+        for(int i = 0; i < m; i++) {
+            set.add(arr[i]);
+        }
+
+        for(int i = 1; i <= n; i++) {
+            if(set.contains(i) == true) continue;
+
+            if(flag == true) {
+                s1.add(i);
+                flag = false;
+            } else {
+                s2.add(i);
+                flag = true;
+            }
+        }
+
+        for(int val : s1) {
+            System.out.print(val + " ");
+        }
+        System.out.println();
+        for(int val : s2) {
+            System.out.print(val + " ");
+        }
+	}
 
     public static void main(String[] args) {
 
