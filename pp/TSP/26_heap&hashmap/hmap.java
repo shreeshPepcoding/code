@@ -634,6 +634,7 @@ public class hmap {
             return handleWhenK1(str);
         }
         HashMap<Character, Integer> mapb = new HashMap<>();
+        HashMap<Character, Integer> maps = new HashMap<>();
 
         int count = 0;
 
@@ -693,7 +694,69 @@ public class hmap {
         return count;
     }
 
+    // maximum consecutive one - I
+    public static int maxConsecutive1sI(int[] arr){
+        int ans = 0;
+        int j = -1;
+        int count0 = 0;
 
+        for(int i = 0; i < arr.length; i++) {
+            if(arr[i] == 0) count0++;
+
+            while(count0 > 1) {
+                // release
+                j++;
+                if(arr[j] == 0) count0--;
+            }
+            // count 0 must be less than equal to 1
+            ans = Math.max(ans, i - j);
+        }
+        return ans;
+    }
+
+    // maximum consecutive one - II
+    public static int maxConsecutive1sII(int[] arr, int k){
+        int ans = 0;
+        int j = -1;
+        int count0 = 0;
+
+        for(int i = 0; i < arr.length; i++) {
+            if(arr[i] == 0) count0++;
+
+            while(count0 > k) {
+                // release
+                j++;
+                if(arr[j] == 0) count0--;
+            }
+            // count 0 must be less than equal to 1
+            ans = Math.max(ans, i - j);
+        }
+        return ans;
+    }
+
+    // longest subarray with contiguous elements
+    private static int longestSubArrayContiguous(int[] arr) {
+        int len = 0;
+        for(int i = 0; i < arr.length; i++) {
+            int max = arr[i];
+            int min = arr[i];
+            HashSet<Integer> set = new HashSet<>();
+            for(int j = i; j < arr.length; j++) {
+                if(set.contains(arr[j]) == true) {
+                    break;
+                }
+                set.add(arr[j]);
+
+                min = Math.min(min, arr[j]);
+                max = Math.max(max, arr[j]);
+
+                if(max - min == j - i) {
+                    len = Math.max(len, j - i + 1);
+                }
+            }
+        }
+        return len;
+    }
 
 
     public static void main(String[] args) {
