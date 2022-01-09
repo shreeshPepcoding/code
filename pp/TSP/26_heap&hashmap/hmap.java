@@ -540,7 +540,6 @@ public class hmap {
         return count;
     }
 
-
     private static int longestKUniqueCharacter(String str, int k) {
         int ans = -1;
 
@@ -627,7 +626,6 @@ public class hmap {
 
         return count;
     }
-
 
     private static int countSubStringExactlyK(String str, int k) {
         if(k == 1) {
@@ -758,7 +756,167 @@ public class hmap {
         return len;
     }
 
+    // longest substring with at most k unique characters
+    private static int longestSubStringAtMostK(String str, int k) {
+        int len = 0;
+        int acq = -1;
+        int rel = -1;
+        HashMap<Character, Integer> map = new HashMap<>();
+        while(true) {
+            boolean flag1 = false;
+            boolean flag2 = false;
+            while(acq < str.length() - 1) {
+                flag1 = true;
+                acq++;
+                char ch = str.charAt(acq);
+                map.put(ch, map.getOrDefault(ch, 0) + 1);
+                if(map.size() <= k) {
+                    len = Math.max(len, acq - rel);
+                } else {
+                    break;
+                }
+            }
+            while(rel < acq) {
+                flag2 = true;
+                rel++;
+                char ch = str.charAt(rel);
+                map.put(ch, map.get(ch) - 1);
+                if(map.get(ch) == 0) map.remove(ch);
+                if(map.size() == k) break;
+            }
+            if(flag1 == false && flag2 == false) break;
+        }
+        return len;
+    }
 
+    // count of substring with at most k unique characters
+    private static int countOfSubStringAtMostK(String str, int k) {
+        int count = 0;
+        int acq = -1;
+        int rel = -1;
+        HashMap<Character, Integer> map = new HashMap<>();
+        while(true) {
+            boolean flag1 = false;
+            boolean flag2 = false;
+            while(acq < str.length() - 1) {
+                flag1 = true;
+                acq++;
+                char ch = str.charAt(acq);
+                map.put(ch, map.getOrDefault(ch, 0) + 1);
+                if(map.size() <= k) {
+                    count += acq - rel;
+                } else {
+                    break;
+                }
+            }
+            if(acq == str.length() - 1 && map.size() <= k) {
+                break;
+            }
+            while(rel < acq) {
+                flag2 = true;
+                rel++;
+                char ch = str.charAt(rel);
+                map.put(ch, map.get(ch) - 1);
+                if(map.get(ch) == 0) map.remove(ch);
+                if(map.size() == k) {
+                    count += acq - rel;
+                    break;
+                }
+            }
+            if(flag1 == false && flag2 == false) break;
+        }
+        return count;
+    }
+
+    // valid anagram
+    private static boolean validAnagram(String s1, String s2) {
+        if(s1.length() != s2.length()) return false;
+        HashMap<Character, Integer> map = new HashMap<>();
+        for(int i = 0; i < s1.length(); i++) {
+            char ch = s1.charAt(i);
+            map.put(ch, map.getOrDefault(ch, 0) + 1);
+        }
+
+        for(int i = 0; i < s2.length(); i++) {
+            char ch = s2.charAt(i);
+            if(map.containsKey(ch) == false) return false;
+            map.put(ch, map.get(ch) - 1);
+            if(map.get(ch) == 0) map.remove(ch);
+        }
+        return map.size() == 0;
+    }
+
+    // find mapping of anagrams
+    public static int[] anagramMappings(int[] arr1, int[] arr2) {
+		HashMap<Integer, LinkedList<Integer>> map = new HashMap<>();
+        for(int i = 0; i < arr2.length; i++) {
+            int val = arr2[i];
+            if(map.containsKey(val) == true) {
+                map.get(val).addLast(i);
+            } else {
+                LinkedList<Integer> list = new LinkedList<>();
+                list.add(i);
+                map.put(val, list);
+            }
+        }
+        int[] res = new int[arr1.length];
+        for(int i = 0; i < arr1.length; i++) {
+            int val = arr1[i];
+            int indx = map.get(val).removeFirst();
+            res[i] = indx;
+        }
+		return res;
+	}
+
+    // find all anagrams in a string
+    private static boolean match(HashMap<Character, Integer> map1, HashMap<Character, Integer> map2) {
+        for(Character key : map1.keySet()) {
+            int val1 = map1.getOrDefault(key, -1);
+            int val2 = map2.getOrDefault(key, -1);
+            if(val1 != val2) return false;
+        }
+        return true;
+    }
+
+    public static void findAnagrams(String s, String p) {
+        HashMap<Character, Integer> pmap = new HashMap<>(); // pattern map
+        for(int i = 0; i < p.length(); i++) {
+            char ch = p.charAt(i);
+            pmap.put(ch, pmap.getOrDefault(ch, 0) + 1);
+        }
+        
+        HashMap<Character, Integer> smap = new HashMap<>(); // source map
+        // acquire first window of length =  p.length
+        for(int i = 0; i < p.length(); i++) {
+            char ch = s.charAt(i);
+            smap.put(ch, smap.getOrDefault(ch, 0) + 1);
+        }
+        ArrayList<Integer> res = new ArrayList<>();
+        for(int i = p.length(); i < s.length(); i++) {
+            // match
+            if(match(smap, pmap) == true) {
+                res.add(i - p.length());
+            }
+
+            // we can use equals function too
+            // if(smap.equals(pmap) == true) {
+            // }
+
+            // acquire
+            char ch = s.charAt(i);
+            smap.put(ch, smap.getOrDefault(ch, 0) + 1);
+            // release
+            char relCh = s.charAt(i - p.length()); // relCh - > releasing character
+            smap.put(relCh, smap.get(relCh) - 1);
+            if(smap.get(relCh) == 0) smap.remove(relCh);
+        }
+        if(match(smap, pmap) == true) {
+            res.add(s.length() - 1 - p.length());
+        }
+        System.out.println(res.size());
+        for(int val : res) System.out.print(val + " ");
+	}
+    
     public static void main(String[] args) {
         
     }
