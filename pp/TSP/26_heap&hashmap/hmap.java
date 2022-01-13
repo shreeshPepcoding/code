@@ -916,7 +916,146 @@ public class hmap {
         System.out.println(res.size());
         for(int val : res) System.out.print(val + " ");
 	}
+
+    // k anagram
+    public static boolean areKAnagrams(String s1, String s2, int k) {
+		if(s1.length() != s2.length()) return false;
+        HashMap<Character, Integer> map = new HashMap<>();
+        // freq. map for s1
+        for(int i = 0; i < s1.length(); i++) {
+            char ch = s1.charAt(i);
+            map.put(ch, map.getOrDefault(ch, 0) + 1);
+        }
+        // reduce mapping from s2
+        for(int i = 0; i < s2.length(); i++) {
+            char ch = s2.charAt(i);
+            if(map.getOrDefault(ch, 0) > 0) {
+                map.put(ch, map.get(ch) - 1);
+            }
+        }
+        // add +ve count
+        int count = 0;
+        for(char ch : map.keySet()) {
+            count += map.get(ch);
+        }
+        return count <= k;
+	}
     
+    // group anagrams
+    public static ArrayList<ArrayList<String>> groupAnagrams(String[] strs) {
+		HashMap<HashMap<Character, Integer>, ArrayList<String>> map = new HashMap<>();
+
+        for(String str : strs) {
+            HashMap<Character, Integer> fmap = new HashMap<>();
+            for(int i = 0; i < str.length(); i++) {
+                char ch = str.charAt(i);
+                fmap.put(ch, fmap.getOrDefault(ch, 0) + 1);
+            }
+
+            if(map.containsKey(fmap) == true) {
+                map.get(fmap).add(str);
+            } else {
+                ArrayList<String> list = new ArrayList<>();
+                list.add(str);
+                map.put(fmap, list);
+            }
+        }
+        ArrayList<ArrayList<String>> res = new ArrayList<>();
+        for(ArrayList<String> list : map.values()) {
+            res.add(list);
+        }
+        return res;
+	}
+
+    // group shifted strings
+    private static String getStringCode(String str) {
+        String code = "";
+        for(int i = 1; i < str.length(); i++) {
+            char ch1 = str.charAt(i - 1);
+            char ch2 = str.charAt(i);
+            int val = (int)(ch2 - ch1);
+            if(val >= 0) {
+                code += val;
+            } else { 
+                code += (val + 26);
+            }
+            code += "#";
+        }
+        code += ".";
+        return code;
+    }
+
+    public static ArrayList<ArrayList<String>> groupShiftedStrings(String[] strs) {
+		HashMap<String, ArrayList<String>> map = new HashMap<>();
+        
+        for(String str : strs) {
+            String code = getStringCode(str);
+            if(map.containsKey(code) == true) {
+                map.get(code).add(str);
+            } else {
+                ArrayList<String> list = new ArrayList<>();
+                list.add(str);
+                map.put(code, list);
+            }
+        }
+
+        ArrayList<ArrayList<String>> res = new ArrayList<>();
+        for(ArrayList<String> list : map.values()) {
+            res.add(list);
+        }
+        return res;
+	}
+
+    // isomorphic strings
+    public static boolean isIsomorphic(String s, String t) {
+        if(s.length() != t.length()) return false;
+
+        HashMap<Character, Character> map = new HashMap<>();
+        HashSet<Character> set = new HashSet<>();
+
+        for(int i = 0; i < s.length(); i++) {
+            char ch1 = s.charAt(i);
+            char ch2 = t.charAt(i);
+
+            if(map.containsKey(ch1) == true) {
+                if(map.get(ch1) != ch2) return false;
+            } else {
+                if(set.contains(ch2) == true) {
+                    return false;
+                } else {
+                    map.put(ch1, ch2);
+                    set.add(ch2);
+                }
+            }
+        }
+        return true;
+    }
+
+    // word pattern
+    public static boolean wordPattern(String pattern, String strs) {
+        String[] str = strs.split(" ");
+        HashMap<Character, String> map = new HashMap<>();
+        HashSet<String> set = new HashSet<>();
+
+        for(int i = 0; i < pattern.length(); i++) {
+            char ch1 = pattern.charAt(i);
+            String ch2 = str[i];
+
+            if(map.containsKey(ch1) == true) {
+                if(map.get(ch1).equals(ch2) == false) return false;
+            } else {
+                if(set.contains(ch2) == true) {
+                    return false;
+                } else {
+                    map.put(ch1, ch2);
+                    set.add(ch2);
+                }
+            }
+        }
+        return true;
+	}
+
+
     public static void main(String[] args) {
         
     }
