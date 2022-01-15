@@ -1055,6 +1055,151 @@ public class hmap {
         return true;
 	}
 
+    // check arithmetic Sequ
+    public static boolean checkArithMaticSeq(int[] arr) {
+        // find min and max and add element in hashset 
+        if(arr.length <= 1) return true; 
+        HashSet<Integer> set = new HashSet<>();
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+
+        for(int val : arr) {
+            min = Math.min(min, val);
+            max = Math.max(max, val);
+            set.add(val);
+        }
+
+        int n = arr.length;
+        int d = (max - min) / (n - 1);
+        int sum = min;
+        while(sum < max) {
+            sum += d;
+            if(set.contains(sum) == false) return false;
+        }
+        return true;
+    }
+
+    // rabbits in forest, leetcode 781
+    public int numRabbits(int[] arr) {
+        HashMap<Integer, Integer> fmap = new HashMap<>();
+        for(int val : arr) {
+            fmap.put(val, fmap.getOrDefault(val, 0) + 1);
+        }
+        int count = 0;
+        for(int key : fmap.keySet()) {
+            int val = fmap.get(key);
+            count += (key + 1) * (int)Math.ceil(val * 1.0 / (key + 1));
+        }
+        return count;
+    }
+
+    // leetcode 166
+    public static String fractionToDecimal(int nn, int dd) {
+        if(nn == 0) return "0";
+        long num = nn;
+        long den = dd;
+        boolean n1 = num < 0;
+        boolean n2 = den < 0;
+        num = Math.abs(num);
+        den = Math.abs(den);
+        StringBuilder ans = new StringBuilder();
+        long q = num / den;
+        long r = num % den;
+        ans.append(q);
+        if(r == 0) {
+            if((n1 == true && n2 == false) || (n1 == false && n2 == true)) {
+            ans.insert(0, '-');
+        }
+            return ans.toString();
+        }
+        ans.append(".");
+        HashMap<Long, Integer> map = new HashMap<>();
+        while(r != 0) {
+            map.put(r, ans.length());
+            r *= 10;
+            q = r / den;
+            r = r % den;
+            ans.append(q);
+            if(map.containsKey(r) == true) {
+                // insert bracket
+                int si = map.get(r);
+                ans.insert(si, '(');
+                ans.append(")");
+                break;
+            }
+        }
+        if((n1 == true && n2 == false) || (n1 == false && n2 == true)) {
+            ans.insert(0, '-');
+        }
+        return ans.toString();
+    }
+
+    // count equivalent subarray
+    public static int countEquivalentSubArray(int[] arr) {
+        int n = arr.length;
+        HashSet<Integer> set = new HashSet<>();
+        for(int val : arr) {
+            set.add(val);
+        }
+        int k = set.size();
+
+        // solve, number of subarrays having k distinct elements, [imp : K is distinct element in whole array]
+        int acq = -1;
+        int rel = -1;
+        int count = 0;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        while(true) {
+            boolean flag1 = false;
+            boolean flag2 = false;
+            // acquire
+            while(acq < n - 1 ) {
+                flag1 = true;
+                acq++;
+                int val = arr[acq];
+                map.put(val, map.getOrDefault(val, 0) + 1);
+                if(map.size() == k) {
+                    count += n - acq;
+                    break;
+                }
+            }
+            // release
+            while(rel < acq) {
+                flag2 = true;
+                rel++;
+                int val = arr[rel];
+                map.put(val, map.get(val) - 1);
+                if(map.get(val) == 0) {
+                    map.remove(val);
+                }
+
+                if(map.size() == k) {
+                    count += n - acq;
+                } else {
+                    break;
+                }
+            }
+            if(flag1 == false && flag2 == false) {
+                break;
+            }
+        }
+        return count;
+    }
+
+    // pair with equal sum
+    public static boolean pairWithEqualSum(int[] arr) {
+        HashSet<Integer> set = new HashSet<>();
+        for(int i = 0; i < arr.length; i++) {
+            for(int j = i + 1; j < arr.length; j++) {
+                int sum = arr[i] + arr[j];
+                if(set.contains(sum) == true) {
+                    return true;
+                } else {
+                    set.add(sum);
+                }
+            }
+        }
+        return false;
+    }
 
     public static void main(String[] args) {
         
