@@ -1201,6 +1201,103 @@ public class hmap {
         return false;
     }
 
+    // pair with given sum
+    public static int pairWithGivenSum(int[][] num1, int[][] num2, int k) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for(int i = 0; i < num1.length; i++) {
+            for(int j = 0; j < num1[0].length; j++) {
+                map.put(num1[i][j], map.getOrDefault(num1[i][j], 0) + 1);
+            }
+        }
+        int count = 0;
+        for(int i = 0; i < num2.length; i++) {
+            for(int j = 0; j < num2[0].length; j++) {
+                count += map.getOrDefault(k - num2[i][j], 0);
+            }
+        }
+        return count;
+	}
+
+    // smallest subarray with all the occurrence of most frequent element
+    public static void printMostFreqElementArray(int[] arr) {
+        HashMap<Integer, Integer> fmap = new HashMap<>(); // frequency map
+        HashMap<Integer, Integer> imap = new HashMap<>(); // index map
+
+        int mfreq = 0;
+        int si = 0;
+        int ei = 0;
+        int len = 0;
+
+        for(int i = 0; i < arr.length; i++) {
+            int val = arr[i];
+            if(fmap.containsKey(val) == true) {
+                // upgrade freqeuncy
+                fmap.put(val, fmap.getOrDefault(val, 0) + 1);
+            } else {
+                // insert element with freq. 1, set starting index
+                fmap.put(val, 1);
+                imap.put(val, i);
+            }
+
+            if(mfreq < fmap.get(val)) {
+                mfreq = fmap.get(val);
+                si = imap.get(val);
+                ei = i;
+                len = ei - si + 1;
+            } else if(mfreq == fmap.get(val)) {
+                int nlen = i - imap.get(val) + 1; // new length
+                if(nlen < len) {
+                    si = imap.get(val);
+                    ei = i;
+                    len = nlen;
+                }
+            } else {
+                // nothing to do
+            }
+        }
+        System.out.println(arr[si]);
+        System.out.println(si);
+        System.out.println(ei);
+    }
+
+    // leetcode 914
+    private int gcd(int a, int b) {
+        if(b == 0) return a;
+        return gcd(b, a % b);
+    }
+
+    public boolean hasGroupsSizeX(int[] deck) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+
+        for(int i = 0; i < deck.length; i++) {
+            int val = deck[i];
+            map.put(val, map.getOrDefault(val, 0) + 1);
+        }
+        int ans = 0;
+        for(int key : map.keySet()) {
+            int freq = map.get(key);
+            ans = gcd(ans, freq);
+        }
+        return ans >= 2;
+    }
+
+    // brick wall, leetcode 554,
+    public int leastBricks(List<List<Integer>> walls) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int joint = 0;
+        for(List<Integer> layer : walls) {
+            int sum = 0;
+            for(int i = 0; i < layer.size() - 1; i++) {
+                sum += layer.get(i);
+                map.put(sum, map.getOrDefault(sum, 0) + 1);
+                if(map.get(sum) > joint) {
+                    joint = map.get(sum);
+                }
+            }
+        }
+        return walls.size() - joint;
+    }
+
     public static void main(String[] args) {
         
     }
