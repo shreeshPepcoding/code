@@ -180,6 +180,97 @@ public class bits {
         return counts;
 	}
 
+    // non repeating number
+    private static int nonRepeatingNum(int[] arr) {
+        int res = 0;
+        for(int val : arr) {
+            res = (res ^ val);
+        }
+        return res;
+    }
+
+    // all repeating except two numbers
+    public static void allReeatingExceptTwoNum(int[] arr){
+        // find rsbm in xor of all numbersa
+        int xor = 0;
+        for(int val : arr) {
+            xor = (xor ^ val);
+        }
+
+        int rsbm = (xor & (-xor));
+
+        int x = 0; // rsbm bit is OFF
+        int y = 0; // rsbm bit is ON
+
+        for(int val : arr) {
+            if((val & rsbm) == 0) {
+                // rsbm bit is OFF
+                x = (x ^ val);
+            } else {
+                // rsbm bit is ON
+                y = (y ^ val);
+            }
+        }
+        if(x < y) {
+            System.out.println(x);
+            System.out.println(y);
+        } else {
+            System.out.println(y);
+            System.out.println(x);
+        }
+    }
+
+    // one number is repeating and one is missing
+    public static void oneRepeatOneMiss(int[] arr){
+        int xor = 0;
+        for(int val : arr) {
+            xor = (xor ^ val);
+        }    
+        for(int i = 1; i <= arr.length; i++) {
+            xor = (xor ^ i);
+        }
+
+        int rsbm = (xor & (-xor));
+
+        int x = 0;
+        int y = 0;
+
+        for(int val : arr) {
+            if((val & rsbm) == 0) {
+                // bit is off
+                x = (x ^ val);
+            } else {
+                // bit is on
+                y = (y ^ val);
+            }
+        }
+        for(int val = 1; val <= arr.length; val++) {
+            if((val & rsbm) == 0) {
+                // bit is off
+                x = (x ^ val);
+            } else {
+                // bit is on
+                y = (y ^ val);
+            }
+        }
+
+        // check of x is missing or y is missing
+        boolean xmiss = true;
+        for(int val : arr) {
+            if(x == val) {
+                xmiss = false;
+                break;
+            }
+        }
+        if(xmiss == true) {
+            System.out.println(x);
+            System.out.println(y);
+        } else {
+            System.out.println(y);
+            System.out.println(x);
+        }
+    }
+
 
     public static void main(String[] args) {
         System.out.println();
