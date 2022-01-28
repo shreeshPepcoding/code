@@ -333,6 +333,88 @@ public class bits {
         System.out.println(count);
     }
 
+    // reduce from N to 1
+    public static int reduceNto1(long n) {
+        int count = 0;
+        while(n != 1) {
+            if((n & 1) == 0) {
+                // n % 2 == 0
+                // even
+                n = n / 2;
+            } else if(n == 3) {
+                // special case
+                n = n - 1;
+            } else if((n & 3) == 1) {
+                // n % 4 == 1
+                // odd 1 type
+                n = n - 1;
+            } else if((n & 3) == 3) {
+                // n % 4 == 3
+                // odd 2 type
+                n = n + 1;
+            }
+            count++;
+        }
+        return count;
+    }
+
+    // XOR of sum of all pairs
+    public static int XORofSumOfAllPairs(int[] arr){
+        int res = 0;
+        for(int val : arr) {
+            res = (res ^ val);
+        }
+        return 2 * res;
+    }
+
+    // pepcoder and bits
+    public static long ncr(long n, long r){
+        if(n < r){
+            return 0L;    
+        }
+        long res = 1L;
+        for(long i = 0L; i < r; i++){
+            res = res * (n - i);
+            res = res / (i + 1);
+        }
+        return res;
+    }
+        
+    public static int csb(long n){
+        // kernighan's Algorithm
+        int res = 0;
+        while(n > 0){
+            long rsb = n & -n;
+            n -= rsb;
+            res++;
+        }
+        
+        return res;
+    }
+    
+    // n -> number, srb -> required set bits, lbi -> leftmost bit index => 63
+    private static long pepcoderAndBits_rec(long n, int rsb, int lbi) {
+        if(rsb == 0) return 0L;
+        long count = 0L;
+        // check left most index bit
+        long bm = (1L << lbi);
+        if((n & bm) == 0) {
+            // leftmost bit index's bit is OFF
+            count = pepcoderAndBits_rec(n, rsb, lbi - 1);
+        } else {
+            // bit is ON
+            // find count if lbi is considered as OFF
+            count = ncr(lbi, rsb);
+            // find count if lbi is ON
+            count += pepcoderAndBits_rec(n, rsb - 1, lbi - 1);
+        }
+        return count;
+    }
+
+    public static long pepcoderAndBits(long n) {
+        int rsb = csb(n);
+        return pepcoderAndBits_rec(n, rsb, 63);
+    }
 
     public static void main(String[] args) {
         System.out.println();
