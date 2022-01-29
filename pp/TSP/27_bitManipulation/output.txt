@@ -1,0 +1,16 @@
+---------Binary Literals in Byte--------
+b1 = 5
+b2 = 5
+---------Binary Literals in Integer--------
+i1 = 109
+i2 = 109
+---------Binary Literals in -ve Integer--------
+i3 = -109
+i4 = -109
+---------Binary Literals(Underscore) in Integer--------
+
+num1 = 5
+num2 = -7
+
+-109       11111111111111111111111110010011
+1073741796 00111111111111111111111111100100

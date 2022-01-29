@@ -416,6 +416,157 @@ public class bits {
         return pepcoderAndBits_rec(n, rsb, 63);
     }
 
+    // abbreviation 1
+    public static void abbreviation1(String str){
+        StringBuilder res = new StringBuilder();
+        for(int i = 0; i < (1 << str.length()); i++) {
+            int count = 0;
+            for(int j = 0; j < str.length(); j++) {
+                int k = str.length() - 1 - j; // bit index, because bit index begin from right to left
+
+                // check if kth bit is ON or OFF in 'i'
+                int bm = 1 << k;
+                char ch = str.charAt(j);
+                if((i & bm) == 0) {
+                    // bit is OFF
+                    if(count == 0) {
+                        res.append(ch);
+                    } else {
+                        res.append(count);
+                        res.append(ch);
+                        count = 0; // reset count
+                    }
+                } else {
+                    // bit is ON
+                    count++;
+                }
+            }
+            if(count != 0) {
+                res.append(count);
+            }
+            res.append("\n");
+        }
+        System.out.println(res);
+    }
+
+    // utf 8 encoding
+    public static boolean utf8Encoding(int[] arr) {
+        int remByte = 0;
+        for(int val : arr) {
+            if(remByte == 0) {
+                if((val >> 7) == 0b0) {
+                    // 1 byte character
+                    remByte = 0;
+                } else if((val >> 5) == 0b110) {
+                    // 2 byte character
+                    remByte = 1;
+                } else if((val >> 4) == 0b1110) {
+                    // 3 byte character
+                    remByte = 2;
+                } else if((val >> 3) == 0b11110) {
+                    // 4 byte character
+                    remByte = 3;
+                } else {
+                    return false;
+                }
+            } else {
+                // check for remain byte i.e. it begin with 10_____
+                if((val >> 6) != 0b10) {
+                    return false;
+                }
+                remByte--;
+            }
+        }
+        // return true;
+        return remByte == 0;
+    }
+
+    // sudoku
+    public static void display(int[][] arr){
+        for (int ii = 0; ii < arr.length; ii++) {
+          for (int jj = 0; jj < arr.length; jj++) {
+            System.out.print(arr[ii][jj] + " ");
+          }
+          System.out.println();
+        }
+        System.out.println();
+    }
+
+
+    private static boolean isSafeToPlace(int[] rows, int[] cols, int[][] grid, int i, int j, int n) {
+        int bm = (1 << n);
+        
+        // row repitition check
+        int rowBitMask = rows[i];
+        // check if nth bit is ON in rowBitMask
+        if((rowBitMask & (1 << n)) == (1 << n)) {
+            return false;
+        }
+
+        // col repitition check
+        int colBitMask = cols[j];
+        // check if nth bit is ON in rowBitMask
+        if((colBitMask & bm) == bm) {
+            return false;
+        }
+
+        // submatrix repitition check
+        int smri = i / 3; // smri -> submatrix row index
+        int smci = j / 3; // smci -> submatrix col index
+
+        int smBitMask = grid[smri][smci];
+        if((smBitMask & bm) == bm) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static void OnBitInChecks(int[] rows, int[] cols, int[][] grid, int i, int j, int n) {
+        rows[i] = (rows[i] | (1 << n));
+        cols[j] = (cols[j] | (1 << n));
+        grid[i / 3][j / 3] = (grid[i / 3][j / 3] | (1 << n));
+    }
+
+    private static void OffBitInChecks(int[] rows, int[] cols, int[][] grid, int i, int j, int n) {
+        int bm = (1 << n);
+        rows[i] = (rows[i] & (~bm));
+        cols[j] = (cols[j] & (~bm));
+        grid[i / 3][j / 3] = (grid[i / 3][j / 3] & (~bm));
+    }
+
+    public static void solveSudoku(int[][] arr, int[] rows, int[] cols, int[][] grid, int i, int j) {
+        // for particular i, j index, we check all 9 possible number to place it at i, j, if it is not occupied
+        if(j == arr[0].length) {
+            i++;
+            j = 0;
+        }
+
+        if(i == arr.length) {
+            display(arr);
+            return;
+        }
+
+        if(arr[i][j] != 0) {
+            // place is occupied
+            solveSudoku(arr, rows, cols, grid, i, j + 1); // try on next cell
+        } else {
+            for(int num = 1; num <= 9; num++) {
+                // check if we can place num at i, j
+                if(isSafeToPlace(rows, cols, grid, i, j, num) == true) {
+                    // place num
+                    arr[i][j] = num;
+                    OnBitInChecks(rows, cols, grid, i, j, num);
+                    // make call to next cell
+                    solveSudoku(arr, rows, cols, grid, i, j + 1);
+                    // unplace num for backtracking
+                    OffBitInChecks(rows, cols, grid, i, j, num);
+                    arr[i][j] = 0;
+                }
+            }
+        }
+    }
+
     public static void main(String[] args) {
         System.out.println();
     }
