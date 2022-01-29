@@ -567,6 +567,79 @@ public class bits {
         }
     }
 
+    // n queen using bits
+    private static boolean isQueenSafe(int i, int j, int cmask, int dmask, int admask, int n) {
+        // column check
+        int indx = j;
+        if((cmask & (1 << indx)) != 0) {
+            // in cmask, jth bit is ON, it means jth column is occupied
+            return false;
+        }
+
+        // diagonal check
+        indx = j - i + n - 1;
+        if((dmask & (1 << indx)) != 0) {
+            // in cmask, jth bit is ON, it means jth column is occupied
+            return false;
+        }
+        // antidiagonal check
+        indx = i + j;
+        if((admask & (1 << indx)) != 0) {
+            // in cmask, jth bit is ON, it means jth column is occupied
+            return false;
+        }
+
+        return true;
+    }
+
+    // cmask -> column mask, dmask -> diagonal mask, admask -> anti diagonal mask
+    public static void nqueen(boolean[][] board, int r, int cmask, int dmask, int admask, String asf) {
+        // board is not required, we can solve this without board
+        int n = board.length;
+        if(r == n) {
+            System.out.println(asf + ".");
+            // System.out.println("yes");
+            return;
+        }
+
+        for(int c = 0; c < board.length; c++) {
+            if(isQueenSafe(r, c, cmask, dmask, admask, n) == true) {
+                // place 
+                board[r][c] = true;
+
+                cmask = (cmask | (1 << c));
+                dmask = (dmask | (1 << (c - r + n - 1)));
+                admask = (admask | 1 << (r + c));
+
+                // call to next row
+                nqueen(board, r + 1, cmask, dmask, admask, asf + r + "-" + c + ", ");
+                // unplace
+
+                int bm1 = (1 << c);
+                cmask = (cmask & (~bm1));
+                int bm2 = (1 << (c - r + n - 1));
+                dmask = (dmask & (~bm2));
+                int bm3 = (1 << (r + c));
+                admask = (admask & (~bm3));
+                board[r][c] = false;
+            }
+        }
+    }
+
+    // is a power of 2, leetcode 231
+    public boolean isPowerOfTwo(int n) {
+        return n > 0 && (n & (n - 1)) == 0;
+    }
+
+    // is power of 4, leetcode 342
+    public boolean isPowerOfFour(int n) {
+        // int bm = 0b1010_1010_1010_1010_1010_1010_1010_1010; // literals for binary to int
+        int bm = 0xA_A_A_A_A_A_A_A; // literals for hexadecimal to int
+        return n > 0 && ((n & (n - 1)) == 0) && (n & bm) == 0;
+    }
+
+
+
     public static void main(String[] args) {
         System.out.println();
     }
