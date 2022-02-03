@@ -638,7 +638,115 @@ public class bits {
         return n > 0 && ((n & (n - 1)) == 0) && (n & bm) == 0;
     }
 
+    // swap odd and even index bits
+    private static int swapBits(int n) {
+        int mask1 = 0x5_5_5_5_5_5_5_5;
+        int mask2 = 0xA_A_A_A_A_A_A_A;
 
+        // 1. Preserve odd index
+        int n1 = (n & mask1);
+        // 2. Preserve even index
+        int n2 = (n & mask2);
+        // 3. left shift in n1
+        n1 = (n1 << 1);
+        // 4. Right shift in n2
+        n2 = (n2 >> 1);
+        // 5. res = n1 OR n2
+        int res = (n1 | n2);
+        return res;
+    }
+
+    // sum of bit difference of all pairs 
+    public static long sumOfBitDifference(int[] arr){
+        long res = 0;
+        for(int i = 0; i < 32; i++) {
+            long count0 = 0;
+            long count1 = 0;
+            for(int val : arr) {
+                // check if ith bit is ON in val or not
+                int bm = (1 << i);
+                if((val & bm) != 0) {
+                    // bit is ON
+                    count1++;
+                } else {
+                    // bit is OFF
+                    count0++;
+                }
+            }
+            res += count0 * count1 * 2;
+        }
+        return res;
+    }
+
+    // print binary and Decimal form of reverse of Binary
+    private static void printBinaryAndReverseDecimal(int n) {
+        boolean flag = false;
+        int rev = 0;
+        int j = 0;
+        for(int i = 31; i >= 0; i--) {
+            int bm = 1 << i;
+            if(flag == true) {
+                if((bm & n) != 0) {
+                    // bit is ON
+                    System.out.print(1);
+                    int bm2 = 1 << j;
+                    rev = (rev | bm2);
+                } else {
+                    System.out.print(0);
+                }
+                j++;
+            } else {
+                if((bm & n) != 0) {
+                    flag = true;
+                    // bit is ON
+                    System.out.print(1);
+                    int bm2 = 1 << j;
+                    rev = (rev | bm2);
+                    j++;
+                } else {
+                    // leading zero, skip
+                }
+            }
+        }
+        System.out.println("\n" + rev);
+    }
+
+    // check if binary String is divisible by 3
+    private static boolean isDivisibleBy3(String num) {
+        int odd = 0;
+        int even = 0;
+        for(int i = 0; i < num.length(); i++) {
+            int bit = num.charAt(i) - '0';
+            if(i % 2 == 0) {
+                even += bit;
+            } else {
+                odd += bit;
+            }
+        }
+        return (Math.abs(odd - even) % 11) == 0;
+    }
+
+    // count set bit in N natural numbers
+    private static int powerOf2(int n) {
+        int num = 1;
+        int x = 0;
+        while(num <= n) {
+            num = (num << 1);
+            x++;
+        }
+        x--;
+        return x;
+    }
+
+    public static int countSetBitInNNaturalNumber(int n){
+        if(n == 0) return 0;
+        int x = powerOf2(n);
+        int first = x * (1 << (x - 1));
+        int second = n + 1 - (1 << x);
+        int recRes = countSetBit(n - (1 << x));
+        int res = first + second + recRes;    
+        return res;
+    }
 
     public static void main(String[] args) {
         System.out.println();
