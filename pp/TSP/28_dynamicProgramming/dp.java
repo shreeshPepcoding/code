@@ -86,8 +86,84 @@ public class dp {
     }
 
     // stock buy and sell, K transaction
-    private static void stockBuySell6(int[] price, int k) {
-        
+    private static void stockBuySell6(int[] price, int K) {
+        int[][] dp = new int[K + 1][price.length];
+
+        for(int i = 1; i < dp.length; i++) {
+            int max = -price[0];
+            for(int j = 1; j < dp[0].length; j++) {
+                // int pitt = 0; // pitt -> profit if transaction today
+                int pitt = max + price[j];
+                int pintt = dp[i][j - 1]; // pintt -> profit if no transaction today
+                // for(int k = j - 1; k >= 0; k--) {
+                //     pitt = Math.max(pitt, price[i] - price[k] + dp[i - 1][k]);
+                // }
+                dp[i][j] = Math.max(pitt, pintt);
+                // prepare max for next iteration
+                max = Math.max(max, dp[i - 1][j] - price[j]);
+            }
+        }
+        System.out.println(dp[K][price.length - 1]);
+    }
+
+    // longest increasing subsequence
+    private static int lis(int[] arr) {
+        int[] dp = new int[arr.length];
+        dp[0] = 1;
+        int ans = 1;
+        for(int i = 1; i < arr.length; i++) {
+            int max = 0;
+            for(int j = i - 1; j >= 0; j--) {
+                if(arr[j] < arr[i]) {
+                    max = Math.max(max, dp[j]);
+                }
+            }
+            dp[i] = max + 1;
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+    }
+
+    // maximum sum increasing subsequence
+    private static int maxSumLIS(int[] arr) {
+        int[] dp = new int[arr.length];
+        dp[0] = arr[0];
+        int ans = arr[0];
+        for(int i = 1; i < arr.length; i++) {
+            // int max = 0;
+            int max = Integer.MIN_VALUE;
+            for(int j = i - 1; j >= 0; j--) {
+                if(arr[j] <= arr[i]) {
+                    max = Math.max(max, dp[j]);
+                }
+            }
+            // dp[i] = max + arr[i];
+            if(max == Integer.MIN_VALUE) {
+                dp[i] = arr[i];
+            } else {
+                dp[i] = max + arr[i];
+            }
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+    }
+
+    // longest decreasing subsequence
+    private static int lds(int[] arr) {
+        int[] dp = new int[arr.length];
+        dp[arr.length - 1] = 1;
+        int ans = 1;
+        for(int i = arr.length - 2; i >= 0; i--) {
+            int max = 0;
+            for(int j = i + 1; j < arr.length; j++) {
+                if(arr[i] > arr[j]) {
+                    max = Math.max(max, dp[j]);
+                }
+            }
+            dp[i] = max + 1;
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
     }
 
 
