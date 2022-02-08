@@ -225,6 +225,159 @@ public class dp {
     // russian doll envelope
     // code is exactle same as above one, i.e. Non overlapping bridges
 
+    // box stacking, link : https://practice.geeksforgeeks.org/problems/box-stacking/1/
+    private static class Box implements Comparable<Box> {
+        int l;
+        int b;
+        int h;
+        int area;
+
+        public Box(int l, int b, int h) {
+            this.l = l;
+            this.b = b;
+            this.h = h;
+            this.area = this.l * this.b;
+        }
+
+        public int compareTo(Box o) {
+            if(o.area != this.area)
+                return o.area - this.area;
+            else
+                return o.h - this.h;
+        }
+    }
+
+    public static int maxHeight(int[] height, int[] width, int[] length, int n) {
+        Box[] arr = new Box[3 * n];
+        int j = 0;
+        for(int i = 0; i < n; i++) {
+            // LBH
+            if(length[i] > width[i]) {
+                arr[j++] = new Box(length[i], width[i], height[i]);
+            } else {
+                arr[j++] = new Box(width[i], length[i], height[i]);
+            }
+            // HBL
+            if(height[i] > width[i]) {
+                arr[j++] = new Box(height[i], width[i], length[i]);
+            } else {
+                arr[j++] = new Box(width[i], height[i], length[i]);
+            }
+            // LHB
+            if(length[i] > height[i]) {
+                arr[j++] = new Box(length[i], height[i], width[i]);
+            } else {
+                arr[j++] = new Box(height[i], length[i], width[i]);
+            }
+        }
+        Arrays.sort(arr);
+        int[] dp = new int[3 * n];
+        dp[0] = arr[0].h;
+        int maxHeight = dp[0];
+        for(int i = 1; i < 3 * n; i++) {
+            int max = 0;
+            for(int k = i - 1; k >= 0; k--) {
+                if(arr[k].l > arr[i].l && arr[k].b > arr[i].b) {
+                    max = Math.max(max, dp[k]);
+                }
+            }
+            dp[i] = max + arr[i].h;
+            maxHeight = Math.max(maxHeight, dp[i]);
+        }
+        return maxHeight;
+    }
+
+    // leetcode 1691, https://leetcode.com/problems/maximum-height-by-stacking-cuboids/
+    public int maxHeight(int[][] cuboids) {
+        Box[] arr = new Box[cuboids.length];
+        int j = 0;
+        for(int[] box : cuboids) {
+            Arrays.sort(box);
+            arr[j++] = new Box(box[0], box[1], box[2]);
+        }
+        Arrays.sort(arr);
+        int[] dp = new int[arr.length];
+        dp[0] = arr[0].h;
+        int maxHeight = dp[0];
+        for(int i = 1; i < arr.length; i++) {
+            int max = 0;
+            for(int k = i - 1; k >= 0; k--) {
+                if(arr[k].l >= arr[i].l && arr[k].b >= arr[i].b && arr[k].h >= arr[i].h) {
+                    max = Math.max(max, dp[k]);
+                }
+            }
+            dp[i] = max + arr[i].h;
+            maxHeight = Math.max(maxHeight, dp[i]);
+        }
+        return maxHeight;
+    }
+
+    // leetcode 646, https://leetcode.com/problems/maximum-length-of-pair-chain/
+    public int findLongestChain(int[][] pairs) {
+        Arrays.sort(pairs, (a, b)->{
+            return a[1] - b[1];
+        });
+
+        int[] dp = new int[pairs.length];
+        dp[0] = 1;
+        int maxLength = 1;
+        for(int i = 1; i < pairs.length; i++) {
+            int max = 0;
+            for(int j = i - 1; j >= 0; j--) {
+                if(pairs[j][1] < pairs[i][0]) {
+                    max = Math.max(max, dp[j]);
+                }
+            }
+            dp[i] = max + 1;
+            maxLength = Math.max(maxLength, dp[i]);
+        }
+        return maxLength;
+    }
+
+    // leetcode 647, https://leetcode.com/problems/palindromic-substrings/
+    public int countSubstrings(String s) {
+        int n = s.length();
+        boolean[][] dp = new boolean[n][n];
+        int count = 0;
+        for(int gap = 0; gap < n; gap++) {
+            for(int i = 0, j = gap; j < n; i++, j++) {
+                if(gap == 0) {
+                    dp[i][j] = true;
+                } else if(gap == 1) {
+                    dp[i][j] = s.charAt(i) == s.charAt(j);
+                } else {
+                    dp[i][j] = s.charAt(i) == s.charAt(j) && dp[i + 1][j - 1];
+                }
+                if(dp[i][j] == true) count++;
+            }
+        }
+        return count;
+    }
+
+    // leetcode 5, https://leetcode.com/problems/longest-palindromic-substring/
+    public String longestPalindrome(String s) {
+        int n = s.length();
+        boolean[][] dp = new boolean[n][n];
+        int x = 0;
+        int y = 0;
+        for(int gap = 0; gap < n; gap++) {
+            for(int i = 0, j = gap; j < n; i++, j++) {
+                if(gap == 0) {
+                    dp[i][j] = true;
+                } else if(gap == 1) {
+                    dp[i][j] = s.charAt(i) == s.charAt(j);
+                } else {
+                    dp[i][j] = s.charAt(i) == s.charAt(j) && dp[i + 1][j - 1];
+                }
+                if(dp[i][j] == true) {
+                    x = i;
+                    y = j;
+                }
+            }
+        }
+        return s.substring(x, y + 1);
+    }
+
     public static void main(String[] args) {
 
     }
