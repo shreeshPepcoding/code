@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class dp {
+public class dp {i
 
     // stock buy and sell, one transaction
     private static void stockBuySell1(int[] stocks) {
@@ -376,6 +376,269 @@ public class dp {
             }
         }
         return s.substring(x, y + 1);
+    }
+
+    // print path of min jumps
+    private static class MJHelper {
+        int indx;
+        int jumps;
+        int minJumps;
+        String psf;
+        public MJHelper(int indx, int jumps, int minJumps, String psf) {
+            this.indx = indx;
+            this.jumps = jumps;
+            this.minJumps = minJumps;
+            this.psf = psf;
+        }
+    }
+
+    public static void printPathMinJumps(int arr[]){
+        int n = arr.length;
+        int[] dp = new int[n];
+        dp[n - 1] = 0;
+        
+        for(int i = n - 2; i >= 0; i--) {
+            int minJumps = Integer.MAX_VALUE;
+            for(int jump = 1; jump <= arr[i] && i + jump < n; jump++) {
+                minJumps = Math.min(minJumps, dp[i + jump]);
+            }
+            dp[i] = minJumps != Integer.MAX_VALUE? minJumps + 1: minJumps;
+        }
+
+        System.out.println(dp[0]);
+        Queue<MJHelper> que = new LinkedList<>();
+        que.add(new MJHelper(0, arr[0], dp[0], "0"));
+
+        while(que.size() > 0) {
+            MJHelper rem = que.remove();
+            if(rem.indx == n - 1) {
+                System.out.println(rem.psf + " .");
+                continue;
+            }
+            for(int jump = 1; jump < rem.jumps && jump + rem.indx < n; jump++) {
+                if(dp[rem.indx + jump] == rem.minJumps - 1) {
+                    int nindx = rem.indx + jump;
+                    que.add(new MJHelper(nindx, arr[nindx], rem.minJumps - 1, rem.psf + " -> "+ nindx));
+                }
+            }
+        }
+    }
+
+    // print all path for minimum cost in grid
+    private static class Pair {
+        String psf;
+        int i;
+        int j;
+        
+        public Pair(String psf, int i, int j) {
+            this.psf = psf;
+            this.i = i;
+            this.j = j;
+        }
+    }
+    
+    private static void printAllMinCost(int[][] grid) {
+        int n = grid.length;
+        int m = grid[0].length;
+        int[][] dp = new int[n][m];
+        
+        for(int i = n - 1; i >= 0; i--) {
+            for(int j = m - 1; j >= 0; j--) {
+                if(i == n - 1 && j == m - 1) {
+                    dp[i][j] = grid[i][j];
+                } else if(i == n -1) {
+                    dp[i][j] = grid[i][j] + dp[i][j + 1];
+                } else if(j == m - 1) {
+                    dp[i][j] = grid[i][j] + dp[i + 1][j];
+                } else {
+                    dp[i][j] = grid[i][j] + Math.min(dp[i][j + 1], dp[i + 1][j]);
+                }
+            }
+        }
+        System.out.println(dp[0][0]);
+
+        Queue<Pair> que = new LinkedList<>();
+        que.add(new Pair("", 0, 0));
+        while(que.size() > 0) {
+            Pair rem = que.remove();
+            int i = rem.i;
+            int j = rem.j;
+
+            if(i == n - 1 && j == m - 1) {
+                System.out.println(rem.psf);
+                continue;
+            } else if(i == n - 1) {
+                que.add(new Pair(rem.psf + "H", i, j + 1));
+            } else if(j == m - 1) {
+                que.add(new Pair(rem.psf + "V", i + 1, j));
+            } else {
+                if(dp[i + 1][j] == dp[i][j + 1]) {
+                    // add H
+                    que.add(new Pair(rem.psf + "H", i, j + 1));
+                    // add V
+                    que.add(new Pair(rem.psf + "V", i + 1, j));
+                } else if(dp[i + 1][j] < dp[i][ j + 1]) {
+                    que.add(new Pair(rem.psf + "V", i + 1, j));
+                } else {
+                    que.add(new Pair(rem.psf + "H", i, j + 1));
+                }
+            }
+        }
+    } 
+    
+    // print all path in goldmine
+    private static int[] xarr = {-1, 0, 1};
+    private static int[] yarr = {1, 1, 1};
+
+    private static int maxInGoldmine(int x, int y, int[][] dp) {
+        int max = Integer.MIN_VALUE;
+        for(int d = 1; d <= 3; d++) {
+            int r = x + xarr[d - 1];
+            int c = y + yarr[d - 1];
+
+            if(r >= 0 && r < dp.length && c >= 0 && c < dp[0].length) {
+                max = Math.max(max, dp[r][c]);
+            }
+        }
+        return max;
+    }
+
+    private static void printPathGoldmine(int[][] mine) {
+        int n = mine.length;
+        int m = mine[0].length;
+
+        int[][] dp = new int[n][m];
+        int max = Integer.MIN_VALUE;
+        for(int c = m - 1; c >= 0; c--) {
+            for(int r = 0; r < n; r++) {
+                if(c == m - 1) {
+                    dp[r][c] = mine[r][c];
+                } else if(r == 0) { // compare D2 and D3
+                    dp[r][c] = Math.max(dp[r][c + 1], dp[r + 1][c + 1]) + mine[r][c];
+                } else if(r == n - 1) { // compare D1 and D2
+                    dp[r][c] = Math.max(dp[r - 1][c + 1], dp[r][c + 1]) + mine[r][c];
+                } else { // compare D1, D2, and D3
+                    dp[r][c] = Math.max(dp[r - 1][c + 1], Math.max(dp[r][c + 1], dp[r + 1][c + 1])) + mine[r][c];
+                }
+                max = Math.max(max, dp[r][c]);
+            }
+        }
+        System.out.println(max);
+
+        Queue<Pair> que = new LinkedList<>();
+        for(int r = 0; r < n; r++) {
+            if(dp[r][0] == max) {
+                que.add(new Pair(""  + r + " ", r, 0));
+            }
+        }
+
+        while(que.size() > 0) {
+            Pair rem = que.remove();
+            int i = rem.i;
+            int j = rem.j;
+
+            if(j == m - 1) {
+                System.out.println(rem.psf);
+                continue;
+            } else {
+                int maxInDiagonal = maxInGoldmine(i, j, dp);
+                for(int d = 1; d <= 3; d++) {
+                    int r = i + xarr[d - 1];
+                    int c = j + yarr[d - 1];
+                    if(r >= 0 && r < dp.length && c >= 0 && 
+                        c < dp[0].length && dp[r][c] == maxInDiagonal) {
+                        que.add(new Pair(rem.psf + "d" + d + " ", r, c));
+                    }
+                }
+            }
+        }
+    }
+
+    // print all path with Target Sum Subset
+    private static void printPathtargetSumSubset(int[] arr, int tar) {
+        int n = arr.length;
+        boolean[][] dp = new boolean[n + 1][tar + 1];
+        for(int i = 0; i <= n; i++) {
+            for(int j = 0; j <= tar; j++) {
+                if(j == 0) {
+                    dp[i][j] = true;
+                } else if(i == 0) {
+                    dp[i][j] = false;
+                } else {
+                    if(j < arr[i - 1]) {
+                        dp[i][j] = dp[i - 1][j];
+                    } else {
+                        dp[i][j] = dp[i - 1][j] || dp[i - 1][j - arr[i - 1]];
+                    }
+                }
+            }
+        }
+        System.out.println(dp[n][tar]);
+        Queue<Pair> que = new LinkedList<>();
+        if(dp[n][tar] == true) {
+            que.add(new Pair("", n, tar));
+        }
+        while(que.size() > 0) {
+            Pair rem = que.remove();
+            int i = rem.i;
+            int j = rem.j;
+            if(j == 0) {
+                System.out.println(rem.psf);
+                continue;
+            } else if(i == 0) {
+                continue;
+            }
+            // yes call
+            if(j - arr[i - 1] >= 0 && dp[i - 1][j - arr[i - 1]] == true) {
+                que.add(new Pair((i - 1) + " " +rem.psf, i - 1, j - arr[i - 1]));
+            }
+            // no call
+            if(dp[i - 1][j] == true) {
+                que.add(new Pair(rem.psf, i - 1, j));
+            }
+        }
+    }
+    
+    // print all possible result in 0-1 Knapsacks
+    private static void print01Knapsack(int[] value, int[] wts, int cap) {
+        int n = value.length;
+        int[][] dp = new int[n + 1][cap + 1];
+        for(int i = 0; i <= n; i++) {
+            for(int j = 0; j <= cap; j++) {
+                if(i == 0 || j == 0) {
+                    dp[i][j] = 0;
+                } else {
+                    if(j < wts[i - 1]) {
+                        dp[i][j] = dp[i - 1][j];
+                    } else {    
+                        dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][j - wts[i - 1]] + value[i - 1]);
+                    }
+                }
+            }
+        }
+        System.out.println(dp[n][cap]);
+
+        Queue<Pair> que = new LinkedList<>();
+        que.add(new Pair("", n, cap));
+        while(que.size() > 0) {
+            Pair rem = que.remove();
+            int i = rem.i;
+            int j = rem.j;
+            if(j == 0) {
+                System.out.println(rem.psf);
+                continue;
+            } else if(i == 0) {
+                continue;
+            }
+            // yes call
+            if(j - wts[i - 1] >= 0 && dp[i - 1][j - wts[i - 1]] == dp[i][j] - value[i - 1]) {
+                que.add(new Pair(wts[i - 1] + " " + rem.psf, i - 1, j - wts[i - 1]));
+            }
+            // no call
+            if(dp[i - 1][j] == dp[i][j]) {
+                que.add(new Pair(rem.psf, i - 1, j));
+            }
+        }
     }
 
     public static void main(String[] args) {
