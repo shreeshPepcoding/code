@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class dp {i
+public class dp {
 
     // stock buy and sell, one transaction
     private static void stockBuySell1(int[] stocks) {
@@ -640,6 +640,141 @@ public class dp {i
             }
         }
     }
+
+    // fractional Knapsack
+    private static class KnapHelper implements Comparable<KnapHelper> {
+        int val;
+        int wt;
+        double val_by_wt;
+        KnapHelper(int val, int wt) {
+            this.val = val;
+            this.wt = wt;
+            this.val_by_wt = (val * 1.0) / wt;
+        }
+        public int compareTo(KnapHelper o) {
+            if(this.val_by_wt > o.val_by_wt) {
+                return 1;
+            } else if(this.val_by_wt < o.val_by_wt) {
+                return -1;
+            } else {
+                return 0;
+            }
+            // return Double.compare(this.val_by_wt, o.val_by_wt);
+        }
+    }
+
+    private static double fractionalKnapsack(int[] val, int[] wts, int cap) {
+        PriorityQueue<KnapHelper> pq = new PriorityQueue<>(Collections.reverseOrder());
+        for(int i = 0; i < val.length; i++) {
+            pq.add(new KnapHelper(val[i], wts[i]));
+        }
+        double profit = 0;
+        while(pq.size() > 0) {
+            KnapHelper rem = pq.remove();
+            if(rem.wt <= cap) {
+                // consume all wt
+                cap -= rem.wt;
+                profit += rem.val;
+            } else {
+                // consume according to fraction, we have to exahuast capacity to 0
+                profit += cap * rem.val_by_wt;
+                cap = 0;
+            }
+            if(cap == 0) break;
+        }
+        return profit;
+    }
+
+    // leetcode 279, https://leetcode.com/problems/perfect-squares/
+    public int numSquares(int n) {
+        int[] dp = new int[n + 1];
+        dp[0] = 0; 
+        for(int i = 1; i <= n; i++) {
+            int min = Integer.MAX_VALUE;
+            int count = 1;
+            while(i - (count * count) >= 0) {
+                min = Math.min(min, dp[i - count * count]);
+                count++;
+            }
+            dp[i] = min + 1;
+        }
+        return dp[n];
+    }
+
+    // print all Longest Increasing Subsequence
+    public static class LISHelper {
+        int l;
+        int i;
+        int v;
+        String psf;
+        
+        LISHelper(int l, int i, int v, String psf){
+            this.l = l;
+            this.i = i;
+            this.v = v;
+            this.psf = psf;
+        }
+    }
+
+    public static void printAllLIS(int []arr){
+        int n = arr.length;
+        int[] dp = new int[n];
+
+        dp[0] = 1;
+        int maxIndx = 0;
+        for(int i = 1; i < n; i++) {
+            int maxLen = 0;
+            for(int j = i - 1; j >= 0; j--) {
+                if(arr[j] < arr[i]) {
+                    maxLen = Math.max(maxLen, dp[j]);
+                }
+            }
+            dp[i] = maxLen + 1;
+            if(dp[maxIndx] < dp[i]) {
+                maxIndx = i;
+            }
+        }
+
+        Queue<LISHelper> qu = new LinkedList<>();
+        for(int i = n - 1; i >= 0; i--) {
+            if(dp[i] == dp[maxIndx]) {
+                qu.add(new LISHelper(dp[maxIndx], i, arr[i], arr[i] + ""));
+            }
+        }
+
+        while(qu.size() > 0) {
+            LISHelper rem = qu.remove();
+            if(rem.l == 1) {
+                System.out.println(rem.psf);
+                continue;
+            }
+
+            for(int j = rem.i - 1; j >= 0; j--) {
+                if(dp[j] == rem.l - 1 && arr[j] < arr[rem.i]) {
+                    qu.add(new LISHelper(dp[j], j, arr[j], arr[j] + " -> " + rem.psf));
+                }
+            }
+        }
+    }
+
+    // largest square from 1s, leetcode 221(Maximal Rectangle, return area rather than length)
+    public static int largestSquarefrom1s(int[][] arr) {
+		int max = 0;
+        int r = arr.length;
+        int c = arr[0].length;
+        int[][] dp = new int[r][c];
+        for(int i = r - 1; i >= 0; i--) {
+            for(int j = c - 1; j >= 0; j--) {
+                if(i == r - 1 || j == c - 1 || arr[i][j] == 0) {
+                    dp[i][j] = arr[i][j];
+                } else {
+                    dp[i][j] = Math.min(Math.min(dp[i + 1][j], dp[i][j + 1]), dp[i + 1][j + 1]) + 1;
+                }
+                max = Math.max(max, dp[i][j]);
+            }
+        }
+        return max;
+	}
 
     public static void main(String[] args) {
 
