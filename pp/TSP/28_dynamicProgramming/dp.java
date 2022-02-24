@@ -776,6 +776,45 @@ public class dp {
         return max;
 	}
 
+    // catalan number
+    private static int catalanNumber(int n) {
+        if(n == 0 || n == 1) return 1;
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        dp[1] = 1;
+
+        for(int i = 2; i <= n; i++) {
+            int i1 = 0;
+            int i2 = i - 1;
+            int sum = 0;
+            for(; i1 < i; i1++, i2--) {
+                sum += dp[i1] * dp[i2];
+            }
+            dp[i] = sum;
+        }
+        return dp[n];
+    }
+
+    // possible number of BST from n nodes
+    private static int numberOfBSTs(int n) {
+        return catalanNumber(n);
+    }
+
+    // possible number of mountain and valleys
+    private static int countOfMountainAndValleys(int n) {
+        return catalanNumber(n);
+    }
+
+    // count brackets
+    private static int countBrackets(int n) {
+        return catalanNumber(n);
+    }
+
+    // chords and circle
+    public static int NumberOfChords(int n){
+        return catalanNumber(n);
+    }
+
     public static void main(String[] args) {
 
     }
