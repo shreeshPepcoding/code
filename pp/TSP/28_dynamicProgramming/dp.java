@@ -797,7 +797,7 @@ public class dp {
 
     // possible number of BST from n nodes
     private static int numberOfBSTs(int n) {
-        return catalanNumber(n);
+        return catalanNumber(n - 2);
     }
 
     // possible number of mountain and valleys
@@ -814,6 +814,61 @@ public class dp {
     public static int NumberOfChords(int n){
         return catalanNumber(n);
     }
+
+    // number of ways of triangulation
+    public static int numberOfWaysOfTriangulation(int n){
+		return catalanNumber(n);
+	}
+
+    // highway billboard, method-1 using LIS technique
+
+    // highway billboard, method-2 using distance
+    public static int highwayBillboard(int m , int[] x, int[] rev, int t) {
+        int[] dp = new int[m + 1];
+        dp[0] = 0;
+        int indx = 0;
+        for(int i = 1; i <= m; i++) {
+            if(indx < x.length && x[indx] == i) {
+                int opt1 = dp[i - 1];
+                int opt2 = (i - t - 1) >= 0 ? dp[i - t - 1] + rev[indx] : rev[indx];
+                dp[i] = Math.max(opt1, opt2);
+                indx++;
+            } else {
+                dp[i] = dp[i - 1];
+            }
+        }
+        return dp[m];
+    }
+
+    // temple offerings
+    public static int totaloffering(int[] height) {
+        int n = height.length;
+        int[] dp = new int[n];
+        // left to right
+        dp[0] = 1;
+        for(int i = 1; i < n; i++) {
+            if(height[i] > height[i - 1]) {
+                dp[i] = dp[i - 1] + 1;
+            } else {
+                dp[i] = 1;
+            }
+        }
+        int sum = 0;
+        // right to left
+        int count = 1;
+        dp[n - 1] = Math.max(count, dp[n - 1]);
+        sum = dp[n - 1];
+        for(int i = n - 2; i >= 0; i--) {
+            if(height[i] > height[i + 1]) {
+                count++;
+            } else {
+                count = 1;
+            }
+            sum += Math.max(count, dp[i]);
+        }
+        return sum;
+	}
+
 
     public static void main(String[] args) {
 
