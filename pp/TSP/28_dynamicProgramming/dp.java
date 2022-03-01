@@ -869,6 +869,117 @@ public class dp {
         return sum;
 	}
 
+    // longest palindromic subsequence
+    private static int lps(String str) {
+        int n = str.length();
+        int[][] dp = new int[n][n];
+        
+        for(int gap = 0; gap < n; gap++) {
+            for(int r = 0, c = gap; c < n; r++, c++) {
+                if(gap == 0) {
+                    dp[r][c] = 1;
+                } else if(gap == 1) {
+                    dp[r][c] = str.charAt(r) == str.charAt(c) ? 2 : 1;
+                } else {
+                    if(str.charAt(r) == str.charAt(c)) {
+                        dp[r][c] = dp[r + 1][c - 1] + 2;
+                    } else {
+                        dp[r][c] = Math.max(dp[r][c - 1], dp[r + 1][c]);
+                    }
+                }
+            }
+        }
+        return dp[0][n - 1];
+    }
+
+    // count all palindromic subseq.
+    private static int countLPS(String str) {
+        int n = str.length();
+        int[][] dp = new int[n][n];
+        
+        for(int gap = 0; gap < n; gap++) {
+            for(int r = 0, c = gap; c < n; r++, c++) {
+                if(gap == 0) {
+                    dp[r][c] = 1;
+                } else if(gap == 1) {
+                    dp[r][c] = str.charAt(r) == str.charAt(c) ? 3 : 2;
+                } else {
+                    if(str.charAt(r) == str.charAt(c)) {
+                        dp[r][c] = dp[r][c - 1] + dp[r + 1][c] + 1;
+                    } else {
+                        dp[r][c] = dp[r][c - 1] + dp[r + 1][c] - dp[r + 1][c - 1];
+                    }
+                }
+            }
+        }
+        return dp[0][n - 1];
+    }
+
+    // ugly number
+    public static int uglyNumber(int n) {
+        if(n == 1) return 1;
+
+        int[] dp = new int[n];
+        dp[0] = 1;
+        int p2 = 0;
+        int p3 = 0;
+        int p5 = 0;    
+
+        int indx = 1;
+        while(indx < n) {
+            int n1 = dp[p2] * 2;
+            int n2 = dp[p3] * 3;
+            int n3 = dp[p5] * 5;
+            int min = Math.min(n1, Math.min(n2, n3));
+            dp[indx] = min;
+            if(n1 == min) {
+                p2++;
+            }
+            if(n2 == min) {
+                p3++;
+            }
+            if(n3 == min) {
+                p5++;
+            }
+            indx++;
+        }
+        return dp[n - 1];
+    }
+
+    // longest common subseq.
+    private static int lcs(String str1, String str2) {
+        int n1 = str1.length();
+        int n2 = str2.length();
+        int[][] dp = new int[n1 + 1][n2 + 1];
+        for(int i = 1; i <= n1; i++) {
+            for(int j = 1; j <= n2; j++) {
+                if(str1.charAt(i - 1) == str2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1]  + 1;
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[n1][n2];
+    }
+
+    // count distinct subseq.
+    private static int countDistinctSubseq(String str) {
+        int n = str.length();
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        dp[1] = 2;
+        HashMap<Character, Integer> map = new HashMap<>();
+        map.put(str.charAt(0), 0);
+        for(int i = 2; i <= n; i++) {
+            char ch = str.charAt(i - 1);
+            int prevVal = map.containsKey(ch) == true ? dp[map.get(ch)] : 0;
+            dp[i] = 2 * dp[i - 1] - prevVal;
+        }
+        // subtract 1 for all no's
+        return dp[n] - 1;
+    }
+
 
     public static void main(String[] args) {
 
