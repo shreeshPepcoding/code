@@ -1038,6 +1038,80 @@ public class dp {
         return dp[0][n - 1];
 	}
 
+    // longest repeating subseq.
+    public static int longestRepeatingSubseq(String str){
+        // code and logic is same as longest common subseq. 
+        // but in equality check, make sure that i and j index is not equal
+
+        int n = str.length();
+        int[][] dp = new int[n + 1][n + 1];
+        for(int i = 1; i <= n; i++) {
+            for(int j = 1; j <= n; j++) {
+                if(str.charAt(i - 1) == str.charAt(j - 1) && i != j) {
+                    dp[i][j] = dp[i - 1][j - 1]  + 1;
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[n][n];
+	}
+
+    // longest common substring
+    public static int longestCommonSubstring(String s1, String s2){
+        int n1 = s1.length();
+        int n2 = s2.length();
+
+        int[][] dp = new int[n1 + 1][n2 + 1];
+        int ans = 0;
+        for(int i = 1; i <= n1; i++) {
+            for(int j = 1; j <= n2; j++) {
+                if(s1.charAt(i - 1) == s2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                }
+                ans = Math.max(ans, dp[i][j]);
+            }
+        }
+        return ans;
+	}
+
+    // arithmatic slices
+    public static int arithmaticSlices1(int[] arr) {
+        int n = arr.length;
+        int[] dp = new int[n];
+        int count = 0;
+        for(int i = 2; i < n; i++) {
+            if(arr[i] - arr[i - 1] == arr[i - 1] - arr[i - 2]) {
+               dp[i] = dp[i - 1] + 1;
+               count += dp[i];
+            }
+        }
+        return count;
+	}
+
+    // arithmatic slices 2
+    public static int arithmaticSlices2(int[] arr) {
+        int n = arr.length;
+        HashMap<Long, Integer>[] dp = new HashMap[n];
+        for(int i = 0; i < n; i++) {
+            dp[i] = new HashMap<>();
+        }
+
+        int count = 0;
+        for(int i = 1; i < n; i++) {
+            for(int j = 0; j < i; j++) {
+                long cd = (long)arr[i] - (long)arr[j];
+
+                int countInI = dp[i].getOrDefault(cd, 0);
+                int countInJ = dp[j].getOrDefault(cd, 0);
+                
+                count += countInJ;
+                dp[i].put(cd, countInI + countInJ + 1);
+            }
+        }
+        return count;
+    }
+
     public static void main(String[] args) {
 
     }
