@@ -456,6 +456,153 @@ public class linkedlist {
         return head2.next;
     }
 
+    // leetcode 83, https://leetcode.com/problems/remove-duplicates-from-sorted-list/
+    public ListNode deleteDuplicates1(ListNode head) {
+        if(head == null) return head;
+        ListNode i = head;
+        ListNode curr = head.next;
+
+        while(curr != null) {
+            if(i.val != curr.val) {
+                i.next = curr;
+                i = curr;
+            }
+            curr = curr.next;
+        }
+        i.next = curr;
+        return head;
+    }
+
+    // leetcode 82, https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/
+    public ListNode deleteDuplicates2(ListNode head) {
+        if(head == null) return head;
+        ListNode head2 = new ListNode(-1);
+        ListNode i = head2;
+        ListNode curr = head;
+        i.next = curr;
+        while(curr != null) {
+            curr = curr.next;
+            boolean flag = false;
+            while(curr != null && i.next.val == curr.val) {
+                flag = true; // help to identify duplicacy
+                curr = curr.next;
+            }
+
+            if(flag == true) {
+                i.next = curr;
+            } else {
+                i = i.next;
+            }
+        }
+        return head2.next;
+    }
+
+    // leetcode 141, https://leetcode.com/problems/linked-list-cycle/
+    public boolean hasCycle(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head;
+        while(fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+
+            if(slow == fast) {
+                // same address
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    // leetcode 142, https://leetcode.com/problems/linked-list-cycle-ii/
+    public ListNode detectCycle(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head;
+        while(fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if(slow == fast) {
+                break;
+            }
+        }
+        if(fast == null || fast.next == null) return null;
+
+        slow = head;
+        while(slow != fast) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        return slow;
+    }
+
+    // leetcode 160, https://leetcode.com/problems/intersection-of-two-linked-lists/
+    public ListNode getIntersectionNode1(ListNode headA, ListNode headB) {
+        // step 1 : find Tail and connect tail.next = headA
+        ListNode tail = headA;
+        while(tail.next != null) 
+            tail = tail.next;
+        
+        tail.next = headA;
+        // step 2 : find starting node of cycle linkedlist (if cycle then result is node otherwise null)
+        ListNode res = detectCycle(headB);
+        // step 3 : retain original structure, tail.next = null
+        tail.next = null;
+        // step 4 : return result
+        return res;
+    }
+
+    // method 2, using difference method
+    public ListNode getIntersectionNode2(ListNode headA, ListNode headB) {
+        int sizeA = size(headA);
+        int sizeB = size(headB);
+        ListNode tempA = headA, tempB = headB;
+        if(sizeA > sizeB) {
+            // move tempA
+            for(int i = 0; i < sizeA - sizeB; i++)
+                tempA = tempA.next;
+        } else {
+            // move tempB
+            for(int i = 0; i < sizeB - sizeA; i++)
+                tempB = tempB.next;
+        }
+
+        // move tempA and tempB simultaneously
+        while(tempA != null) {
+            if(tempA == tempB) {
+                return tempA;
+            }
+            tempA = tempA.next;
+            tempB = tempB.next;
+        }
+        return null;
+    }
+
+    // leetcode 2, https://leetcode.com/problems/add-two-numbers/
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        l1 = reverseList(l1);
+        l2 = reverseList(l2);
+        ListNode i = l1;
+        ListNode j = l2;
+        ListNode head = new ListNode(-1);
+        ListNode temp = head;
+        int carry = 0;
+        while(i != null || j != null || carry != 0) {
+            int ival = i == null ? 0 : i.val;
+            i = i == null ? null : i.next;
+            int jval = j == null ? 0 : j.val;
+            j = j == null ? null : j.next;
+            int sum = ival + jval + carry;
+            int val = sum % 10;
+            carry = sum / 10;
+            ListNode nn = new ListNode(val);
+            temp.next = nn;
+            temp = nn;
+        }
+        head = reverseList(head.next);
+        l1 = reverseList(l1);
+        l2 = reverseList(l2);
+        return head;
+    }
+
     public static void main(String[] args) {
         
     }
