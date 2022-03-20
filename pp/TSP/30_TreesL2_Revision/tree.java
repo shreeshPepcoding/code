@@ -22,7 +22,7 @@ public class tree {
         }
     }
 
-    public class Node {
+    public static class Node {
         int data;
         Node left;
         Node right;
@@ -149,6 +149,143 @@ public class tree {
 
     public TreeNode sortedArrayToBST(int[] in) {
         return constructBST_In(in, 0, in.length - 1);
+    }
+
+    // leetcode 1008, https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/
+    static int index = 0;
+    private TreeNode constructBST_Pre(int[] pre, int leftRange, int rightRange) {
+        if(index >= pre.length || pre[index] < leftRange || pre[index] > rightRange) {
+            return null;
+        }
+
+        int val = pre[index++];
+        TreeNode root = new TreeNode(val);
+        root.left = constructBST_Pre(pre, leftRange, val);
+        root.right = constructBST_Pre(pre, val, rightRange);
+        return root;
+    }
+
+    public TreeNode bstFromPreorder(int[] pre) {
+        index = 0;
+        return constructBST_Pre(pre, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    }
+
+    // construct BST from postorder, https://practice.geeksforgeeks.org/problems/construct-bst-from-post-order/1/
+    private static Node constructBST_Post(int[] post, int leftRange, int rightRange) {
+        if(index < 0 || post[index] < leftRange || post[index] > rightRange) {
+            return null;
+        }
+
+        int val = post[index--];
+        Node root = new Node(val);
+        root.right = constructBST_Post(post, val, rightRange);
+        root.left = constructBST_Post(post, leftRange, val);
+        return root;
+    }
+    
+    public static Node constructTree(int post[],int n) {
+        index = post.length - 1;
+        return constructBST_Post(post, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    }
+
+    // construct BST from levelOrder, https://practice.geeksforgeeks.org/problems/convert-level-order-traversal-to-bst/1
+    private Node constructBST_levelOrder(ArrayList<Integer> level) {
+        if(level.size() == 0) {
+            return null;
+        }
+        Node root = new Node(level.get(0));
+        ArrayList<Integer> llvl = new ArrayList<>();
+        ArrayList<Integer> rlvl = new ArrayList<>();
+        for(int i = 1; i < level.size(); i++) {
+            int val = level.get(i);
+            if(val < root.data) {
+                llvl.add(val);
+            } else {
+                rlvl.add(val);
+            }
+        }
+
+        root.left = constructBST_levelOrder(llvl);
+        root.right = constructBST_levelOrder(rlvl);
+        return root;
+    }
+    
+    public Node constructBST(int[] arr) {
+        ArrayList<Integer> lvl = new ArrayList<>();
+        for(int val : arr) lvl.add(val);
+        return constructBST_levelOrder(lvl);
+    }
+
+    // leetcode 968, https://leetcode.com/problems/binary-tree-cameras/
+    static int camera = 0;
+    // state 0 -> camera is present
+    // state 1 -> I am covered
+    // state 2 -> I am unsafe
+
+    private int minCameraCover_rec(TreeNode root) {
+        if(root == null) {
+            return 1; // null is safe, parent try to save yourself
+        }
+        int leftState = minCameraCover_rec(root.left);
+        int rightState = minCameraCover_rec(root.right);
+
+        // post area
+        if(leftState == 1 && rightState == 1) {
+            // root is unsafe
+            return 2;
+        } else if(leftState == 2 || rightState == 2) {
+            // camera is required
+            camera++;
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+
+    public int minCameraCover(TreeNode root) {
+        camera = 0;
+        int finalState = minCameraCover_rec(root);
+        if(finalState == 2) camera++;
+
+        return camera;
+    }
+
+    // leetcode 337, https://leetcode.com/problems/house-robber-iii/
+    private class RPair {
+        int withRob;
+        int withoutRob;
+
+        RPair(int withRob, int withoutRob) {
+            this.withRob = withRob;
+            this.withoutRob = withoutRob;
+        }
+    }
+
+    private RPair rob_rec(TreeNode root) {
+        if(root == null) {
+            return new RPair(0, 0);
+        }
+
+        RPair left = rob_rec(root.left);
+        RPair right = rob_rec(root.right);
+
+        int a = left.withRob;
+        int b = left.withoutRob;
+        int a_ = right.withRob;
+        int b_ = right.withoutRob;
+        int c = root.val;
+
+        // robbery on root, c + b + b_
+        int withRobbery = c + b + b_;
+        // no robbery, max(a, b) + max(a_, b_)
+        int withoutRobbery = Math.max(a, b) + Math.max(a_, b_);
+
+        return new RPair(withRobbery, withoutRobbery);
+    }
+
+    public int rob(TreeNode root) {
+        RPair res = rob_rec(root);
+        return Math.max(res.withRob, res.withoutRob);
     }
 
     public static void main(String[] args) {
