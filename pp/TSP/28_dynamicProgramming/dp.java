@@ -1112,6 +1112,28 @@ public class dp {
         return count;
     }
 
+    // burst ballons, leetcode 312, https://leetcode.com/problems/burst-balloons/
+    public int maxCoins(int[] nums) {
+        int n = nums.length;
+        int[][] dp = new int[n][n];
+        
+        for(int g = 0; g < n; g++) {
+            for(int x = 0, y = g; y < n; y++, x++)  {
+                int nm1 = x == 0 ? 1 : nums[x - 1];
+                int np1 = y == n - 1 ? 1 : nums[y + 1];
+                int max = 0;
+                for(int z = x; z <= y; z++) {
+                    int firstHalf = z == 0 ? 0 : dp[x][z - 1];
+                    int num = nums[z];
+                    int secondHalf = z == n - 1 ? 0 : dp[z + 1][y];
+                    
+                    max = Math.max(max, firstHalf + (nm1 * num * np1) + secondHalf);
+                }
+                dp[x][y] = max;
+            }
+        } 
+        return dp[0][n - 1];
+    }
     
 
     public static void main(String[] args) {
