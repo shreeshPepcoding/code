@@ -19,6 +19,16 @@ public class btree {
         }
     }
 
+    public static class TreeNode {
+        int val;
+        TreeNode left, right;
+
+        TreeNode(int val) {
+            this.val = val;
+            this.left = this.right = null;
+        }
+    }
+
     public static class Pair {
         Node node;
         int state;
@@ -119,6 +129,94 @@ public class btree {
         display(root);
     }
 
+    public static void levelOrder(Node node) {
+        
+        LinkedList<Node> qu = new LinkedList<>();
+        // linkedlist as a queue -> addLast, removeFirst
+        qu.addLast(node);
+        while(qu.size() > 0) {
+            int sz = qu.size();
+            while(sz-- > 0) {
+                // get + remove
+                Node rem = qu.removeFirst();
+                // work -> print data
+                System.out.print(rem.data + " ");
+                // add children if valid
+                if(rem.left != null) qu.addLast(rem.left);
+                if(rem.right != null) qu.addLast(rem.right);
+            }
+            // hit enter
+            System.out.println();
+        }
+    }
+
+    // leetcode 102, https://leetcode.com/problems/binary-tree-level-order-traversal/
+    public List<List<Integer>> levelOrder(TreeNode node) {
+        List<List<Integer>> res = new ArrayList<>();
+        if(node == null) return res;
+
+        LinkedList<TreeNode> qu = new LinkedList<>();
+        // linkedlist as a queue -> addLast, removeFirst
+        qu.addLast(node);
+        while(qu.size() > 0) {
+            int sz = qu.size();
+            List<Integer> list = new ArrayList<>();
+            while(sz-- > 0) {
+                // get + remove
+                TreeNode rem = qu.removeFirst();
+                // work -> print data
+                list.add(rem.val);
+                // add children if valid
+                if(rem.left != null) qu.addLast(rem.left);
+                if(rem.right != null) qu.addLast(rem.right);
+            }
+            res.add(list);
+        }
+        return res;
+    }
+
+    public static void iterativePrePostInTraversal(Node node) {
+        ArrayList<Integer> pre = new ArrayList<>();
+        ArrayList<Integer> in = new ArrayList<>();
+        ArrayList<Integer> post = new ArrayList<>();
+
+        Stack<Pair> st = new Stack<>();
+        st.push(new Pair(node, 1));
+        while(st.size() > 0) {
+            Pair top = st.peek();
+            if(top.state == 1) {
+                // pre Area
+
+                pre.add(top.node.data);
+                if(top.node.left != null) st.add(new Pair(top.node.left, 1));
+                top.state++;
+            } else if(top.state == 2) {
+                // in area
+
+                in.add(top.node.data);
+                if(top.node.right != null) st.add(new Pair(top.node.right, 1));
+                top.state++;
+            } else {
+                // post area
+
+                post.add(top.node.data);
+                st.pop();
+            }
+        }
+        // print
+        for(int val : pre) {
+            System.out.print(val + " ");
+        }
+        System.out.println();
+        for(int val : in) {
+            System.out.print(val + " ");
+        }
+        System.out.println();
+        for(int val : post) {
+            System.out.print(val + " ");
+        }
+    }
+    
     public static void main(String[] args) {
         fun();
     }
