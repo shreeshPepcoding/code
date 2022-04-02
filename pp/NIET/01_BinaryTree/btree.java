@@ -217,6 +217,210 @@ public class btree {
         }
     }
     
+    public static boolean find(Node node, int data){
+        if(node == null) return false;
+
+        if(node.data == data) return true;
+
+        boolean lres = find(node.left, data);
+        if(lres == true) {
+            return true;
+        }
+        boolean rres = find(node.right, data);
+        return rres;
+
+        // return node.data == data || find(node.left, data) || find(node.right, data);
+
+    }
+
+    public static ArrayList<Integer> nodeToRootPath(Node node, int data){
+        if(node == null) return new ArrayList<>();
+
+        if(node.data == data) {
+            ArrayList<Integer> mres = new ArrayList<>();
+            mres.add(node.data);
+            return mres;
+        }
+
+        ArrayList<Integer> lres = nodeToRootPath(node.left, data);
+        if(lres.size() > 0) {
+            lres.add(node.data);
+            return lres;
+        }
+        ArrayList<Integer> rres = nodeToRootPath(node.right, data);
+        if(rres.size() > 0) {
+            rres.add(node.data);
+            return rres;
+        }
+        return new ArrayList<>();
+    }
+
+    public static void printKLevelsDown(Node node, int k){
+        if(node == null) return;
+
+        if(k == 0) {
+            System.out.println(node.data);
+            return;
+        }
+
+        printKLevelsDown(node.left, k - 1);
+        printKLevelsDown(node.right, k - 1);
+    }
+
+    public static ArrayList<Node> nodeToRootPath2(Node node, int data){
+        if(node == null) return new ArrayList<>();
+
+        if(node.data == data) {
+            ArrayList<Node> mres = new ArrayList<>();
+            mres.add(node);
+            return mres;
+        }
+
+        ArrayList<Node> lres = nodeToRootPath2(node.left, data);
+        if(lres.size() > 0) {
+            lres.add(node);
+            return lres;
+        }
+        ArrayList<Node> rres = nodeToRootPath2(node.right, data);
+        if(rres.size() > 0) {
+            rres.add(node);
+            return rres;
+        }
+        return new ArrayList<>();
+    }
+
+    public static void printKLevelsDown2(Node node, int k, Node blocker){
+        if(node == null) return;
+
+        if(node == blocker) return;
+
+        if(k == 0) {
+            System.out.println(node.data);
+            return;
+        }
+
+        printKLevelsDown2(node.left, k - 1, blocker);
+        printKLevelsDown2(node.right, k - 1, blocker);
+    }
+
+    public static void printKNodesFar(Node node, int data, int k) {
+        ArrayList<Node> n2rp = nodeToRootPath2(node, data);
+        Node blocker = null;
+        for(int i = 0; i < n2rp.size() && k - i >= 0; i++) {
+            Node root = n2rp.get(i);
+            printKLevelsDown2(root, k - i, blocker);
+            blocker = root;
+        }
+    }
+
+    public static void pathToLeafFromRoot(Node node, String path, int sum, int lo, int hi){
+        if(node == null) return;
+
+        path += node.data;
+        sum += node.data;
+        
+        if(node.left == null && node.right == null) {
+            // leaf
+            if(lo <= sum && sum <= hi) {
+                System.out.println(path);
+            }    
+            return;
+        }
+
+        pathToLeafFromRoot(node.left, path + " ", sum, lo, hi);
+        pathToLeafFromRoot(node.right, path + " ", sum, lo, hi);
+    }
+
+    public static Node createLeftCloneTree(Node root){
+        if(root == null) return null;
+
+        Node leftRoot = createLeftCloneTree(root.left);
+        Node rightRoot = createLeftCloneTree(root.right);
+
+        Node nn = new Node(root.data);
+        
+        nn.left = leftRoot;
+        root.left = nn;
+        root.right = rightRoot;
+
+        return root;
+    }   
+
+    public static Node transBackFromLeftClonedTree(Node root){
+        if(root == null) return null;
+
+        Node lroot = transBackFromLeftClonedTree(root.left.left);
+        Node rroot = transBackFromLeftClonedTree(root.right);
+
+        root.right = rroot;
+        root.left = lroot;
+        return root;
+    }
+
+    public static void printSingleChildNodes(Node node, Node parent){
+        if(node == null) return;
+        // self cgeck
+        if(parent != null && 
+            ((parent.left == null && parent.right != null) || 
+            (parent.right == null && parent.left != null))) {
+            System.out.println(node.data);
+        }
+        // left + right
+        printSingleChildNodes(node.left, node);
+        printSingleChildNodes(node.right, node);
+    }
+
+    // call -> foolish, base case-> smart
+    public static void traverse1(Node node) {
+        if(node == null) return;
+
+        traverse1(node.left);
+        traverse1(node.right);
+    }
+
+    // no base case, every call is smart
+    public static void traverse2(Node node) {
+        if(node.left != null)
+            traverse1(node.left);
+        if(node.right != null)
+            traverse1(node.right);
+    }
+
+    public static void traverse3(Node node) {
+        if(node.left != null && node.right != null) {
+            // left + right both exist
+            traverse3(node.left);
+            traverse3(node.right);
+        } else if(node.left != null) {
+            // left exist
+            traverse3(node.left);
+        } else if(node.right != null) {
+            // right exist
+            traverse3(node.right);
+        } else {
+            // no child exist, you are at leaf
+            // no call
+        }
+    }
+
+    public static Node removeLeaves(Node node){
+        if(node.left != null && node.right != null) {
+            // left + right both exist
+            node.left = removeLeaves(node.left);
+            node.right = removeLeaves(node.right);
+        } else if(node.left != null) {
+            // left exist
+            node.left = removeLeaves(node.left);
+        } else if(node.right != null) {
+            // right exist
+            node.right = removeLeaves(node.right);
+        } else {
+            // no child exist, you are at leaf
+            return null;
+        }
+        return node;
+    }
+
     public static void main(String[] args) {
         fun();
     }
