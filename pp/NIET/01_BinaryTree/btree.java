@@ -112,6 +112,15 @@ public class btree {
         return mmax;
     }
 
+    public static int min(Node node) {
+        if(node == null) return Integer.MAX_VALUE;
+
+        int lmin = min(node.left);
+        int rmin = min(node.right);
+        int mmin = Math.min(node.data, Math.min(lmin, rmin));
+        return mmin;
+    }
+
     public static int height(Node node) {
         if(node == null) return -1; // on the basis of edge
         int lh = height(node.left);
@@ -420,6 +429,128 @@ public class btree {
         }
         return node;
     }
+
+    public static int diameter1(Node node) {
+        if(node == null) return 0;
+
+        int ld = diameter1(node.left);
+        int rd = diameter1(node.right);
+
+        int lh = height(node.left);
+        int rh = height(node.right);
+        int md = lh + rh + 1;
+
+        return Math.max(md, Math.max(ld, rd));
+    }
+
+
+    public static class DPair {
+        int ht;
+        int dia;
+
+        DPair(int ht, int dia) {
+            this.ht = ht;
+            this.dia = dia;
+        }
+    }
+
+    public static DPair diameter2(Node node) {
+        if(node == null) {
+            return new DPair(-1, 0);
+        }
+
+        DPair lpair = diameter2(node.left);
+        DPair rpair = diameter2(node.right);
+
+        int my_ht = Math.max(lpair.ht, rpair.ht) + 1;
+        int my_dia = Math.max(lpair.ht + rpair.ht + 2, Math.max(lpair.dia, rpair.dia));
+        DPair mpair = new DPair(my_ht, my_dia);
+        return mpair;
+    }
+
+    static int tilt = 0;
+    private static int tilt_(Node node) {
+        if(node == null) return 0;
+
+        int lsum = tilt_(node.left);
+        int rsum = tilt_(node.right);
+        tilt += Math.abs(lsum - rsum);
+
+        return lsum + rsum + node.data;
+    }
+
+    public static int tilt(Node node){
+        tilt_(node);
+        return tilt;
+    }
+
+    public static class BSTPair {
+        boolean isBST;
+        int max;
+        int min;
+        int size;
+
+        BSTPair(boolean isBST, int max, int min, int size) {
+            this.isBST = isBST;
+            this.min = min;
+            this.max = max;
+        }
+    }
+    public static int maxSize = 0;
+    public static Node nn;
+    public static BSTPair isBST_(Node node) {
+        if(node == null) {
+            return new BSTPair(true, Integer.MIN_VALUE, Integer.MAX_VALUE, 0);
+        }
+        BSTPair lpair = isBST_(node.left);
+        BSTPair rpair = isBST_(node.right);
+        int mx = Math.max(Math.max(lpair.max, rpair.max), node.data);
+        int mn = Math.min(Math.min(lpair.min, rpair.min), node.data);
+        int msize = lpair.size + rpair.size + 1;
+        boolean isbst = lpair.isBST && rpair.isBST && (lpair.max < node.data && node.data < rpair.min);
+
+        if(isbst == true && msize > maxSize) {
+            maxSize = msize;
+            nn = node;
+        }
+
+        BSTPair mpair = new BSTPair(isbst, mx, mn, msize);
+        return mpair;
+    }
+
+    public static boolean isBST(Node node) {
+        if(node == null) return true;
+        boolean lres = isBST(node.left);
+        boolean rres = isBST(node.right);
+        int lmax = max(node.left);
+        int rmin = min(node.right);
+        boolean mres = lmax < node.data && node.data < rmin;
+        return lres && rres && mres;
+    }
+
+    public static class BalancePair {
+        int ht;
+        boolean isBalance;
+
+        BalancePair(boolean isBalance, int ht) {
+            this.isBalance = isBalance;
+            this.ht = ht;
+        }
+    }
+
+    public static BalancePair isBalanced_(Node node) {
+        if(node == null) {
+            return new BalancePair(true, 0);
+        }
+        BalancePair lpair = isBalanced_(node.left);
+        BalancePair rpair = isBalanced_(node.right);
+
+        int mh = Math.max(lpair.ht, rpair.ht) + 1;
+        boolean mbalance = Math.abs(lpair.ht - rpair.ht) <= 1 && lpair.isBalance && rpair.isBalance;
+        BalancePair mpair = new BalancePair(mbalance, mh);
+        return mpair;
+    }
+
 
     public static void main(String[] args) {
         fun();

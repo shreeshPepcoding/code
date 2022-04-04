@@ -570,7 +570,6 @@ public class tree {
         }
     }
 
-
     public List<List<Integer>> verticalTraversal(TreeNode root) {
         PriorityQueue<VTPair> ppq = new PriorityQueue<>(); // ppq -> parent priority queueu
         PriorityQueue<VTPair> cpq = new PriorityQueue<>(); // cpq -> child priority queueu
@@ -617,7 +616,7 @@ public class tree {
         return res;
     }
     
-
+    
     public static void main(String[] args) {
 
     }
