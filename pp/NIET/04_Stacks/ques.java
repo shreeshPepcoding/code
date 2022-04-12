@@ -294,6 +294,139 @@ public class ques {
         }
     }
 
+    public static void findCelebrity(int[][] arr) {
+        Stack<Integer> st = new Stack<>();
+        for(int i = 0; i < arr.length; i++) {
+            st.push(i);
+        }
+
+        // eliminate non-celebrity person
+        while(st.size() > 1) {
+            int i = st.pop();
+            int j = st.pop();
+
+            if(arr[i][j] == 1) {
+                // i is not celebrity
+                st.push(j);
+            } else {
+                // j is not celebrity
+                st.push(i);
+            }
+        }
+
+        int candidate = st.pop();
+        // confirmation for candidate in row
+        for(int c = 0; c < arr[0].length; c++) {
+            if(arr[candidate][c] == 1) {
+                System.out.println("none");
+                return;
+            }
+        }
+        // confirmation for candidate in column
+        for(int r = 0; r < arr.length; r++) {
+            if(r != candidate && arr[r][candidate] == 0) {
+                System.out.println("none");
+                return;
+            }
+        }
+        System.out.println(candidate);
+    }
+
+    public static class Pair implements Comparable<Pair>{
+        int start;
+        int end;
+
+        Pair(int start, int end) {
+            this.start = start;
+            this.end = end;
+        }
+
+        public int compareTo(Pair o) {
+            return this.start - o.start;
+        }
+    }
+
+    public static void mergeOverlappingIntervals(int[][] arr) {
+        Pair[] pairs = new Pair[arr.length];
+        for(int i = 0; i < arr.length; i++) {
+            pairs[i] = new Pair(arr[i][0], arr[i][1]);
+        }
+        Arrays.sort(pairs);
+        // use linkedlist as stack
+        LinkedList<Pair> st = new LinkedList<>(); // addLast, removeLast
+        st.addLast(pairs[0]);
+
+        for(int i = 1; i < pairs.length; i++) {
+            Pair p = pairs[i];
+            if(p.start <= st.getLast().end) {
+                // end time update
+                if(p.end > st.getLast().end) {
+                    st.getLast().end = p.end;
+                }
+            } else {
+                st.addLast(p);
+            }
+        }
+
+        for(Pair p : st) {
+            System.out.println(p.start + " " + p.end);
+        }
+    }
+
+    public static void smallestNumberFollowingPattern(String str) {
+        Stack<Integer> st = new Stack<>();
+        int num = 1;
+        for(int i = 0; i < str.length(); i++) {
+            char ch = str.charAt(i);
+            if(ch == 'd') {
+                st.push(num);
+                num++;
+            } else {
+                st.push(num);
+                num++;
+                while(st.size() > 0) {
+                    System.out.print(st.pop());
+                }
+            }
+        }
+        st.push(num);
+        while(st.size() > 0) {
+            System.out.print(st.pop());
+        }
+        System.out.println();
+    }
+
+    // stack creation
+    public static class CustomStack {
+        int[] data;
+        int tos;
+    
+        public CustomStack(int cap) {
+          data = new int[cap];
+          tos = -1;
+        }
+    
+        int size() {
+          // write ur code here
+        }
+    
+        void display() {
+          // write ur code here
+        }
+    
+        void push(int val) {
+          // write ur code here
+        }
+    
+        int pop() {
+          // write ur code here
+        }
+    
+        int top() {
+           // write ur code here
+        }
+    }
+
 
     public static void fun() {
         int[] arr = {10, 6, 12, 5, 3, 11, 14, 8, 9};
