@@ -218,11 +218,178 @@ public class graphs {
     // journey to the moon, https://www.hackerrank.com/challenges/journey-to-the-moon/problem
     // same as perfect friend
 
-    
+    // leetcode 200 https://leetcode.com/problems/number-of-islands/
+    static int[] xdir = {-1, 0, 1, 0};
+    static int[] ydir = {0, -1, 0, 1};
 
+    private void numIslandsComp(char[][] grid, int x, int y) {
+        grid[x][y] = '#';
+        // from x, y we can move top left down and right
+        for(int d = 0; d < 4; d++) {
+            int r = x + xdir[d];
+            int c = y + ydir[d];
+
+            if(r >= 0 && r < grid.length && c >= 0 && 
+            c < grid[0].length && grid[r][c] == '1') {
+                numIslandsComp(grid, r, c);
+            }
+        }
+    }
+
+    public int numIslands(char[][] grid) {
+        int count = 0;
+        for(int i = 0; i < grid.length; i++) {
+            for(int j = 0; j < grid[0].length; j++) {
+                if(grid[i][j] == '1') {
+                    count++;
+                    numIslandsComp(grid, i, j);
+                }
+            }
+        }
+        return count;
+    }
+
+    private static void hamiltonianPathAndCycle(ArrayList<Edge>[] graph, int src, 
+        boolean[] vis, String psf, int osrc) {
+        if(psf.length() == graph.length - 1) {
+            psf += src;
+            System.out.print(psf);
+            // now check is path is cyclic or not
+            boolean isCycle = false;
+            // check if back edge is exist or not
+            for(Edge e : graph[src]) {
+                if(e.nbr == osrc) {
+                    isCycle = true;
+                    break;
+                }
+            }
+            if(isCycle == true) {
+                System.out.println("*");
+            } else {
+                System.out.println(".");
+            }
+            return;
+        }
+        vis[src] = true;
+        for(Edge e : graph[src]) {
+            if(vis[e.nbr] == false) {
+                hamiltonianPathAndCycle(graph, e.nbr, vis, psf + src, osrc);
+            }
+        }
+        vis[src] = false;
+    }
+
+
+    static int[] rdir = {-2, -1, 1, 2, 2, 1, -1, -2};
+    static int[] cdir = {1, 2, 2, 1, -1, -2, -2, -1};
+
+    public static void displayBoard(int[][] chess){
+        for(int i = 0; i < chess.length; i++){
+            for(int j = 0; j < chess[0].length; j++){
+                System.out.print(chess[i][j] + " ");
+            }
+            System.out.println();
+        }
+
+        System.out.println();
+    }
+
+    public static void printKnightsTour(int[][] chess, int x, int y, int upcomingMove) {
+        chess[x][y] = upcomingMove;
+        if(upcomingMove == chess.length * chess.length) {
+            displayBoard(chess);
+            chess[x][y] = 0;
+            return;
+        }
+        for(int d = 0; d < 8; d++) {
+            int r = x + rdir[d];
+            int c = y + cdir[d];
+
+            if(r >= 0 && r < chess.length && c >= 0 && c < chess.length && chess[r][c] == 0) {
+                printKnightsTour(chess, r, c, upcomingMove + 1);
+            }
+        }
+        chess[x][y] = 0;
+    }
+
+    /*  you have a source, 
+        print shortest path(in terms opf edge) 
+        from source to every vertex
+    */
+    private static class BFSHelper {
+        int vtx;
+        String psf;
+        int wsf;
+
+        BFSHelper(int vtx, String psf, int wsf) {
+            this.vtx = vtx;
+            this.psf = psf;
+            this.wsf = wsf;
+        }
+    }
+
+    public static void bfsAlgo(ArrayList<Edge>[] graph, int src) {
+        Queue<BFSHelper> qu = new LinkedList<>();
+        boolean[] vis = new boolean[graph.length];
+        qu.add(new BFSHelper(src, src + "", 0));
+        while(qu.size() > 0) {
+            // 1. get + remove
+            BFSHelper rem = qu.remove();
+            // 2. mark*
+            if(vis[rem.vtx] == true) {
+                continue;
+            } else {
+                vis[rem.vtx] = true;
+            }
+            // 3. work -> print dst + @ + psf
+            System.out.println(rem.vtx + "@" + rem.psf + "-" + rem.wsf);
+            // 4. add unvisited nbrs
+            for(Edge e : graph[rem.vtx]) {
+                if(vis[e.nbr] == false) {
+                    qu.add(new BFSHelper(e.nbr, rem.psf + e.nbr, rem.wsf + e.wt));
+                }
+            }
+        }
+    }
+
+    public static boolean isCompCyclic(ArrayList<Edge>[] graph, int src, boolean[] vis) {
+        Queue<Integer> qu = new LinkedList<>();
+        qu.add(src);
+        while(qu.size() > 0) {
+            // 1. get + remove
+            int rem = qu.remove();
+            // 2. mark*
+            if(vis[rem] == true) {
+                return true;
+            } else {
+                vis[rem] = true;
+            }
+            // 3. work -> check cycle
+            
+            // 4. add unvisited nbrs
+            for(Edge e : graph[rem]) {
+                if(vis[e.nbr] == false) {
+                    qu.add(e.nbr);
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean isCyclicGraph(ArrayList<Edge>[] graph) {
+        boolean[] vis = new boolean[graph.length];
+        for(int v = 0; v < graph.length; v++) {
+            if(vis[v] == false) {
+                if(isCompCyclic(graph, v, vis) == true) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     public static void fun() {
-        int n = 9;
+        int n = 7;
         ArrayList<Edge>[] graph = new ArrayList[n];
         for(int i = 0; i < n; i++) {
             graph[i] = new ArrayList<>();
@@ -231,13 +398,13 @@ public class graphs {
         addEdge(graph, 0, 3, 40);
         addEdge(graph, 1, 2, 10);
         addEdge(graph, 2, 3, 10);
-        // addEdge(graph, 3, 4, 2);
+        addEdge(graph, 3, 4, 2);
         addEdge(graph, 4, 5, 3);
         addEdge(graph, 4, 6, 8);
         addEdge(graph, 5, 6, 3);
-        // addEdge(graph, 2, 5, 4);
-        addEdge(graph, 7, 8, 10);
-        display(graph);
+        addEdge(graph, 2, 5, 4);
+        // addEdge(graph, 7, 8, 10);
+        // display(graph);
 
         // boolean[] vis = new boolean[n];
         // System.out.println();
@@ -250,9 +417,14 @@ public class graphs {
         // System.out.println("Floor path : " + fpath + " @ " + fpathwt);
         // System.out.println("Kth Largest Path path : " + pq.peek().psf + " @ " + pq.peek().wsf);
         
-        System.out.println(getConnectedComponents(graph));
+        // System.out.println(getConnectedComponents(graph));
+        
+        // hamiltonianPathAndCycle(graph, 6, vis, "", 6);
 
-    
+        // int[][] board = new int[5][5];
+        // printKnightsTour(board, 2, 0, 1);
+
+        bfsAlgo(graph, 0);
     }
 
 
