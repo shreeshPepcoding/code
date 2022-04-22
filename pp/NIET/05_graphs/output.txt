@@ -1,5 +1,0 @@
-6 at time t = 1
-4 at time t = 2
-5 at time t = 2
-3 at time t = 3
-4
