@@ -388,6 +388,168 @@ public class graphs {
         return false;
     }
 
+
+    private static class DHelper implements Comparable<DHelper> {
+        int vtx;
+        String psf;
+        int wsf;
+
+        DHelper(int vtx, String psf, int wsf) {
+            this.vtx = vtx;
+            this.psf = psf;
+            this.wsf = wsf;
+        }
+
+        public int compareTo(DHelper o) {
+            return this.wsf - o.wsf;
+        }
+    }
+
+    // djikstra's Algorithm -> shortest path in terms of weight
+    public static void djikstrasAlgo(ArrayList<Edge>[] graph, int src) {
+        PriorityQueue<DHelper> pq = new PriorityQueue<>();
+        pq.add(new DHelper(src, src + "", 0));
+        boolean[] vis = new boolean[graph.length];
+        while(pq.size() > 0) {
+            // 1. get + remove
+            DHelper rem = pq.remove();
+            // 2. mark*
+            if(vis[rem.vtx] == true) {
+                continue;
+            } else {
+                vis[rem.vtx] = true;
+            }
+            // 3. work
+            System.out.println(rem.vtx + " via " + rem.psf + " @ " + rem.wsf);
+            // 4. add unvisited nbrs
+            for(Edge e : graph[rem.vtx]) {
+                if(vis[e.nbr] == false) {
+                    pq.add(new DHelper(e.nbr, rem.psf + e.nbr, rem.wsf + e.wt));
+                } 
+            }
+        }
+    }
+
+    // prims Algo -> min wire required to connect all PCs
+    public static class PHelper implements Comparable<PHelper> {
+        int src;
+        int prt;
+        int wt;
+
+        PHelper(int src, int prt, int wt) {
+            this.src = src;
+            this.prt = prt;
+            this.wt = wt;
+        }
+
+        public int compareTo(PHelper o) {
+            return this.wt - o.wt;
+        }
+    }
+
+    public static void primsAlgo(ArrayList<Edge>[] graph) {
+        PriorityQueue<PHelper> pq = new PriorityQueue<>();
+        pq.add(new PHelper(0, -1, 0));
+
+        boolean[] vis = new boolean[graph.length];
+
+        while(pq.size() > 0) {
+            PHelper rem = pq.remove();
+
+            if(vis[rem.src] == true) {
+                continue;
+            } 
+            vis[rem.src] = true;
+
+            // work -> add edge
+            if(rem.prt != -1)
+                System.out.println("[" + rem.src + "-" + rem.prt + "@" + rem.wt + "]");
+            
+            for(Edge e : graph[rem.src]) {
+                if(vis[e.nbr] == false) {
+                    pq.add(new PHelper(e.nbr, rem.src, e.wt));
+                }
+            }
+        }
+    }
+
+    // bpair -> bipartite pair
+    public static class bpair {
+        int src;
+        int time;
+
+        public bpair(int src, int time) {
+            this.src = src;
+            this.time = time;
+        }
+    }
+
+    public static boolean isBipartiteComp(ArrayList<Edge>[] graph, int src, int[] vis) {
+        Queue<bpair> qu = new LinkedList<>();
+
+        qu.add(new bpair(src, 0));
+        while(qu.size() > 0) {
+            bpair rem = qu.remove();
+            
+            if(vis[rem.src] != -1) {
+                // already marked
+                if(vis[rem.src] % 2 == rem.time % 2) {
+                    continue;
+                } else {
+                    return false;
+                }
+            } else {
+                vis[rem.src] = rem.time;
+            }
+
+            for(Edge e : graph[rem.src]) {
+                if(vis[e.nbr] == -1) {
+                    qu.add(new bpair(e.nbr, rem.time + 1));
+                }
+            }
+        }
+        return true;
+    }
+
+    public static boolean isBipartite(ArrayList<Edge>[] graph) {
+        int[] vis = new int[graph.length];
+        Arrays.fill(vis, -1);
+
+        for(int v = 0; v < graph.length; v++) {
+            if(vis[v] == -1) {
+                boolean res = isBipartiteComp(graph, v, vis);
+                if(res == false) return false;
+            }
+        }
+        return true;
+    }
+
+    // spread of infection
+    public static int spreadOfInfection(ArrayList<Edge>[] graph, int src, int time) {
+        int count = 0;
+        Queue<int[]> qu = new LinkedList<>();
+        // int[] first element is src, and second is time
+        qu.add(new int[]{src, 1});
+        boolean[] vis = new boolean[graph.length];
+        while(qu.size() > 0) {
+            int[] rem = qu.remove();
+            if(vis[rem[0]] == true) {
+                continue;
+            } else {
+                vis[rem[0]] = true;
+            }
+            System.out.println(rem[0] + " at time t = " + rem[1]);
+            count++;
+            for(Edge e : graph[rem[0]]) {
+                if(vis[e.nbr] == false && rem[1] < time) {
+                    qu.add(new int[]{e.nbr, rem[1] + 1});
+                }
+            }
+        }
+        return count;
+    }
+
+
     public static void fun() {
         int n = 7;
         ArrayList<Edge>[] graph = new ArrayList[n];
@@ -402,7 +564,7 @@ public class graphs {
         addEdge(graph, 4, 5, 3);
         addEdge(graph, 4, 6, 8);
         addEdge(graph, 5, 6, 3);
-        addEdge(graph, 2, 5, 4);
+        // addEdge(graph, 2, 5, 4);
         // addEdge(graph, 7, 8, 10);
         // display(graph);
 
@@ -424,7 +586,11 @@ public class graphs {
         // int[][] board = new int[5][5];
         // printKnightsTour(board, 2, 0, 1);
 
-        bfsAlgo(graph, 0);
+        // bfsAlgo(graph, 0);
+        // djikstrasAlgo(graph, 0);
+        // primsAlgo(graph);
+        // System.out.println(isBipartite(graph));
+        System.out.println(spreadOfInfection(graph, 6, 3));
     }
 
 
