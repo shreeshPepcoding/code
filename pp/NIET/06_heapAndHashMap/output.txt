@@ -1,0 +1,17 @@
+{USA=1500, Pakistan=100, SriLanka=5000, UK=1000, China=1700, India=10000}
+6
+India check : true
+London check : false
+India get : 2700
+London get : null
+[USA, Pakistan, SriLanka, UK, China, India]
+Key : USA, value : 1500
+Key : Pakistan, value : 100
+Key : SriLanka, value : 5000
+Key : UK, value : 1000
+Key : China, value : 1700
+Key : India, value : 2700
+[China, Australia, Germany, India]
+China find : true
+[Australia, Germany, India]
+China find : false
