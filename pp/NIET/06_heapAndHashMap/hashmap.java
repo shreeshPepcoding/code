@@ -2,7 +2,6 @@ import java.util.*;
 
 public class hashmap {
 
-
     public static void printMaxFreqCharacter(String str) {
         HashMap<Character, Integer> map = new HashMap<>();
         char res = 'a';
