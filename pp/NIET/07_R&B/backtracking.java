@@ -209,6 +209,169 @@ public class backtracking {
 
     }
 
+    // qpsf -> queen place so far, tq-> total queen, lbno-> last box number
+    public static void queensCombinations(int qpsf, int tq, boolean[][] chess, int lbno) {
+        if(qpsf == tq) {
+            for(int i = 0; i < chess.length; i++) {
+                for(int j = 0; j < chess.length; j++) {
+                    if(chess[i][j] == true) {
+                        System.out.print("q\t");
+                    } else {
+                        System.out.print("-\t");
+                    }
+                }
+                System.out.println();
+            }
+            System.out.println();
+            return;
+        }
+
+        for(int b = lbno + 1; b < chess.length * chess.length; b++) {
+            int r = b / chess.length;
+            int c = b % chess.length;
+            
+            chess[r][c] = true;
+            queensCombinations(qpsf + 1, tq, chess, b);
+            chess[r][c] = false;
+        }
+    }
+
+    public static boolean isQueenSafe1(boolean[][] chess, int r, int c) {
+        // direction 1
+        for(int j = c - 1; j >= 0; j--) {
+            if(chess[r][j] == true) return false;
+        }
+        // direction 2
+        for(int i = r - 1, j = c - 1; i >= 0 && j >= 0; i--, j--) {
+            if(chess[i][j] == true) return false;
+        }
+        // direction 3
+        for(int i = r - 1; i >= 0; i--) {
+            if(chess[i][c] == true) return false;
+        }
+        // direction 4
+        for(int i = r - 1, j = c + 1; i >= 0 && j < chess[0].length; i--, j++) {
+            if(chess[i][j] == true) return false;
+        }
+
+        return true;
+    }
+
+    public static void nqueens(int qpsf, int tq, boolean[][] chess, int lbno) {
+        if(qpsf == tq) {
+            for(int i = 0; i < chess.length; i++) {
+                for(int j = 0; j < chess.length; j++) {
+                    if(chess[i][j] == true) {
+                        System.out.print("q\t");
+                    } else {
+                        System.out.print("-\t");
+                    }
+                }
+                System.out.println();
+            }
+            System.out.println();
+            return; 
+        }
+
+        for(int b = lbno + 1; b < tq * tq; b++) {
+            int r = b / chess[0].length;
+            int c = b % chess[0].length;
+
+            if(isQueenSafe1(chess, r, c) == true) {
+                chess[r][c] = true; // queen is placed at (r, c)
+                nqueens(qpsf + 1, tq, chess, b);
+                chess[r][c] = false;
+            }
+        }   
+    }
+
+    static int[] xdir = {-1, -1, 0, 1, 1, 1, 0, -1};
+    static int[] ydir = {0, 1, 1, 1, 0, -1, -1, -1};
+
+    public static boolean IsQueenSafe2(int[][] chess, int row, int col) {
+        for(int rad = 1; rad < chess.length; rad++) {
+            for(int d = 0; d < 8; d++) {
+                int r = row + (xdir[d] * rad);
+                int c = col + (ydir[d] * rad);
+
+                if(r >= 0 && r < chess.length && c >= 0 && c < chess[0].length && chess[r][c] != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public static void nqueens(int qpsf, int tq, int[][] chess) {
+        if(qpsf == tq) {
+            for(int i = 0; i < chess.length; i++) {
+                for(int j = 0; j < chess[0].length; j++) {
+                    if(chess[i][j] != 0) {
+                        System.out.print("q" + chess[i][j] + "\t");
+                    } else {
+                        System.out.print("-\t");
+                    }
+                } 
+                System.out.println();
+            }
+            System.out.println();
+            return;
+        }
+
+        for(int b = 0; b < tq * tq; b++) {
+            int r = b / chess[0].length;
+            int c = b % chess[0].length;
+
+            if(chess[r][c] == 0 && IsQueenSafe2(chess, r, c) == true) {
+                chess[r][c] = qpsf + 1;
+                nqueens(qpsf + 1, tq, chess);
+                chess[r][c] = 0;
+            }
+        }
+    }
+
+    static int[] rdir = {-2, -1, 1, 2, 2, 1, -1, -2};
+    static int[] cdir = {1, 2, 2, 1, -1, -2, -2, -1};
+
+    public static boolean IsKnightSafe(boolean[][] chess, int x, int y) {
+        for(int d = 0; d < 8; d++) {
+            int r = x + rdir[d];
+            int c = y + cdir[d];
+
+            if(r >= 0 && r < chess.length && c >= 0 && c < chess[0].length && chess[r][c] == true) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static void nknights(int kpsf, int tk, boolean[][] chess, int lbno) {
+        if(kpsf == tk) {
+            for(int i = 0; i < chess.length; i++) {
+                for(int j = 0; j < chess[0].length; j++) {
+                    if(chess[i][j] == true) {
+                        System.out.print("k\t");
+                    } else {
+                        System.out.print("-\t");
+                    }
+                }
+                System.out.println();
+            }
+            System.out.println();
+            return;
+        }
+
+        for(int b = lbno + 1; b < tk * tk; b++) {
+            int r = b / chess[0].length;
+            int c = b % chess[0].length;
+
+            if(IsKnightSafe(chess, r, c)) {
+                chess[r][c] = true;
+                nknights(kpsf + 1, tk, chess, b);
+                chess[r][c] = false;
+            }
+        }
+    }
 
     public static void fun() {
         combinations1(1, 4, 0, 2, "");
