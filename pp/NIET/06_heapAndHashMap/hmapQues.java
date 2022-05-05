@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class hashmap {
+public class hmapQues {
 
     public static void printMaxFreqCharacter(String str) {
         HashMap<Character, Integer> map = new HashMap<>();
