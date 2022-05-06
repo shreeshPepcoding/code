@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class heap {
+public class heapQues {
 
     public static void kLargest(int n,int[] arr,int k){
         // min priority

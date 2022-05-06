@@ -1,41 +1,7 @@
-[Australia = 100]
-[Nepal = 12]
-[pak = 90]
-[US = 70]
-[Japan = 50]
-[Bhutan = 55]
-[India = 125]
-[Egypt = 75]
-bucket : 0 -> [Australia = 100], [Nepal = 12], 
-bucket : 1 -> 
-bucket : 2 -> [pak = 90], [US = 70], [Japan = 50], [Bhutan = 55], 
-bucket : 3 -> [India = 125], [Egypt = 75], 
-[Australia = 100]
-[England = 175]
-[pak = 105]
-[Bhutan = 55]
-[Egypt = 75]
-[Nepal = 12]
-[US = 70]
-[Japan = 50]
-[newzeland = 156]
-[India = 130]
-bucket : 0 -> [Australia = 100], 
-bucket : 1 -> [England = 175], 
-bucket : 2 -> [pak = 105], [Bhutan = 55], 
-bucket : 3 -> [Egypt = 75], 
-bucket : 4 -> [Nepal = 12], 
-bucket : 5 -> 
-bucket : 6 -> [US = 70], [Japan = 50], [newzeland = 156], 
-bucket : 7 -> [India = 130], 
+7
 10
-105
-bucket : 0 -> [Australia = 100], 
-bucket : 1 -> [England = 175], 
-bucket : 2 -> [Bhutan = 55], 
-bucket : 3 -> [Egypt = 75], 
-bucket : 4 -> [Nepal = 12], 
-bucket : 5 -> 
-bucket : 6 -> [US = 70], [Japan = 50], [newzeland = 156], 
-bucket : 7 -> [India = 130], 
-9
+17
+19
+20
+82
+100
