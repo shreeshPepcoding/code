@@ -289,8 +289,8 @@ public class backtracking {
     static int[] ydir = {0, 1, 1, 1, 0, -1, -1, -1};
 
     public static boolean IsQueenSafe2(int[][] chess, int row, int col) {
-        for(int rad = 1; rad < chess.length; rad++) {
-            for(int d = 0; d < 8; d++) {
+        for(int d = 0; d < 8; d++) {
+            for(int rad = 1; rad < chess.length; rad++) {
                 int r = row + (xdir[d] * rad);
                 int c = col + (ydir[d] * rad);
 
@@ -372,6 +372,87 @@ public class backtracking {
             }
         }
     }
+
+    // permutation word - 1
+    // cb -> current box, tb-> total box
+    public static void generateWords(int cb, int tb, HashMap<Character, Integer> fmap, String asf) {
+        if(cb > tb) {
+            System.out.println(asf);
+            return;
+        }
+        for(char ch : fmap.keySet()) {
+            if(fmap.get(ch) > 0) {
+                // exhaust character
+                fmap.put(ch, fmap.get(ch) - 1);
+                // call
+                generateWords(cb + 1, tb, fmap, asf + ch);
+                // regain character
+                fmap.put(ch, fmap.get(ch) + 1);
+            }
+        }
+    }
+
+    // leetcode 47, https://leetcode.com/problems/permutations-ii/
+    public List<List<Integer>> res;
+    
+    public void permutation(int cb, int tb, HashMap<Integer, Integer> map, List<Integer> asf) {
+        if(cb > tb) {
+            List<Integer> bres = new ArrayList<>();
+            for(int val : asf) {
+                bres.add(val);
+            }
+            res.add(bres);
+            return;
+        }
+        
+        for(int val : map.keySet()) {
+            if(map.get(val) > 0) {
+                map.put(val, map.get(val) - 1);
+                asf.add(val);
+                permutation(cb + 1, tb, map, asf);
+                asf.remove(asf.size() - 1);
+                map.put(val, map.get(val) + 1);
+            }
+        }
+    }
+    
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        res = new ArrayList<>();
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for(int val : nums) {
+            map.put(val, map.getOrDefault(val, 0) + 1);
+        }
+        
+        List<Integer> asf = new ArrayList<>();
+        permutation(1, nums.length, map, asf);
+        return res;
+    }
+
+    // permutation word - 2
+    public static void generateWords(int indx, String str, Character[] box, HashMap<Character, Integer> lastIndx) {
+        if(indx == str.length()) {
+            for(char c : box) {
+                System.out.print(c);
+            }
+            System.out.println();
+            return;
+        }
+        char ch = str.charAt(indx);
+        int li = lastIndx.get(ch);
+        for(int b = li + 1; b < box.length; b++) {
+            if(box[b] == null) {
+                // change last index for char ch
+                lastIndx.put(ch, b);
+                box[b] = ch;
+                // call
+                generateWords(indx + 1, str, box, lastIndx);
+                // regain last index for char ch
+                lastIndx.put(ch, li);
+                box[b] = null;
+            }
+        }
+    }
+
 
     public static void fun() {
         combinations1(1, 4, 0, 2, "");
