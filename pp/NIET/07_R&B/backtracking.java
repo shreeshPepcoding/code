@@ -453,6 +453,250 @@ public class backtracking {
         }
     }
 
+    // word-k-selection 1
+    public static void combination(int indx, String uniqStr, int ssf, int k, String asf ) {
+        if(indx == uniqStr.length()) {
+            if(ssf == k) {
+                System.out.println(asf);
+            }
+            return;
+        }
+        char ch = uniqStr.charAt(indx);
+        // yes call
+        if(ssf < k)
+            combination(indx + 1, uniqStr, ssf + 1, k, asf + ch);
+        
+        // no call  
+        combination(indx + 1, uniqStr, ssf, k, asf);
+    }
+
+    public static void combination2(int lci, String uniqStr, int ssf, int k, String asf ) {
+        if(ssf == k) {
+            System.out.println(asf);
+            return;
+        }
+        for(int i = lci + 1; i < uniqStr.length(); i++) {
+            char ch = uniqStr.charAt(i);
+            combination2(i, uniqStr, ssf + 1, k, asf + ch);
+        }
+    }
+
+    private static void words_k_length_words_1(String ustr, int indx, Character[] spots, int ssf) {
+        if(indx == ustr.length()) {
+            if(ssf == spots.length) {
+                for(char c : spots) {
+                    System.out.print(c);
+                }
+                System.out.println();
+            }
+            return;
+        }
+        
+        char ch = ustr.charAt(indx);
+
+        // yes call
+        for(int spot = 0; spot < spots.length; spot++) {
+            if(spots[spot] == null) {
+                // occupy the spot
+                spots[spot] = ch;
+                words_k_length_words_1(ustr, indx + 1, spots, ssf + 1);
+                // release spot
+                spots[spot] = null;
+            }
+        }
+        // no call
+        words_k_length_words_1(ustr, indx + 1, spots, ssf);
+    }
+
+    private static void word_k_length_words_2(String ustr, boolean[] items, String asf, int ssf, int k) {
+        if(ssf == k) {
+            System.out.println(asf);
+            return;
+        }
+
+        for(int i = 0; i < ustr.length(); i++) {
+            char ch = ustr.charAt(i);
+            if(items[i] == false) {
+                items[i] = true;
+                word_k_length_words_2(ustr, items, asf + ch, ssf + 1, k);
+                items[i] = false;
+            }
+        }
+    }
+
+    // Words - K Selection - 3, cc-> current character
+    public static void combination(String ustr, int cc, HashMap<Character, Integer> fmap, String asf, int k) {
+        int ssf = asf.length();
+
+        if (ssf == k) {
+            System.out.println(asf);
+            return;
+        }
+
+        if (cc == ustr.length())
+            return;
+
+        char ch = ustr.charAt(cc);
+        int freq = fmap.get(ch);
+
+        // yes call
+        for (int i = freq; i > 0; i--) {
+            if (i + ssf <= k) {
+
+                String str = "";
+                for (int j = 0; j < i; j++) {
+                    str += ch;
+                }
+                combination(ustr, cc + 1, fmap, asf + str, k);
+            }
+        }
+        // no call
+        combination(ustr, cc + 1, fmap, asf, k);
+    }
+
+    // Words - K Selection - 4, li->last index, cs-> current spot, ts-> total spot
+    public static void combination(String ustr, HashMap<Character, Integer> fmap, int li, String asf, int cs, int ts) {
+        if (cs == ts) {
+            System.out.println(asf);
+            return;
+        }
+
+        for (int i = li; i < ustr.length(); i++) {
+            char ch = ustr.charAt(i);
+            int freq = fmap.get(ch);
+            if (freq > 0) {
+                fmap.put(ch, freq - 1);
+                combination(ustr, fmap, i, asf + ch, cs + 1, ts);
+                fmap.put(ch, freq);
+            }
+        }
+    }
+
+    // Words - K Length Words - 3, cci-> current character index
+    public static void words_k_length_words3(String str, int cci, int ssf, int ts, Character[] slots,
+            HashMap<Character, Integer> map) {
+        if (cci == str.length()) {
+            if (ssf == ts) {
+                for (char ch : slots) {
+                    System.out.print(ch);
+                }
+                System.out.println();
+            }
+            return;
+        }
+
+        char ch = str.charAt(cci); // ch-> current character
+        int loc = map.get(ch); // loc-> last occurrence of character
+
+        // yes call
+        for (int i = loc + 1; i < slots.length; i++) {
+            if (slots[i] == null) {
+                // change last occurrence of character
+                map.put(ch, i);
+                // place
+                slots[i] = ch;
+
+                words_k_length_words3(str, cci + 1, ssf + 1, ts, slots, map);
+
+                // unplace
+                slots[i] = null;
+                // reset last occurrence of character
+                map.put(ch, loc);
+            }
+        }
+
+        if (loc == -1) {
+            // no call
+            words_k_length_words3(str, cci + 1, ssf, ts, slots, map);
+        }
+    }
+
+    // Words - K Length Words - 4, cs-> current slots, ts -> total slots
+    public static void words_k_length_words4(String ustr, int cs, int ts, String asf,
+            HashMap<Character, Integer> fmap) {
+        if (cs == ts) {
+            System.out.println(asf);
+            return;
+        }
+
+        for (int i = 0; i < ustr.length(); i++) {
+            char ch = ustr.charAt(i);
+            int freq = fmap.get(ch);
+            if (freq > 0) {
+                // freq reduce
+                fmap.put(ch, freq - 1);
+
+                words_k_length_words4(ustr, cs + 1, ts, asf + ch, fmap);
+
+                // freq regain
+                fmap.put(ch, freq);
+            }
+        }
+    }
+
+    // coin change combination 1, amtsf-> amount so far, tamt-> total amount
+    public static void coinChange1(int i, int[] coins, int amtsf, int tamt, String asf) {
+        if (amtsf == tamt) {
+            System.out.println(asf + ".");
+            return;
+        }
+        if (i == coins.length) {
+            return;
+        }
+        // yes call
+        if (coins[i] + amtsf <= tamt) {
+            coinChange1(i + 1, coins, amtsf + coins[i], tamt, asf + coins[i] + "-");
+        }
+        // no call
+        coinChange1(i + 1, coins, amtsf, tamt, asf);
+    }
+
+    // coin change combination 2
+    public static void coinChange2(int i, int[] coins, int amtsf, int tamt, String asf) {
+        if (i == coins.length) {
+            if (amtsf == tamt) {
+                System.out.println(asf + ".");
+            }
+            return;
+        }
+        // yes call
+        if (coins[i] + amtsf <= tamt) {
+            coinChange2(i, coins, amtsf + coins[i], tamt, asf + coins[i] + "-");
+        }
+        // no call
+        coinChange2(i + 1, coins, amtsf, tamt, asf);
+    }
+
+    // coin change permutation 1
+    public static void coinChange(int[] coins, int amtsf, int tamt, String asf, boolean[] used) {
+        if (amtsf == tamt) {
+            System.out.println(asf + ".");
+            return;
+        }
+
+        for (int i = 0; i < coins.length; i++) {
+            if (used[i] == false && coins[i] + amtsf <= tamt) {
+                used[i] = true;
+                coinChange(coins, amtsf + coins[i], tamt, asf + coins[i] + "-", used);
+                used[i] = false;
+            }
+        }
+    }
+
+    // coin change permutation 2
+    public static void coinChange(int[] coins, int amtsf, int tamt, String asf) {
+        if (amtsf == tamt) {
+            System.out.println(asf + ".");
+            return;
+        }
+
+        for (int i = 0; i < coins.length; i++) {
+            if (coins[i] + amtsf <= tamt) {
+                coinChange(coins, amtsf + coins[i], tamt, asf + coins[i] + "-");
+            }
+        }
+    }
+
 
     public static void fun() {
         combinations1(1, 4, 0, 2, "");
