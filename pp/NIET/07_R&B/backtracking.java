@@ -697,6 +697,270 @@ public class backtracking {
         }
     }
 
+    // ===================================================================================
+    // ~~~~~~~~~~~~~~~~~~~~~~Questions On Recursion and Backtracking~~~~~~~~~~~~~~~~~~~~~~
+    // ===================================================================================
+    // print abbreviations
+    public static void solution(String str, String asf, int count, int indx) {
+        if (indx == str.length()) {
+            // base case
+            String res = asf + (count != 0 ? count : "");
+            System.out.println(res);
+            return;
+        }
+
+        char ch = str.charAt(indx);
+        // yes call -> answer so far + count(if != 0) + yes of char
+        solution(str, asf + (count != 0 ? count : "") + ch, 0, indx + 1);
+        // no call
+        solution(str, asf, count + 1, indx + 1);
+    }
+
+    // N Queens - Branch And Bound -> initialise these arrays from main
+    static boolean[] cols;
+    static boolean[] nd; // normal diagonals
+    static boolean[] rd; // reverse diagonals
+
+    public static boolean isSafeToPlace(int r, int c) {
+        // for saftey across column
+        if (cols[c] == true) {
+            return false;
+        }
+        // for safety across normal diagonal
+        if (nd[r + c] == true) {
+            return false;
+        }
+        // for saftey across reverse diagonal
+        if (rd[r - c + cols.length - 1] == true) {
+            return false;
+        }
+        return true;
+    }
+
+    public static void nQueens(int row, int n, String asf) {
+        if (row == n) {
+            System.out.println(asf + ".");
+            return;
+        }
+
+        for (int col = 0; col < n; col++) {
+            if (isSafeToPlace(row, col)) {
+                // mark
+                cols[col] = true;
+                nd[row + col] = true;
+                rd[row - col + n - 1] = true;
+                nQueens(row + 1, n, asf + row + "-" + col + ", ");
+                // unmark
+                cols[col] = false;
+                nd[row + col] = false;
+                rd[row - col + n - 1] = false;
+            }
+        }
+    }
+
+    // Max Score
+    public static int solution(String[] words, int[] farr, int[] score, int idx) {
+        if (idx == words.length)
+            return 0;
+
+        // no call
+        int no_ans = solution(words, farr, score, idx + 1);
+
+        // yes call
+        String word = words[idx];
+        int myScore = 0;
+        boolean flag = true;
+        // exhaust frequency + make score for current
+        for (int i = 0; i < word.length(); i++) {
+            int charIndx = word.charAt(i) - 'a';
+            myScore += score[charIndx];
+
+            if (farr[charIndx] <= 0) {
+                flag = false;
+            }
+            farr[charIndx]--;
+        }
+        int yes_ans = 0;
+        if (flag == true) {
+            yes_ans = myScore + solution(words, farr, score, idx + 1);
+        }
+        // reset frequencies
+        for (int i = 0; i < word.length(); i++) {
+            int charIndx = word.charAt(i) - 'a';
+            farr[charIndx]++;
+        }
+        return Math.max(no_ans, yes_ans);
+    }
+
+    // Josephus Problem
+    public static int solution(int n, int k) {
+        if (n == 1)
+            return 0;
+        return (solution(n - 1, k) + k) % n;
+    }
+
+    // Lexicographical Numbers
+    public static void lexicography(int val, int n) {
+        // base case
+        if (val > n)
+            return;
+        // self printing
+        System.out.println(val);
+        // family printing
+        for (int i = 0; i < 10; i++) {
+            lexicography(10 * val + i, n);
+        }
+    }
+
+    // Goldmine - 2
+    static int max = 0;
+    static int[] xdir1 = { -1, 0, 1, 0 };
+    static int[] ydir1 = { 0, -1, 0, 1 };
+
+    public static int dfs(int[][] arr, int i, int j) {
+        // mark
+        int gold = arr[i][j];
+        arr[i][j] *= -1;
+        // visit in neighbours
+        for (int d = 0; d < xdir1.length; d++) {
+            int r = i + xdir1[d];
+            int c = j + ydir1[d];
+            if (r >= 0 && r < arr.length && c >= 0 && c < arr[0].length && arr[r][c] > 0) {
+                gold += dfs(arr, r, c);
+            }
+        }
+        return gold;
+    }
+
+    public static void getMaxGold(int[][] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = 0; j < arr[0].length; j++) {
+                if (arr[i][j] > 0) {
+                    int res = dfs(arr, i, j);
+                    max = Math.max(max, res);
+                }
+            }
+        }
+    }
+
+    // leetcode 52, https://leetcode.com/problems/n-queens-ii/submissions/
+    private boolean[] col; // column
+    private boolean[] dia1; // normal diagonal
+    private boolean[] dia2; // reverse diagonal
+    private int count;
+    
+    private boolean isSafeToPlace(int i, int j, int n) {
+        if(col[j] == true) return false;
+        else if(dia1[i + j] == true) return false;
+        else if(dia2[i - j + n - 1] == true) return false;
+        else return true;
+    }
+    
+    private void nQueen(int row, int n) {
+        if(row == n) {
+            count++;
+            return;
+        }
+        
+        for(int c = 0; c < n; c++) {
+            if(isSafeToPlace(row, c, n)) {
+                col[c] = true;
+                dia1[row + c] = true;
+                dia2[row - c + n - 1] = true;
+                
+                nQueen(row + 1, n);
+                
+                col[c] = false;
+                dia1[row + c] = false;
+                dia2[row - c + n - 1] = false;
+            }
+        }
+    }
+    
+    
+    public int totalNQueens(int n) {
+        if(n == 1) return 1;
+        else if(n == 2 || n == 3) {
+            return 0;
+        }
+        
+        col = new boolean[n];
+        dia1 = new boolean[2 * n - 1];
+        dia2 = new boolean[2 * n - 1];
+        count = 0;
+        nQueen(0, n);
+        return count;
+    }
+
+    // solve sudoku -> nados portal
+    public static void display(int[][] board){
+        for(int i = 0; i < board.length; i++){
+          for(int j = 0; j < board[0].length; j++){
+            System.out.print(board[i][j] + " ");
+          }
+          System.out.println();
+        }
+    }
+
+    private static boolean safeSudoku(int[][] bd, int row, int col, int num) {
+        // 1. check in row
+        for(int c = 0; c < bd.length; c++) {
+            if(bd[row][c] == num) return false;
+        }
+        // 2. check in col
+        for(int r = 0; r < bd.length; r++) {
+            if(bd[r][col] == num) return false;
+        }
+        // 3. check in sub matrix
+        int r = row - row % 3;
+        int c = col - col % 3;
+
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++) {
+                int rr = r + i;
+                int cc = c + j;
+
+                if(bd[rr][cc] == num) return false;
+            }
+        }
+        return true;
+    }
+
+    private static void solveSudoku_1(int[][] bd, ArrayList<Integer> list, int li) {
+        if(li == list.size()) {
+            display(bd);
+            return;
+        }
+
+        int cell_no = list.get(li);
+        int r = cell_no / bd.length;
+        int c = cell_no % bd.length;
+
+        for(int num = 1; num <= 9; num++) {
+            if(safeSudoku(bd, r, c, num) == true) {
+                bd[r][c] = num;
+                solveSudoku_1(bd, list, li + 1);
+                bd[r][c] = 0;
+            }
+        }
+    }
+
+    public static void solveSudoku(int[][] board, int r, int c) {
+        ArrayList<Integer> list = new ArrayList<>();
+
+        for(int i = 0; i < board.length; i++) {
+            for(int j = 0; j < board.length; j++) {
+                if(board[i][j] == 0) {
+                    list.add(board.length * i + j);
+                }
+            }
+        }
+
+        solveSudoku_1(board, list, 0);
+    }
+
+
+
 
     public static void fun() {
         combinations1(1, 4, 0, 2, "");
